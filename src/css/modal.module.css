@@ -1,0 +1,49 @@
+.modal_overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999; /* Ensure it's on top */
+}
+
+.modal {
+  background-color: #fff;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+  width: 70%;
+  height: 55%;
+  border-radius: 5px;
+  z-index: 1000; /* Ensure it's on top of the overlay */
+}
+
+.close {
+  position: relative;
+  top: 5px;
+  right: 1px;
+  cursor: pointer;
+}
+
+.button_like_input {
+  appearance: none;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 15px;
+  width: 100%;
+  text-align: start;
+  padding: 6px 10px;
+  font-size: 14px;
+  outline: none;
+}
+
+/* Add styles for button focus state */
+.button_like_input:focus {
+  border-color: #007bff; /* Change color on focus */
+  box-shadow: 0 0 1px rgba(0, 123, 255, 0.7); /* Add a subtle box shadow on focus */
+}
