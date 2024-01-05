@@ -7,7 +7,8 @@ import { Provider } from 'react-redux';
 import store from './redux/store';
 
 
-import { Home, Product, Products, AboutPage, ContactPage, Cart, Login, Register, Checkout, PageNotFound, Dashboard, ProfilePage, DefaultPage, ShopPage, SettingPage, PricingFarmerPage, EditContactInfoPage, EditDemographicInfoPage, EditSignInSecurityPage, AddIndividualProfilePage, UpgradeSubscriptionPage, CreateShopPage, AddProductPage, AddInventoryPage, WalletPage, InboxPage, ConnectSharePage, ConnectAndShareStoryPage, SwitchBoardPage } from "./pages"
+import { Home, Product, Products, AboutPage, ContactPage, Cart, Login, Register, RegisterBusiness, Checkout, PageNotFound, Dashboard, ProfilePage, DefaultPage, ShopPage, SettingPage, PricingFarmerPage, EditContactInfoPage, EditDemographicInfoPage, EditSignInSecurityPage, AddIndividualProfilePage, UpgradeSubscriptionPage, CreateShopPage, AddProductPage, AddInventoryPage, WalletPage, InboxPage, ConnectAndShareStoryPage, SwitchBoardPage, PricingBusinessPage, EditBusinessContactInfoPage, EditBusinessSignInSecurityPage, UpgradeBusinessSubscriptionPage, ProfileBusinessPage, AccessFarmerData } from "./pages"
+import { EntityList } from './components';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -22,10 +23,13 @@ root.render(
         <Route path="/cart" element={<Cart />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register/*" element={<Register />} />
+        <Route path="/farmer-list/*" element={<EntityList />} />
+        <Route path="/register/business/*" element={<RegisterBusiness />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="*" element={<PageNotFound />} />
         <Route path="/product/*" element={<PageNotFound />} />
         <Route path="/farmer-pricing" element={<PricingFarmerPage />} />
+        <Route path="/business-pricing" element={<PricingBusinessPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/dashboard/profile" element={<ProfilePage />} />
         <Route path="/dashboard/default" element={<DefaultPage />} />
@@ -42,7 +46,12 @@ root.render(
         <Route path="/dashboard/wallet/wallet" element={ <WalletPage/> } />
         <Route path="/dashboard/inbox/inbox" element={ <InboxPage/> } />
         <Route path="/dashboard/connect-share-stories" element={ <ConnectAndShareStoryPage /> } />
-        <Route path='/account-type' element={ <SwitchBoardPage /> } />
+        <Route path="/account-type" element={ <SwitchBoardPage /> } />
+        <Route path="/dashboard/business/edit-profile/contact" element={ <EditBusinessContactInfoPage /> } />
+        <Route path="/dashboard/business/edit-profile/security" element={ <EditBusinessSignInSecurityPage /> } />
+        <Route path="/dashboard/business/edit_profile/upgrade" element={ <UpgradeBusinessSubscriptionPage /> } />
+        <Route path="/dashboard/business" element={ <ProfileBusinessPage />} />
+        <Route path="/dashboard/business/farmer-data" element={ <AccessFarmerData /> } />
       </Routes>
     </Provider>
   </BrowserRouter>

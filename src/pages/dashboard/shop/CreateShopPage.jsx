@@ -7,9 +7,13 @@ import Notiflix from 'notiflix';
 import { Loading } from 'notiflix/build/notiflix-loading-aio';
 
 import countryList from "../../../db/countryList";
-import { STORE_KEY, readLocalCache, readLocalStoredData, storeOnLocalCache } from "../../../db/localSessionData";
+
 import formattedDateTime from "../../../utility/format-current-date";
 import API_END_POINT from "../../../endpoint/apiRoute";
+import { getSession } from "../../../session/appSession";
+import { PROFILE_SESSION } from "../../../session/constant";
+import { STORE_KEY, readLocalCache, storeOnLocalCache } from "../../../db/localSessionData";
+import customCss from "../../../css/custom.loading.module.css";
 
 const CreateShopPage = () => {
 
@@ -52,10 +56,11 @@ const CreateShopPage = () => {
   useEffect(() => {
     setCurrentDate(formattedDateTime);
     setCountry(countryList);
-    const stored_data = readLocalStoredData();
+    const stored_data = getSession(PROFILE_SESSION);
     if(stored_data){
       setStoreData(stored_data);
     }
+    Loading.init({className:customCss.notiflix_loading,});
   },[]); 
 
   useEffect(() => {
@@ -235,10 +240,11 @@ const CreateShopPage = () => {
                         <tr>
                             <td><h5><strong>Shop</strong></h5></td>
                             <td style={{textAlign:"end"}}>
-                                {storeShopData[0]?.name ? 
+                                {
+                                storeShopData[0]?.name ? 
                                 <button className="btn btn-success m-2" onClick={toggleShopHide}><i className=""></i> Edit</button>
                                 :
-                                <button className="btn btn-success m-2" onClick={toggleShopHide} disabled={storeData[0]?.subscription === "basic" ? true : false} ><i className=""></i> Add</button>
+                                <button className="btn btn-success m-2" onClick={toggleShopHide} disabled={storeData[0]?.subscription === "basic" || parseInt(storeData[0]?.is_profile_completed === 0 ) ? true : false} ><i className=""></i> Add</button>
                                 }
                             </td>
                         </tr> 

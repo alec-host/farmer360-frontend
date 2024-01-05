@@ -7,15 +7,15 @@ const PricingFarmerPage = () => {
   return (
     <>
       <Navbar />
-        <div className="container my-3 py-3">
-            <h5 className="text-center">Pricing</h5>
+        <div className="container my-3 py-3" style={{height:"80vh"}}>
+            <h5 className="text-center">Farmer Account Plan</h5>
             <hr />
             <div className="row my-4 h-100">
                 <div className="col-md-4 col-lg-12 col-sm-8 mx-auto" style={{marginTop:"5px"}}>
                     <div className="card-deck mb-3 text-center">
                         <div className="card mb-4 box-shadow">
-                            <div className="card-header" style={{color:"#198754"}}>
-                                <h4 className="my-0 font-weight-normal"><strong>FREE</strong></h4>
+                            <div className="card-header">
+                                <h4 className="my-0 font-weight-normal">Free</h4>
                             </div>
                             <div className="card-body">
                                 <h1 className="card-title pricing-card-title">$0 <small className="text-muted">/ month</small></h1>
@@ -34,8 +34,8 @@ const PricingFarmerPage = () => {
                             </div>
                         </div>
                         <div className="card mb-4 box-shadow">
-                            <div className="card-header" style={{color:"#198754"}}>
-                                <h4 className="my-0 font-weight-normal"><strong>ADVANCE</strong></h4>
+                            <div className="card-header">
+                                <h4 className="my-0 font-weight-normal">Advance</h4>
                             </div>
                             <div className="card-body">
                                 <h1 className="card-title pricing-card-title">$10 <small className="text-muted">/ month</small></h1>

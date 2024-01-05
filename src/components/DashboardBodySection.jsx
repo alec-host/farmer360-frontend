@@ -1,4 +1,6 @@
-import React, { useRef,useState } from "react";
+import React, { useRef,useState,useEffect } from "react";
+import { PROFILE_SESSION } from "../session/constant";
+import { getSession } from "../session/appSession";
 
 const DashboardBodySection = () => {
     
@@ -7,18 +9,20 @@ const DashboardBodySection = () => {
   const refIframe = useRef(null);
 
   const [iframeUrl, setIframeUrl] = useState(defaultUrl);
-  const [expanded, setExpanded] = useState("collapse");
+
+  const [storeData, setStoreData] = useState([]);
+
+  useEffect(() => {
+    const stored_data = getSession(PROFILE_SESSION);
+    if(stored_data) {
+        setStoreData(stored_data);
+    }
+  },[]);
 
   const handleOnClick = (e,page) => {
     e.preventDefault();
-    console.log(e.target);
     setIframeUrl(page);
-    setExpanded("collapse");
   }; 
-  
-  const handleMenuCollapse = () => {
-    alert('dddddddddddddd');
-  };
 
   return (
     <>       
@@ -28,33 +32,51 @@ const DashboardBodySection = () => {
                     <div className="container">
                         <nav className="navbar navbar-expand-lg navbar-light bg-success">
                             <div className="container-fluid">
-                                <button className="navbar-toggler mx-2" type="button" data-toggle={expanded ? "collapse" : ""} data-target="#navDashSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                                {/*
+                                <button className="navbar-toggler mx-2" type="button" data-toggle={"collapse"}  data-target="#navDashSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                                     <span className="navbar-toggler-icon"></span>
                                 </button>
-                                <div className="collapse navbar-collapse" id="navDashSupportedContent">
-                                    <div className="container">
-                                        <a href="/#"className="navbar-brand">&nbsp;</a>
-                                        <button className="btn btn-success" data-bs-toggle="" aria-expanded="false" onClick={(e)=>handleOnClick(e,"/dashboard/default")}>
-                                            <h6>Dashboard</h6>
-                                        </button>
-                                        <a href="/#" className="navbar-brand">&nbsp;</a>
-                                        <button className="btn btn-success" data-bs-toggle="" aria-expanded="false" onClick={(e)=>handleOnClick(e,"/dashboard/edit-profile/stepper")}>
-                                            <h6><strong>Profile</strong></h6>
-                                        </button>
-                                        <a href="/#" className="navbar-brand">&nbsp;</a>
-                                        <button className="btn btn-success" data-bs-toggle="" aria-expanded="false" onClick={(e)=>handleOnClick(e,"/dashboard/inbox/inbox")}>
-                                            <h6><strong>Inbox</strong></h6>
-                                        </button>                            
-                                        <a href="/#" className="navbar-brand">&nbsp;</a>
-                                        <button className="btn btn-success" data-bs-toggle="" aria-expanded="false" onClick={(e)=>handleOnClick(e,"/dashboard/shop")}>
-                                            <h6><strong>Shop</strong></h6>
-                                        </button>
-                                        <a href="/#" className="navbar-brand">&nbsp;</a>
-                                        <button className="btn btn-success" data-bs-toggle="" aria-expanded="false" onClick={(e)=>handleOnClick(e,"/dashboard/setting")}>
-                                            <h6><strong>Settings</strong></h6>
-                                        </button> 
-                                    </div>                              
+                                <div className="collapse navbar-collapse" id="navDashSupportedContent">                             
                                 </div>
+                                */}
+                                <div className="container">
+                                    <a href="/#"className="navbar-brand">&nbsp;</a>
+                                    <button className="btn btn-success" data-bs-toggle="" aria-expanded="true" onClick={(e)=>{handleOnClick(e,"/dashboard/default");}}>
+                                        <h6>Dashboard</h6>
+                                    </button>
+                                    <a href="/#" className="navbar-brand">&nbsp;</a>
+                                    <button className="btn btn-success" data-bs-toggle="" aria-expanded="false" onClick={(e)=>handleOnClick(e,"/dashboard/edit-profile/stepper")}>
+                                        <h6><strong>My Profile</strong></h6>
+                                    </button>
+                                    {
+                                    storeData[0]?.account_type === "business" ?
+                                    <>    
+                                    <a href="/#" className="navbar-brand">&nbsp;</a>
+                                    <button className="btn btn-success" data-bs-toggle="" aria-expanded="false" onClick={(e)=>handleOnClick(e,"/dashboard/business/farmer-data")}>
+                                        <h6><strong>Farmer's Data</strong></h6>
+                                    </button> 
+                                    </>
+                                    :null
+                                    }
+                                    {
+                                    storeData[0]?.account_type === "farmer" ?
+                                    <>                                                                         
+                                    <a href="/#" className="navbar-brand">&nbsp;</a>
+                                    <button className="btn btn-success" data-bs-toggle="" aria-expanded="false" onClick={(e)=>handleOnClick(e,"/dashboard/inbox/inbox")}>
+                                        <h6><strong>Inbox</strong></h6>
+                                    </button>                            
+                                    <a href="/#" className="navbar-brand">&nbsp;</a> 
+                                    <button className="btn btn-success" data-bs-toggle="" aria-expanded="false" onClick={(e)=>handleOnClick(e,"/dashboard/shop")}>
+                                        <h6><strong>Shop</strong></h6>
+                                    </button>
+                                    </>
+                                    :null
+                                    }
+                                    <a href="/#" className="navbar-brand">&nbsp;</a>
+                                    <button className="btn btn-success" data-bs-toggle="" aria-expanded="false" onClick={(e)=>handleOnClick(e,"/dashboard/setting")}>
+                                        <h6><strong>Settings</strong></h6>
+                                    </button> 
+                                </div> 
                             </div>
                         </nav>
                     </div>

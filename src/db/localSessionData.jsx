@@ -4,6 +4,7 @@ const STORE_KEY = "winwnapstartupshop";
 const PRODUCT_KEY = "winwnapstartupsproduct";
 const INBOX_KEY = "winwnapstartupsinbox";
 const STORY_KEY = "winwnapstartupsstory";
+const COMMENT_KEY = "winwnapstartupscomment";
 const DBASE_KEY = "_1234567890L";
 
 const storeInitialLocalData = (new_data) => {
@@ -33,4 +34,4 @@ const clearLocalCache = (key) => {
 };
 
 export default storeInitialLocalData;
-export {readLocalStoredData,clearLocalStoredData,storeOnLocalCache,readLocalCache,clearLocalCache,PROFILE_KEY,STORE_KEY,PRODUCT_KEY,INBOX_KEY,STORY_KEY,DBASE_KEY};
+export {readLocalStoredData,clearLocalStoredData,storeOnLocalCache,readLocalCache,clearLocalCache,PROFILE_KEY,STORE_KEY,PRODUCT_KEY,INBOX_KEY,STORY_KEY,COMMENT_KEY,DBASE_KEY};

@@ -12,6 +12,8 @@ import { Loading } from 'notiflix/build/notiflix-loading-aio';
 import { PRODUCT_KEY, STORE_KEY, readLocalCache, storeOnLocalCache } from "../../../db/localSessionData";
 import API_END_POINT from "../../../endpoint/apiRoute";
 
+import customCss from "../../../css/custom.loading.module.css";
+
 const AddInventoryPage = () => {
 
     const inputProductDocumentId = React.useRef(null);
@@ -20,8 +22,7 @@ const AddInventoryPage = () => {
     const inputProductReferenceNumber = React.useRef(null);
 
     const [hideProfile, setHideProfile] = useState(false);
-    //const [storeData, setStoreData] = useState([]);
-    const [storeShopData, setStoreShopData] = useState([]);
+ 
     const [storeProductData, setStoreProductData] = useState([]);
     const [buttonDisabled, setButtonDisabled] = useState(false);
     const [trackDataChange,setTrackDataChange] = useState(false);
@@ -32,6 +33,9 @@ const AddInventoryPage = () => {
     const [collectionId, setCollectionId] = useState([]);
     const [description, setDescription] = useState([]);
 
+    const [textChanged, setTexChanged] = useState(0);
+    const [clickedButtonName, setClickedButtonName] = useState(null);
+
     const [formData, setFormData] = useState({});
 
     const toggleProfileHide = () => {
@@ -39,17 +43,11 @@ const AddInventoryPage = () => {
     };
 
     useEffect(() => {
-        const stored_data = readLocalCache(STORE_KEY);
-        if(stored_data){
-        setStoreShopData(stored_data);
-        }
-    },[]);
-
-    useEffect(() => {
         const stored_data = readLocalCache(PRODUCT_KEY);
         if(stored_data){
-        setStoreProductData(stored_data);
+            setStoreProductData(stored_data);
         }
+        Loading.init({className:customCss.notiflix_loading,});
     },[]); 
     
     const initialHiddenInput = (formId) => {
@@ -62,7 +60,7 @@ const AddInventoryPage = () => {
     const handleInputChange = (formId,e) => {
         if(typeof(e.target) !== "undefined"){
             const { name, value} = e.target;
-            console.log(e);
+           
             setFormData((prevData) => ({
             ...prevData,
             [formId]: {
@@ -80,7 +78,13 @@ const AddInventoryPage = () => {
                 },
             }));
         }
+    
+        setTexChanged(1);
         initialHiddenInput(formId);
+    };
+
+    const handleButtonClick = (buttonName) => {
+        setClickedButtonName(buttonName);
     };
 
     const handleSubmit = (formId,event) => {
@@ -130,23 +134,33 @@ const AddInventoryPage = () => {
             console.log(collectionIdArr[formId]);
 
             if(isPublishedArr[formId] === "0"){
-                publish_status = 1;
+                if(textChanged.length === 0){
+                    publish_status = 1;
+                }else{
+                    publish_status = 0;
+                }
             }else{
-                publish_status = 0;
+                if(textChanged.length === 0){
+                    publish_status = 0;
+                }else{
+                    publish_status = 1;
+                }
             }  
 
-            formUpdateData = {
-                action:"PUBLISH",
-                is_published:publish_status,
-                product_reference_number:productReferenceNumberArr[formId],
-                database_id:databaseIdArr[formId],
-                table_id:collectionIdArr[formId],
-                record_id:documentIdArr[formId]
-            };
-            
-            console.log(JSON.stringify(formUpdateData));  
+            if(clickedButtonName && clickedButtonName === "publishButton"){
+                formUpdateData = {
+                    action:"PUBLISH",
+                    is_published:publish_status,
+                    product_reference_number:productReferenceNumberArr[formId],
+                    database_id:databaseIdArr[formId],
+                    table_id:collectionIdArr[formId],
+                    record_id:documentIdArr[formId]
+                };
+                
+                console.log(JSON.stringify(formUpdateData));  
 
-           httpPost(formUpdateData); 
+                httpPost(formUpdateData); 
+            }
         }
     };
 
@@ -170,7 +184,6 @@ const AddInventoryPage = () => {
                 console.log(data);
                 if(data?.success){
                     setFormData({});
-                    console.log(data?.data);
                     setStoreProductData(data?.data);
                     Notiflix.Notify.info('Update successful',{
                         ID:'SWA',
@@ -179,7 +192,7 @@ const AddInventoryPage = () => {
                     }); 
                     setTrackDataChange(!trackDataChange); 
                     setTimeout(() => {
-                        window.location.reload();
+                        //window.location.reload();
                     }, 2000);                
                 }else{
                     Notiflix.Notify.warning('Product update has Failed',{
@@ -216,7 +229,7 @@ const AddInventoryPage = () => {
                             <tr>
                                 <td>
                                     <div className="card w-100">
-                                        <div class="column">
+                                        <div className="column">
                                             <table style={{width:"100%"}}>
                                                 <thead><tr><th/></tr></thead>
                                                 <tbody>
@@ -256,7 +269,7 @@ const AddInventoryPage = () => {
                                                                             <label htmlFor="ProductName"><small><strong>Product Name</strong></small></label>
                                                                             <input 
                                                                                 type="text" 
-                                                                                class="form-control" 
+                                                                                className="form-control" 
                                                                                 id={`ProductName-${j}`}
                                                                                 name={`ProductName`}
                                                                                 placeholder="Product Name"
@@ -284,7 +297,7 @@ const AddInventoryPage = () => {
                                                                         <td style={{width:"100%"}}>
                                                                             <label htmlFor="ProductQuantity"><small><strong>Description</strong></small></label>
                                                                             <ReactQuill 
-                                                                                class="form-control"
+                                                                                className="form-control"
                                                                                 style={{position:"sticky",top:"0px",left:"0px",bottom:"0px",width:"100%",height:"100%",padding:"4px" }}
                                                                                 id={`ProductDescription-${j}`}
                                                                                 name={`ProductDescription`}
@@ -314,7 +327,7 @@ const AddInventoryPage = () => {
                                                                             <label htmlFor="ProductPrice"><small><strong>Price</strong></small></label>
                                                                             <input 
                                                                                 type="number" 
-                                                                                class="form-control" 
+                                                                                className="form-control" 
                                                                                 id={`ProductPrice-${j}`}
                                                                                 name={`ProductPrice`}
                                                                                 placeholder="Enter Price"
@@ -343,9 +356,9 @@ const AddInventoryPage = () => {
                                                                             <label htmlFor="ProductQuantity"><small><strong>Quantity</strong></small></label>
                                                                             <input 
                                                                                 type="number" 
-                                                                                class="form-control" 
+                                                                                className="form-control" 
                                                                                 id={`ProductQuantity-${j}`}
-                                                                                Name={`ProductQuantity`}
+                                                                                name={`ProductQuantity`}
                                                                                 placeholder="Enter Qty"
                                                                                 onChange={e=>handleInputChange(j,e)}
                                                                                 defaultValue={storeProductData[j].quantity === 0 ? 0 : storeProductData[j].quantity}
@@ -369,10 +382,13 @@ const AddInventoryPage = () => {
                                                                 <tbody>
                                                                     <tr>
                                                                         <td>
-                                                                            <button id={uuidv4()} 
-                                                                            className={storeProductData[j].is_published === 0 || storeProductData[j].is_published === "0" ? "my-2 mx-auto btn btn-primary btn-md btn-block": "my-2 mx-auto btn btn-danger btn-md btn-block"} 
-                                                                            type="submit">
-                                                                            {storeProductData[j].is_published === 0 || storeProductData[j].is_published === "0" ? "Publish": "Unpublish"}
+                                                                            <button 
+                                                                                id={`pub${uuidv4()}`} 
+                                                                                name={`pub${uuidv4()}`}
+                                                                                className={storeProductData[j].is_published === 0 || storeProductData[j].is_published === "0" ? "my-2 mx-auto btn btn-primary btn-md btn-block": "my-2 mx-auto btn btn-danger btn-md btn-block"} 
+                                                                                type="submit"
+                                                                                onClick={()=>{handleButtonClick('publishButton')}}>
+                                                                                {storeProductData[j].is_published === 0 || storeProductData[j].is_published === "0" ? "Publish": "Unpublish"}
                                                                             </button>
                                                                         </td>
                                                                     </tr>
@@ -386,7 +402,7 @@ const AddInventoryPage = () => {
                                                                 type="hidden" 
                                                                 className="form-control a" 
                                                                 id={`ProductIsPublished-${j}`}
-                                                                Name="ProductIsPublished"
+                                                                name="ProductIsPublished"
                                                                 defaultValue={storeProductData[j].is_published}
                                                                 ref={inputProductReferenceNumber}
                                                                 readOnly
@@ -399,7 +415,7 @@ const AddInventoryPage = () => {
                                                                 type="hidden" 
                                                                 className="form-control b" 
                                                                 id={`ProductId-${j}`}
-                                                                Name="ProductId"
+                                                                name="ProductId"
                                                                 defaultValue={storeProductData[j].product_reference_number}
                                                                 ref={inputProductReferenceNumber}
                                                                 readOnly
@@ -412,7 +428,7 @@ const AddInventoryPage = () => {
                                                                 type="hidden" 
                                                                 className="form-control c" 
                                                                 id={`DatabaseId-${j}`}
-                                                                Name="DatabaseId"
+                                                                name="DatabaseId"
                                                                 defaultValue={storeProductData[j].$databaseId}
                                                                 ref={inputProductDatabaseId}
                                                                 readOnly
@@ -425,7 +441,7 @@ const AddInventoryPage = () => {
                                                                 type="hidden" 
                                                                 className="form-control d" 
                                                                 id={`DocumentId-${j}`}
-                                                                Name="DocumentId"
+                                                                name="DocumentId"
                                                                 defaultValue={storeProductData[j].$id}
                                                                 ref={inputProductDocumentId}
                                                                 readOnly
@@ -438,7 +454,7 @@ const AddInventoryPage = () => {
                                                                 type="hidden" 
                                                                 className="form-control e" 
                                                                 id={`CollectionId-${j}`}
-                                                                Name="CollectionId"
+                                                                name="CollectionId"
                                                                 defaultValue={storeProductData[j].$collectionId}
                                                                 ref={inputProductCollectionId}
                                                                 readOnly

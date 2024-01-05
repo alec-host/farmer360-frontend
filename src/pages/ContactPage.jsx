@@ -4,7 +4,7 @@ const ContactPage = () => {
   return (
     <>
       <Navbar />
-      <div className="container my-3 py-3">
+      <div className="container my-3 py-3" style={{height:"80vh"}}>
         <h5 className="text-center">Contact Us</h5>
         <hr />
         <div class="row my-4 h-100">

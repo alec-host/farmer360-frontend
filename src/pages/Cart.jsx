@@ -170,7 +170,7 @@ const Cart = () => {
   return (
     <>
       <Navbar />
-      <div className="container my-3 py-3">
+      <div className="container my-3 py-3" style={{height:"80vh"}}>
         <h5 className="text-center">Cart</h5>
         <hr />
         {state.length > 0 ? <ShowCart /> : <EmptyCart />}

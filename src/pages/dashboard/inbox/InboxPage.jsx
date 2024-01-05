@@ -8,7 +8,11 @@ import { Loading } from 'notiflix/build/notiflix-loading-aio';
 
 import formattedDateTime from "../../../utility/format-current-date";
 import API_END_POINT from "../../../endpoint/apiRoute";
-import { INBOX_KEY, PROFILE_KEY, readLocalCache } from "../../../db/localSessionData";
+import { INBOX_KEY, readLocalCache } from "../../../db/localSessionData";
+import { getSession } from "../../../session/appSession";
+import { PROFILE_SESSION } from "../../../session/constant";
+
+import datatableStyle from "../../../css/datatable.module.css";
 
 const InboxPage = () => {
 
@@ -35,7 +39,8 @@ const InboxPage = () => {
     };
 
     useEffect(() => {
-        const stored_data = readLocalCache(PROFILE_KEY);
+        const stored_data = getSession(PROFILE_SESSION);
+        console.log(stored_data);
         if(stored_data){
             setStoreData(stored_data);
         }
@@ -47,11 +52,6 @@ const InboxPage = () => {
             setStoreInboxData(stored_data);
         }
     },[]);
-
-    console.log('ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ');
-    console.log(storeInboxData[0]);
-    console.log('cccccccccccccccccccccccccccccccccccccccc');
-
 
     const handleSubmit = (event) => {
 
@@ -135,7 +135,7 @@ const InboxPage = () => {
     const columns = [
         {
             right: false,
-            name: 'CLICK THE ">" TO REPLY',
+            name: 'Reply message',
         },   
         {
             name: '#',
@@ -277,6 +277,7 @@ const InboxPage = () => {
                                                     <td>
                                                         <DataTable
                                                             columns={columns}
+                                                            style={datatableStyle}
                                                             data={storeInboxData}
                                                             pagination
                                                             paginationResetDefaultPage={resetPaginationToggle} 

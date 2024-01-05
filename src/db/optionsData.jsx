@@ -64,6 +64,12 @@
         { value: 'individual', label: 'Individual' },
         { value: 'business', label: 'Business' },
     ];
+
+    const account_type_options = [
+        { value: '', label: '--Choose an option--',disabled: true},
+        { value: 'farmer', label: 'Farmer' },
+        { value: 'business', label: 'Business' },
+    ];
     
     const category_options = [
         { value: '', label: '--Choose an option--',disabled: true},
@@ -86,5 +92,6 @@
     age_options,
     entity_options,
     shop_publish_options,
-    category_options
+    category_options,
+    account_type_options
   };

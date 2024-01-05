@@ -5,8 +5,9 @@ import { NavLink } from "react-router-dom";
 import Notiflix from 'notiflix';
 import { Loading } from 'notiflix/build/notiflix-loading-aio';
 import { age_options, education_options } from "../../../db/optionsData";
-import storeInitialLocalData, {readLocalStoredData } from "../../../db/localSessionData";
 import API_END_POINT from "../../../endpoint/apiRoute";
+import { getSession, setSession } from "../../../session/appSession";
+import { PROFILE_SESSION } from "../../../session/constant";
 
 const EditDemographicInfoPage = () => {
 
@@ -31,7 +32,7 @@ const EditDemographicInfoPage = () => {
   };
 
   useEffect(() =>{
-    const store_data = readLocalStoredData();
+    const store_data = getSession(PROFILE_SESSION);
     if(store_data) {
       setStoreData(store_data);
     }
@@ -117,7 +118,7 @@ const EditDemographicInfoPage = () => {
   };
 
   if(trackDataChange === true){
-    storeInitialLocalData(storeData);
+    setSession(PROFILE_SESSION,storeData);
   }
   
   return (

@@ -3,21 +3,24 @@ import { NavLink } from "react-router-dom";
 import Avatar from 'react-avatar';
 
 import styles from "../css/nav.module.css";
-import { PRODUCT_KEY, PROFILE_KEY, STORE_KEY, clearLocalCache, readLocalStoredData } from "../db/localSessionData";
+import { COMMENT_KEY, PRODUCT_KEY, STORE_KEY, clearLocalCache } from "../db/localSessionData";
+import { deleteSession, getSession } from "../session/appSession";
+import { PROFILE_SESSION } from "../session/constant";
 
 const DashboardNavHeader = () => {
 
 const [storeData, setStoreData] = useState([]);
 
     useEffect(() => {
-        const stored_data = readLocalStoredData();
+        const stored_data = getSession(PROFILE_SESSION);
         if(stored_data) {
             setStoreData(stored_data);
         }
     },[]); 
 
     const handleOnClick = () => {
-        clearLocalCache(PROFILE_KEY);
+        deleteSession(PROFILE_SESSION);
+        clearLocalCache(COMMENT_KEY);
         clearLocalCache(STORE_KEY);
         clearLocalCache(PRODUCT_KEY);
     };
@@ -37,11 +40,16 @@ const [storeData, setStoreData] = useState([]);
                                 &nbsp;&nbsp;
                                 <Avatar 
                                     colors={['#FCCF0A', '#0B51C1', '#3A6024','#B3003C','#7E3794','#F2855C']}
-                                    name={storeData[0]?.email} 
+                                    name={storeData[0]?.email}
                                     size={45}
                                     round={true} 
                                 />
-                                <span>&nbsp;{storeData[0]?.first_name === "N/A" ? storeData[0]?.business_name : storeData[0]?.first_name }&nbsp;</span>
+                                {
+                                storeData[0]?.account_type === "farmer" ? 
+                                <span>&nbsp;{storeData[0]?.first_name === "N/A" && storeData[0]?.last_name === "N/A" ? storeData[0]?.business_name : storeData[0]?.first_name }&nbsp;</span>
+                                :
+                                <span>&nbsp;{ storeData[0]?.business_name }&nbsp;</span>
+                                }
                             </a>
                             <ul className="dropdown-menu text-small shadow text-left">
                                 <li><hr className="dropdown-divider"/></li>

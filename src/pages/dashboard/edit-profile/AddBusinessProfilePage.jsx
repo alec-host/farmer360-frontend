@@ -1,21 +1,23 @@
 import React,{ useState, useEffect, useRef } from "react";
+import { useNavigate } from 'react-router-dom';
+
 import Notiflix from "notiflix";
 import MultiSelect from "react-awesome-multiselect";
 import { Loading } from "notiflix/build/notiflix-loading-aio";
 import CustomStepper from "../../../components/CustomStepper";
 
 import API_END_POINT from "../../../endpoint/apiRoute";
-import { DBASE_KEY, PROFILE_KEY, clearLocalCache, readLocalCache, storeOnLocalCache } from "../../../db/localSessionData";
+import { DBASE_KEY, clearLocalCache, readLocalCache, storeOnLocalCache } from "../../../db/localSessionData";
 import { farm_item_options } from "../../../db/optionsData";
+import { deleteSession, getSession, setSession } from "../../../session/appSession";
+import { PROFILE_SESSION } from "../../../session/constant";
 
 
 const AddBusinessProfilePage = () => {
 
-  const inputFarmItemList = useRef(null);
+  const navigate = useNavigate();
 
-  const inputPIN = useRef(null);
-  const inputIDNumber = useRef(null);
-  const inputBusinessAddress = useRef(null);
+  const inputFarmItemList = useRef(null);
 
   const [storeData,setStoreData] = useState([]);
   const [ activeStep, setActiveStep ] = useState(0);
@@ -53,18 +55,9 @@ const AddBusinessProfilePage = () => {
         input.BusinessAddress = value;
         storeOnLocalCache(DBASE_KEY+"address",input);
         break;
+        default:break;
     };
-
-    console.log(value);
-    /*
-    console.log((JSON.stringify({
-      [name]: value
-    })));*/
   };
-
-  
-
-
 
   let isButtonDisabled = null;
 
@@ -77,7 +70,7 @@ const AddBusinessProfilePage = () => {
   };
 
   useEffect(() => {
-    const stored_data = readLocalCache(PROFILE_KEY);
+    const stored_data = getSession(PROFILE_SESSION);
     if(stored_data){
       setStoreData(stored_data);
     }
@@ -101,7 +94,6 @@ const AddBusinessProfilePage = () => {
     const pinValue = readLocalCache(DBASE_KEY+"pin");
     isButtonDisabled = !selectedBusinessCertFile;
   }else{
-    console.log(activeStep);
     if(!selectedFarmOption.length){
       isButtonDisabled = true;
     }else{
@@ -110,10 +102,8 @@ const AddBusinessProfilePage = () => {
   }
 
   const handleSubmit = (event) => {
+
     event.preventDefault();
-
-    const formData = new FormData;
-
 
     Loading.standard({
       backgroundColor: 'rgba(0,0,0,0)',
@@ -121,20 +111,18 @@ const AddBusinessProfilePage = () => {
 
     setButtonDisabled(!buttonDisabled);
 
-    /*
-    formData.action = "profile";
-    formData.phone = storeData[0]?.msisdn || "";
-    formData.email = storeData[0]?.email || "";
-    formData.gender = selectedGender.value || "";
-    formData.age_bracket = selectedAge.value || "";
-    formData.education_level = selectedEducation.value || "";
-    formData.farmed_items = inputFarmItemList?.current?.value || "";
-    formData.database_id = storeData[0]?.$databaseId || "";
-    formData.table_id = storeData[0]?.$collectionId || "";
-    formData.record_id = storeData[0]?.$id || "";
-    formData.is_profile_completed = 1; 
-
-    */
+    const formData = new FormData;
+    formData.append('action',"business_profile");
+    formData.append('pin',typeof(readLocalCache(DBASE_KEY+"pin")?.PIN) !== "undefined" ? readLocalCache(DBASE_KEY+"pin").PIN : '');
+    formData.append('id_file',selectedIDNumberFile);
+    formData.append('id_number',typeof(readLocalCache(DBASE_KEY+"id")?.IDNumber) !== "undefined"? readLocalCache(DBASE_KEY+"id").IDNumber : '');
+    formData.append('business_address',typeof(readLocalCache(DBASE_KEY+"address")?.BusinessAddress) !== "undefined" ? readLocalCache(DBASE_KEY+"address").BusinessAddress : '');
+    formData.append('business_cert_file',selectedBusinessCertFile);
+    formData.append('farm_item',inputFarmItemList?.current?.value);
+    formData.append('owner_reference_number',storeData[0]?.reference_number || '')
+    formData.append('database_id',storeData[0]?.$databaseId);
+    formData.append('record_id',storeData[0]?.$id);
+    formData.append('table_id',storeData[0]?.$collectionId);
 
     fetch(`${API_END_POINT}/api/v1/updateUserDetailsFile`,{
         method:'PATCH',
@@ -142,15 +130,23 @@ const AddBusinessProfilePage = () => {
     })
     .then(async(response) => {
         await response.json().then(data=>{
+            console.log(data);
             if(data?.success){
+                clearLocalCache(DBASE_KEY+"pin");
+                clearLocalCache(DBASE_KEY+"id");
+                clearLocalCache(DBASE_KEY+"address");
+                setSelectedIDNumberFile(null);
+                setSelectedBusinessCertFile(null);
                 inputFarmItemList.current.value='';
-                setStoreData(data?.data);
+                deleteSession(PROFILE_SESSION);
                 Notiflix.Notify.info('Update was successful',{
                     ID:'SWA',
                     timeout:2950,
                     showOnlyTheLastOne:true                      
                 });
                 setTrackDataChange(!trackDataChange);
+                setSession(PROFILE_SESSION,data?.data);
+                setStoreData(getSession(PROFILE_SESSION));
             }else{
                 Notiflix.Notify.warning('Update has Failed',{
                     ID:'FWA',
@@ -161,7 +157,8 @@ const AddBusinessProfilePage = () => {
             Loading.remove(1523);
             setTimeout(() => {
               setButtonDisabled(buttonDisabled); 
-            }, 3000);
+            },3000);
+            navigate('/dashboard/default');
         });
     })
     .catch(async(error) => {
@@ -171,8 +168,7 @@ const AddBusinessProfilePage = () => {
 
   const BusinessFormOne = () => { 
     return(
-    <>
-    <form>          
+    <>          
         <div className="form my-3">
             <label htmlFor="IDNumber"><small><strong>ID Number</strong> for one of the Director/Partner/Business Associate.</small></label> 
             <input
@@ -180,9 +176,8 @@ const AddBusinessProfilePage = () => {
                 className="form-control"
                 id="IDNumber"
                 name="IDNumber"
-                defaultValue={activeStep === 0 && typeof(readLocalCache(DBASE_KEY+"id")?.IDNumber) !== "undefined"? readLocalCache(DBASE_KEY+"id").IDNumber : '' } 
-                onChange={handleInputChangeOnBusinessForm}
-                ref={inputIDNumber}
+                defaultValue={activeStep === 0 && (readLocalCache(DBASE_KEY+"id")?.IDNumber) ? readLocalCache(DBASE_KEY+"id").IDNumber : '' } 
+                onChange={e=>{handleInputChangeOnBusinessForm(e)}}
                 maxLength={20}
                 required
             />
@@ -206,23 +201,19 @@ const AddBusinessProfilePage = () => {
                 className="form-control"
                 id="PIN"
                 name="PIN"
-                defaultValue={activeStep === 0 && typeof(readLocalCache(DBASE_KEY+"pin")?.PIN) !== "undefined" ? readLocalCache(DBASE_KEY+"pin").PIN : ''}
+                defaultValue={activeStep === 0 && (readLocalCache(DBASE_KEY+"pin")?.PIN) ? readLocalCache(DBASE_KEY+"pin").PIN : ''}
                 onChange={handleInputChangeOnBusinessForm}
-                ref={inputPIN}
                 maxLength={20}
                 required
             />
         </div>          
-    </form>
     </>
     );
   };
 
-  
   const BusinessFormTwo = () => {
     return(
     <>
-    <form>
         <div className="form my-3">
             <label htmlFor="BusinessName">Business Name</label> 
             <input
@@ -241,9 +232,8 @@ const AddBusinessProfilePage = () => {
                 className="form-control"
                 id="BusinessAddress"
                 name="BusinessAddress"
-                defaultValue={activeStep === 1 && typeof(readLocalCache(DBASE_KEY+"address")?.BusinessAddress) !== "undefined" ? readLocalCache(DBASE_KEY+"address").BusinessAddress : ''}
+                defaultValue={activeStep === 1 && (readLocalCache(DBASE_KEY+"address")?.BusinessAddress) ? readLocalCache(DBASE_KEY+"address").BusinessAddress : ''}
                 onChange={handleInputChangeOnBusinessForm}
-                ref={inputBusinessAddress}
                 maxLength={25}
                 required={false}
             />
@@ -260,11 +250,9 @@ const AddBusinessProfilePage = () => {
                 required
             />
         </div>
-    </form>
     </>
     );
   };
-
 
   const DemographicFormThree = () => {
     return(
@@ -336,47 +324,43 @@ const AddBusinessProfilePage = () => {
     }
   };
 
-
-  //const StepperBusinessContainer = () => {
-    return (
-      <>
-        <div className="container-fluid" style={{marginTop:"0px",background:"#F9F9F9",height:"750px"}}>
-          <div className="container">
-            <div className="row">
-              <CustomStepper
-                  steps={steps}
-                  activeStep={activeStep} />
-              <div className="row my-4 h-100">
-                <div className="col-md-4 col-lg-9 col-sm-8 mx-auto">
-                  <BusinessSectionComponent />
-                </div>
+  return (
+    <>
+      <div className="container-fluid" style={{marginTop:"0px",background:"#F9F9F9",height:"750px"}}>
+        <div className="container">
+          <div className="row">
+            <CustomStepper
+                steps={steps}
+                activeStep={activeStep} />
+            <div className="row my-4 h-100">
+              <div className="col-md-4 col-lg-9 col-sm-8 mx-auto">
+                <BusinessSectionComponent />
               </div>
             </div>
-            <div className="row" style={{background:"",textAlign:"right"}}>
-              <div className="row my-4 h-100">
-                <div className="col-md-4 col-lg-9 col-sm-8 mx-auto">
-                  <table style={{width:'100%'}}>
-                    <thead><tr><th/></tr></thead>
-                    <tbody>
-                      <tr>
-                        { (activeStep !== 0 && activeStep !== steps.length - 1)
-                          && <td align='left'><button className="my-2 mx-auto btn btn-success" onClick={ () => setActiveStep(activeStep - 1) }>Back</button></td>
-                        }
-                        { activeStep !== steps.length - 1
-                          && <td><button className="my-2 mx-auto btn btn-success" onClick={ () => setActiveStep(activeStep + 1) } disabled={isButtonDisabled}>Next</button></td>
-                        }
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>  
+          </div>
+          <div className="row" style={{background:"",textAlign:"right"}}>
+            <div className="row my-4 h-100">
+              <div className="col-md-4 col-lg-9 col-sm-8 mx-auto">
+                <table style={{width:'100%'}}>
+                  <thead><tr><th/></tr></thead>
+                  <tbody>
+                    <tr>
+                      { (activeStep !== 0 && activeStep !== steps.length - 1)
+                        && <td align='left'><button className="my-2 mx-auto btn btn-success" onClick={ () => setActiveStep(activeStep - 1) }>Back</button></td>
+                      }
+                      { activeStep !== steps.length - 1
+                        && <td><button className="my-2 mx-auto btn btn-success" onClick={ () => setActiveStep(activeStep + 1) } disabled={isButtonDisabled}>Next</button></td>
+                      }
+                    </tr>
+                  </tbody>
+                </table>
               </div>  
-            </div>
+            </div>  
           </div>
         </div>
-      </>
-    );
-  //};
-
+      </div>
+    </>
+  );
 };
 
 export default AddBusinessProfilePage;

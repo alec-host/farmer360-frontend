@@ -9,17 +9,17 @@ import LazyLoad from 'react-lazy-load';
 import Notiflix from 'notiflix';
 import { Loading } from 'notiflix/build/notiflix-loading-aio';
 
-import { PROFILE_KEY, readLocalCache } from '../../../db/localSessionData';
-
-
 import formattedDateTime from "../../../utility/format-current-date";
 import API_END_POINT from '../../../endpoint/apiRoute';
+import { getSession } from '../../../session/appSession';
+import { PROFILE_SESSION } from '../../../session/constant';
+import { COMMENT_KEY, readLocalCache } from '../../../db/localSessionData';
+
+import  styles from '../../../css/modal.module.css';
+
+
 
 const InfiniteScrollComponent = () => {
-
-    const inputStoryID = React.useRef(null);
-    const inputName = React.useRef(null);
-    const inputUUID = React.useRef(null);
 
     const [storeData,setStoreData] = useState([]);
     const [buttonDisabled, setButtonDisabled] = useState(false);
@@ -27,18 +27,30 @@ const InfiniteScrollComponent = () => {
     const [hasMore, setHasMore] = useState(true);
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
-    const [comment,setComment] = useState(null);
+
+    const [comments, setComments] = useState([]);
+    const [replyComment,setReplyComment] = useState(null);
     const [showComment,setShowComment] = useState(false);
     const [componentId,setComponentId] = useState(0);
+    const [storyID,setStoryID] = useState(0);
+    const [fullName,setFullName] = useState(null);
+    const [UUID,setUUID] = useState(null);
     const [thumbUpCount,setThumbUpCount] = useState(0);
 
     useEffect(() => {
-        const stored_data = readLocalCache(PROFILE_KEY);
+        const stored_data = getSession(PROFILE_SESSION);
         if(stored_data){
             if(typeof(stored_data[0]?.reference_number) !== "undefined"){
                 getStories(stored_data[0]?.reference_number,stored_data[0]?.email);
             }
             setStoreData(stored_data);
+        };
+    },[]);
+
+    useEffect(() => {
+        const stored_data = readLocalCache(COMMENT_KEY);
+        if(stored_data){
+            setComments(stored_data);
         };
     },[]);
 
@@ -77,20 +89,22 @@ const InfiniteScrollComponent = () => {
     };
 
     const handleLikeClick = (e,id) => {
-        console.log(e.target);
         console.log(id);  
         setComponentId(id);
         setThumbUpCount(thumbUpCount+1);
     };
 
-    const handleCommentClick = (e,id) => {
-        console.log(id);
+    //(e,storyData?.$id,storyData?.post_uuid,storyData?.commenters_name,storyData?.owner_reference_number)
+    const handleCommentClick = (e,id,post_uuid,name,uuid) => {
         setComponentId(id);
+        setStoryID(post_uuid);
+        setFullName(name);
+        setUUID(uuid);
         setShowComment(!showComment);
     };
 
     const handleOnChange = (e) => {
-        setComment(e.target.value);
+        setReplyComment(e.target.value);
     };
 
     const handleSubmit = (e) => {
@@ -98,10 +112,10 @@ const InfiniteScrollComponent = () => {
 
         let formData = {};
 
-        formData.post_uuid = inputStoryID?.current.value;
-        formData.posted_comment = comment;
-        formData.owner_reference_number = inputUUID?.current.value;
-        formData.full_name = inputName?.current.value;
+        formData.post_uuid = storyID;
+        formData.posted_comment = replyComment;
+        formData.owner_reference_number = UUID;
+        formData.full_name = fullName;
         formData.date_created = formattedDateTime;
 
         httpPost(formData);
@@ -126,10 +140,10 @@ const InfiniteScrollComponent = () => {
             await response.json().then(data=>{
                 console.log(data);
                 if(data?.success){
-                    inputStoryID.current.value = '';
-                    inputUUID.current.value = '';
-                    inputName.current.value = '';
-                    setComment(null);
+                    setStoryID(null);
+                    setUUID(null);
+                    setFullName(null);
+                    setReplyComment(null);
                     Notiflix.Notify.info('Comment posted',{
                         ID:'SWA',
                         timeout:2950,
@@ -169,30 +183,61 @@ const InfiniteScrollComponent = () => {
                             placeholder='Add a comment'
                             required
                         />
-                        <p><input type="hidden" className="form-control" id="StoryID" name="StoryID" defaultValue={storyData?.post_uuid} ref={inputStoryID} readOnly /></p>
-                        <p><input type="hidden" className="form-control" id="Name" name="Name" defaultValue={storyData?.full_name} ref={inputName} readOnly /></p>
-                        <p><input type="hidden" className="form-control" id="UUID" name="UUID" defaultValue={storyData?.user_uuid} ref={inputUUID} readOnly /></p>
-                        <div className="content">
+                        <p><input type="hidden" className="form-control" id="StoryID" name="StoryID" defaultValue={storyID ? storyID : ''} readOnly /></p>
+                        <p><input type="hidden" className="form-control" id="Name" name="Name" defaultValue={fullName ? fullName : ''} readOnly /></p>
+                        <p><input type="hidden" className="form-control" id="UUID" name="UUID" defaultValue={UUID ? UUID : ''} readOnly /></p>
+                        <div className="content" style={{textAlign:"end"}}>
                             <button id="Reply" className="my-2 mx-auto btn btn-success" type="submit">Post</button>
                         </div>
                     </form>
+                    <div>{renderCommentList(storyID)}</div>
                 </div>
             </>
         );
     };
 
-    /*
-    const renderCommentList = (commentUUID) => {
+    const renderCommentList = (id) => {
+        const filtered_comments = comments.filter(item => item.story_uuid.trim() === storyID);
+        if(id === storyID){}
         return (
             <>
-                <div>
-
-                </div>
+                {filtered_comments?.map((comment) => (commentList(comment)))}
             </>
         );
     };
-    */
-   
+
+    const renderCommentCount = (id) => {
+        const filtered_comments = comments.filter(item => item.story_uuid.trim() === id);
+        return filtered_comments.length;
+    };
+
+    const commentList = (comment) => {
+        return (
+            <div key={comment.$id} className="row" style={{margin:"2px"}}>
+                <table>
+                    <thead><tr><th/></tr></thead>
+                    <tbody>
+                        <tr>
+                            <td><small><strong>{comment?.commenters_name}</strong></small></td>
+                            <td style={{textAlign:"end"}}><small>{comment?.date_created ? comment?.date_created.split('T')[0] : null}</small></td>
+                        </tr>
+                        <tr>
+                            <td colSpan={2}>
+                                <textarea
+                                    className={styles.button_like_input} 
+                                    style={{fontSize:"16px",color:"#000",background:"#F2F2F2"}}
+                                    rows={2}
+                                    placeholder={comment?.comment ? comment?.comment : null}
+                                    readOnly
+                                />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        );
+    }; 
+    
     const renderStoryCardList = (storyData) =>{
         const forms = [];
         forms.push (
@@ -258,14 +303,24 @@ const InfiniteScrollComponent = () => {
                         <tbody>
                             <tr><td><div key={storyData?.$id}><small></small></div></td></tr>
                             <tr><td>{/*(componentId === storyData?.$id) ? thumbUpCount : 0 */}</td></tr>
+                            <tr>
+                                <td colSpan={3} style={{textAlign:"end"}}>
+                                    <small>{renderCommentCount(storyData?.post_uuid) ? renderCommentCount(storyData?.post_uuid) + " comment(s)" : null }</small>
+                                </td>
+                            </tr>
                             <tr><td colSpan={3}><hr/></td></tr>
                             <tr>
                                 <td>
-                                    <NavLink className="nav-link" key={storyData?.$id} onClick={e=>{handleLikeClick(e,storyData?.$id)}}><strong style={{color:"GrayText"}}><span className="fa-regular fa-thumbs-up me-1"></span>Like</strong></NavLink>
+                                    <NavLink className="nav-link" key={storyData?.$id} onClick={e=>{handleLikeClick(e,storyData?.$id)}}><strong style={{color:"GrayText",display:"none"}}>  
+                                        <span className="fa-regular fa-thumbs-up me-1"></span>Like</strong>
+                                    </NavLink>
                                 </td>
                                 <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                 <td style={{textAlign:"end"}}>
-                                    <NavLink className="nav-link" key={storyData?.$id} onClick={e=>handleCommentClick(e,storyData?.$id)}><strong style={{color:"GrayText"}}><span className="fa-regular fa-comment me-1"></span>Comment</strong></NavLink>
+                                    <NavLink className="nav-link" key={storyData?.$id} onClick={e=>handleCommentClick(e,storyData?.$id,storyData?.post_uuid,storyData?.full_name,storyData?.user_uuid)}>
+                                        <strong style={{color:"#198754"}}><span key={storyData?.$id}></span><span className="fa-regular fa-comment me-1"></span>Comment</strong>
+                                    </NavLink>
+                                    <NavLink></NavLink>
                                 </td>
                             </tr>
                         </tbody>

@@ -11,6 +11,8 @@ import formattedDateTime from "../../../utility/format-current-date";
 import { PRODUCT_KEY, STORE_KEY, readLocalCache } from "../../../db/localSessionData";
 import API_END_POINT from "../../../endpoint/apiRoute";
 
+import customCss from "../../../css/custom.loading.module.css";
+
 const AddProductPage = () => {
 
   const inputProductName = React.useRef(null);
@@ -54,6 +56,7 @@ const AddProductPage = () => {
     if(stored_data){
       setStoreShopData(stored_data);
     }
+    Loading.init({className:customCss.notiflix_loading,});
   },[]);
 
   useEffect(() => {
@@ -62,18 +65,6 @@ const AddProductPage = () => {
       setStoreProductData(stored_data);
     }
   },[]); 
-
-  //const navigate = useNavigate();
-
-  /*
-  const handleInputContactFocus = (edit_section) => {
-    setInputUpdate(edit_section);
-  };
-
-  const handleInputFocus = (edit_section) => {
-    setInputUpdate(edit_section);
-  };
-  */
 
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
@@ -116,6 +107,7 @@ const AddProductPage = () => {
                 inputProductName.current.value='';
                 inputDescription.current.value='';
                 inputProductName.current.value='';
+                inputProductPrice.current.value='';
                 inputProductQuantity.current.value='';
                 setSelectedFile(null);
                 console.log(data?.data);

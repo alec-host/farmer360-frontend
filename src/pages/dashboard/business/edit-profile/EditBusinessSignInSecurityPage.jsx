@@ -4,14 +4,14 @@ import { NavLink } from "react-router-dom";
 import Notiflix from 'notiflix';
 import { Loading } from 'notiflix/build/notiflix-loading-aio';
 
-import API_END_POINT from "../../../endpoint/apiRoute";
+import API_END_POINT from "../../../../endpoint/apiRoute";
 
-import { getSession, setSession } from "../../../session/appSession";
-import { PROFILE_SESSION } from "../../../session/constant";
+import { getSession, setSession } from "../../../../session/appSession";
+import { PROFILE_SESSION } from "../../../../session/constant";
 
-import customCss from "../../../css/custom.loading.module.css";
+import customCss from "../../../../css/custom.loading.module.css";
 
-const EditSignInSecurityPage = () => {
+const EditBusinessSignInSecurityPage = () => {
 
     const inputPassword = useRef(null);
     const inputConfirmPassword = useRef(null);
@@ -102,7 +102,7 @@ const EditSignInSecurityPage = () => {
             });
 
             formData.action = "pass";
-            formData.phone = storeData[0]?.msisdn || "";
+            formData.phone = storeData[0]?.phone || "";
             formData.email = storeData[0]?.email || "";
             formData.account_type = storeData[0]?.account_type || "";
             formData.password = inputPassword?.current?.value || "";
@@ -111,7 +111,7 @@ const EditSignInSecurityPage = () => {
             formData.table_id = storeData[0]?.$collectionId || "";
             formData.record_id = storeData[0]?.$id || "";
 
-            fetch(`${API_END_POINT}/api/v1/changeUserPassword`,{
+            fetch(`${API_END_POINT}/api/v1/changeBusinessProfile`,{
                 method:'PATCH',
                 body: JSON.stringify(formData),
                 headers:{
@@ -242,4 +242,4 @@ const EditSignInSecurityPage = () => {
     );
 };
 
-export default EditSignInSecurityPage;
+export default EditBusinessSignInSecurityPage;

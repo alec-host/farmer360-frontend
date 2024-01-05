@@ -8,6 +8,8 @@ import formattedDateTime from "../../../../utility/format-current-date";
 import { PROFILE_KEY, readLocalCache } from '../../../../db/localSessionData';
 import API_END_POINT from '../../../../endpoint/apiRoute';
 
+import customCss from "../../../../css/custom.loading.module.css";
+
 const StoryModalComponent = () => {
 
     const [isOpen, setIsOpen] = useState(false);
@@ -40,6 +42,7 @@ const StoryModalComponent = () => {
         if(stored_data) {
             setStoreData(stored_data);
         }
+        Loading.init({className:customCss.notiflix_loading,});
     },[]);
 
     const openModal = () => {

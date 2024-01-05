@@ -3,11 +3,11 @@ import React,{ useState, useEffect } from "react";
 import Notiflix from 'notiflix';
 import { Loading } from 'notiflix/build/notiflix-loading-aio';
 
-import API_END_POINT from "../../../endpoint/apiRoute";
-import { getSession, setSession } from "../../../session/appSession";
-import { PROFILE_SESSION } from "../../../session/constant";
+import API_END_POINT from "../../../../endpoint/apiRoute";
+import { getSession, setSession } from "../../../../session/appSession";
+import { PROFILE_SESSION } from "../../../../session/constant";
 
-const UpgradeSubscriptionPage = () => {
+const UpgradeBusinessSubscriptionPage = () => {
 
   const [storeData, setStoreData] = useState([]);
   const [buttonDisabled, setButtonDisabled] = useState(false);
@@ -35,6 +35,7 @@ const UpgradeSubscriptionPage = () => {
     formData.email = storeData[0]?.email || "";
     formData.owner_reference_number = storeData[0]?.reference_number || "";
     formData.subscription = storeData[0]?.subscription === "basic" ? "advance" : "basic";
+    formData.account_type = storeData[0]?.account_type || "";
     formData.database_id = storeData[0]?.$databaseId || "";
     formData.table_id = storeData[0]?.$collectionId || "";
     formData.record_id = storeData[0]?.$id || "";
@@ -98,7 +99,7 @@ const UpgradeSubscriptionPage = () => {
                                         <tr>
                                             <td><h6><strong>Active package</strong></h6></td>
                                             <td style={{textAlign:"end"}}>
-                                                <button className={storeData[0]?.subscription  === "basic" ? "btn btn-success m-2" : "btn btn-danger m-2"} type="button"><i></i> {storeData[0]?.subscription  === "advance" ? "Downgrade" : "Upgrade"}</button>
+                                                <button className={storeData[0]?.subscription  === "free" || storeData[0]?.subscription  === "basic" ? "btn btn-success m-2" : "btn btn-danger m-2"} type="button"><i></i> {storeData[0]?.subscription  === "basic" || storeData[0]?.subscription  === "advance" ? "Downgrade" : "Upgrade"}</button>
                                             </td>                    
                                         </tr>
                                         <tr><td colSpan={2}><span style={{color:"#008000",fontSize:"18px",textTransform:"uppercase"}}><strong>{storeData[0]?.subscription}</strong></span></td></tr>
@@ -117,4 +118,4 @@ const UpgradeSubscriptionPage = () => {
   );
 };
 
-export default UpgradeSubscriptionPage;
+export default UpgradeBusinessSubscriptionPage;

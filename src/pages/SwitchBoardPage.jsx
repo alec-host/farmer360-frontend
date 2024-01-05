@@ -7,8 +7,8 @@ const PricingFarmerPage = () => {
   return (
     <>
       <Navbar />
-        <div className="container my-3 py-3">
-            <h5 className="text-center">Register</h5>
+        <div className="container my-3 py-3" style={{height:"80vh"}}>
+            <h5 className="text-center">Registration Options</h5>
             <hr />
             <div className="row my-4 h-100">
                 <div className="col-md-4 col-lg-12 col-sm-8 mx-auto" style={{marginTop:"5px"}}>
@@ -34,7 +34,7 @@ const PricingFarmerPage = () => {
                                 <div className="bg-image rounded" data-mdb-ripple-color="light">
                                     <img className="card-img-top p-5" src="../assets/business.png" alt="business" style={{width:"50%"}} />
                                 </div>
-                                <NavLink to={"#"}>
+                                <NavLink to={"/business-pricing"}>
                                     <button type="button" className="btn btn-md btn-block btn-outline-success">Sign up</button>
                                 </NavLink>
                             </div>

@@ -1,15 +1,17 @@
 import React ,{useEffect,useState} from 'react'
 import { Footer, DashboardNavHeader, DashboardBodySection } from "../components";
 import {useNavigate} from 'react-router-dom';
-import { PROFILE_KEY, readLocalCache } from '../db/localSessionData';
+
+import { getSession } from '../session/appSession';
+import { PROFILE_SESSION } from '../session/constant';
 
 const Dashboard = () => {
+
   const navigate = useNavigate();
   const [storeData,setStoreData] = useState([]);
-
   useEffect(() => {
-    const stored_data = readLocalCache(PROFILE_KEY);
-    setStoreData(stored_data);
+    const session = getSession(PROFILE_SESSION);
+    setStoreData(session);
   },[]);
 
   if(!storeData){

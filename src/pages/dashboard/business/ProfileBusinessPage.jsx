@@ -2,16 +2,16 @@ import React,{ useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Avatar from "react-avatar";
 
-import { getSession } from "../../session/appSession";
-import { PROFILE_SESSION } from "../../session/constant";
+import { getSession } from "../../../session/appSession";
+import { PROFILE_SESSION } from "../../../session/constant";
 
-const Profile = () => {
+const ProfileBusinessPage = () => {
 
   const [storeData, setStoreData] = useState([]);
 
   const refIframe = React.useRef(null);
 
-  const defaultUrl = "/dashboard/edit-profile/contact";
+  const defaultUrl = "/dashboard/business/edit-profile/contact";
 
   const [iframeUrl, setIframeUrl] = useState(defaultUrl);
   
@@ -43,42 +43,28 @@ const Profile = () => {
               </div>
               <ul className="nav flex-column">
                 <li className="nav-item">
-                  <h5 style={{paddingLeft:"18px"}}><strong>{ storeData[0]?.first_name === "N/A" && storeData[0]?.last_name === "N/A" ? storeData[0]?.business_name : storeData[0]?.first_name + ' ' + storeData[0]?.last_name}</strong></h5>
+                  <h5 style={{paddingLeft:"18px"}}><strong>{ storeData[0]?.business_name }</strong></h5>
                 </li>
                 <li className="nav-item">
                   <span>&nbsp;</span>
                 </li>                
                 <li className="nav-item">
-                    <Link className="nav-link d-flex align-items-center gap-3" onClick={(e)=>handleOnClick(e,"/dashboard/edit-profile/contact")} style={{color:"#0B51C1"}} to="#">
+                    <Link className="nav-link d-flex align-items-center gap-3" onClick={(e)=>handleOnClick(e,"/dashboard/business/edit-profile/contact")} style={{color:"#0B51C1"}} to="#">
                       Basic Info
-                    </Link>
-                </li>  
-                {   
-                  storeData[0]?.first_name === "N/A" && storeData[0]?.last_name === "N/A"  ? 
-                  null:         
-                  <li className="nav-item">
-                      <Link className="nav-link d-flex align-items-center gap-3" onClick={(e)=>handleOnClick(e,"/dashboard/edit-profile/demographic")} style={{color:"#0B51C1"}} to="#">
-                        Demographic Info
-                      </Link>
-                  </li> 
-                }
-                <li className="nav-item">
-                    <Link className="nav-link d-flex align-items-center gap-3" onClick={(e)=>handleOnClick(e,"/dashboard/connect-share-stories")} style={{color:"#0B51C1"}} to="#">
-                      Connect & Share Stories
                     </Link>
                 </li>  
                 <li className="nav-item">
                     <Link className="nav-link d-flex align-items-center gap-3" onClick={(e)=>handleOnClick(e,"/dashboard/wallet/wallet")} style={{color:"#0B51C1"}} to="#">
                       Wallet
                     </Link>
-                </li>              
+                </li> 
                 <li className="nav-item">
-                    <Link className="nav-link d-flex align-items-center gap-3" onClick={(e)=>handleOnClick(e,"/dashboard/edit-profile/upgrade")} style={{color:"#0B51C1"}} to="#">
+                    <Link className="nav-link d-flex align-items-center gap-3" onClick={(e)=>handleOnClick(e,"/dashboard/business/edit_profile/upgrade")} style={{color:"#0B51C1"}} to="#">
                       Subscription Info
                     </Link>
-                </li>                                            
+                </li> 
                 <li className="nav-item">
-                    <Link className="nav-link d-flex align-items-center gap-3" onClick={(e)=>handleOnClick(e,"/dashboard/edit-profile/security")} style={{color:"#0B51C1"}} to="#">
+                    <Link className="nav-link d-flex align-items-center gap-3" onClick={(e)=>handleOnClick(e,"/dashboard/business/edit-profile/security")} style={{color:"#0B51C1"}} to="#">
                       Sign-in and Security
                     </Link>
                 </li>
@@ -106,4 +92,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default ProfileBusinessPage;

@@ -6,7 +6,7 @@ const PageNotFound = () => {
   return (
     <>
       <Navbar />
-      <div className="container my-3 py-3">
+      <div className="container my-3 py-3" style={{height:"80vh"}}>
         <div className="container">
           <div className="row">
             <div className="col-md-12 py-5 bg-light text-center">

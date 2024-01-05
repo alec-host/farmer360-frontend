@@ -6,15 +6,15 @@ import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
 import Notiflix from 'notiflix';
 import { Loading } from 'notiflix/build/notiflix-loading-aio';
 
-import countryList from "../../../db/countryList";
-import API_END_POINT from "../../../endpoint/apiRoute";
+import countryList from "../../../../db/countryList";
+import API_END_POINT from "../../../../endpoint/apiRoute";
 
-import { getSession, setSession } from "../../../session/appSession";
-import { PROFILE_SESSION } from "../../../session/constant";
+import { getSession, setSession } from "../../../../session/appSession";
+import { PROFILE_SESSION } from "../../../../session/constant";
 
-import customCss from "../../../css/custom.loading.module.css";
+import customCss from "../../../../css/custom.loading.module.css";
 
-const EditContactInfoPage = () => {
+const EditBusinessContactInfoPage = () => {
 
   const inputFirstName = React.useRef(null);
   const inputLastName = React.useRef(null);  
@@ -69,7 +69,8 @@ const EditContactInfoPage = () => {
         backgroundColor: 'rgba(0,0,0,0)',
     });
 
-    formData.phone = storeData[0]?.msisdn || "";
+    formData.account_type = storeData[0]?.account_type || "";;
+    formData.phone = storeData[0]?.phone || "";
     formData.email = storeData[0]?.email || "";
     formData.account_type = storeData[0]?.account_type || "";
 
@@ -84,14 +85,15 @@ const EditContactInfoPage = () => {
             formData.city = region || "";
             formData.country = country || "";
         break;
-        default:break;
+        default:
+        break;
     }
 
     formData.database_id = storeData[0]?.$databaseId || "";
     formData.table_id = storeData[0]?.$collectionId || "";
     formData.record_id = storeData[0]?.$id || "";
 
-    fetch(`${API_END_POINT}/api/v1/changeUserProfile`,{
+    fetch(`${API_END_POINT}/api/v1/changeBusinessProfile`,{
         method:'PATCH',
         body: JSON.stringify(formData),
         headers:{
@@ -162,7 +164,7 @@ const EditContactInfoPage = () => {
                                     <thead><tr><th/></tr></thead>
                                     <tbody>
                                         <tr>
-                                            <td><strong>{storeData[0]?.first_name === "N/A" && storeData[0]?.last_name === "N/A" ? storeData[0]?.business_name : storeData[0]?.first_name+" "+storeData[0]?.last_name}</strong></td>
+                                            <td><strong>{storeData[0]?.business_name}</strong></td>
                                         </tr>
                                         <tr>
                                             <td style={{textAlign:"left"}}>{storeData[0]?.email}</td>
@@ -177,7 +179,7 @@ const EditContactInfoPage = () => {
                                     <table style={{width:"100%",display: hideProfile ? "" : "none"}}>       
                                         <thead><tr><th/></tr></thead>
                                         <tbody>          
-                                            <tr>
+                                            <tr style={{display:"none"}}>
                                                 <td colSpan={2}>
                                                 <label htmlFor="FirstName"><small><strong>Name</strong></small></label>
                                                     <input
@@ -195,8 +197,8 @@ const EditContactInfoPage = () => {
                                                     />
                                                 </td>
                                             </tr>
-                                            <tr><td height={"18px"}></td></tr> 
-                                            <tr>
+                                            <tr style={{display:"none"}}><td height={"18px"}></td></tr> 
+                                            <tr style={{display:"none"}}>
                                                 <td colSpan={2}>
                                                     <input
                                                         style={{width:"100%"}}
@@ -213,7 +215,7 @@ const EditContactInfoPage = () => {
                                                     />
                                                 </td>
                                             </tr> 
-                                            <tr><td height={"18px"}></td></tr> 
+                                            <tr style={{display:"none"}}><td height={"18px"}></td></tr> 
                                             <tr>
                                                 <td colSpan={2}>
                                                     <label htmlFor="Email"><small><strong>Email</strong></small></label>
@@ -239,7 +241,7 @@ const EditContactInfoPage = () => {
                                                         className="form-control"
                                                         id="Phone"
                                                         name="Phone"
-                                                        value={storeData[0]?.msisdn}
+                                                        value={storeData[0]?.phone}
                                                         placeholder="Phone number"
                                                         maxLength={20}
                                                         readOnly
@@ -371,4 +373,4 @@ const EditContactInfoPage = () => {
   );
 };
 
-export default EditContactInfoPage;
+export default EditBusinessContactInfoPage;

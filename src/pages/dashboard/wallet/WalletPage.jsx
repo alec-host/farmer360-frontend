@@ -4,31 +4,23 @@ import { NavLink } from "react-router-dom";
 //import Notiflix from 'notiflix';
 //import { Loading } from 'notiflix/build/notiflix-loading-aio';
 
-import { PRODUCT_KEY, PROFILE_KEY, readLocalCache } from "../../../db/localSessionData";
+import { getSession } from "../../../session/appSession";
+import { PROFILE_SESSION } from "../../../session/constant";
 //import formattedDateTime from "../../../utility/format-current-date";
 
 const WalletPage = () => {
 
     const [hideWallet, setHideWallet] = useState(false);
     const [storeData, setStoreData] = useState([]);
-    const [storeProductData, setStoreProductData] = useState([]);
-    //const [buttonDisabled, setButtonDisabled] = useState(false);
 
     const toggleProfileHide = () => {
         setHideWallet(!hideWallet);
     };
 
     useEffect(() => {
-        const stored_data = readLocalCache(PROFILE_KEY);
+        const stored_data = getSession(PROFILE_SESSION);
         if(stored_data){
         setStoreData(stored_data);
-        }
-    },[]);
-
-    useEffect(() => {
-        const stored_data = readLocalCache(PRODUCT_KEY);
-        if(stored_data){
-        setStoreProductData(stored_data);
         }
     },[]);
 
@@ -42,7 +34,7 @@ const WalletPage = () => {
                                 <tbody>
                                 <tr><td><h5><strong>Wallet Balance</strong></h5></td></tr>
                                 <tr><td colSpan={2}><hr /></td></tr>
-                                <tr style={{display: storeData[0]?.first_name ? "" : "none"}}>
+                                <tr style={{display: storeData[0]?.account_type === "farmer" || storeData[0]?.account_type === "business" ? "" : "none"}}>
                                     <td><h5><strong></strong></h5></td>
                                     <td style={{textAlign:"end"}}>
                                         <NavLink to="#" className="btn btn-outline-success m-2" onClick={toggleProfileHide}><i className="" ></i>  View</NavLink>

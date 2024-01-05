@@ -1,4 +1,6 @@
 import React,{ useState, useEffect, useRef } from "react";
+import { useNavigate } from 'react-router-dom';
+
 import Notiflix from "notiflix";
 import Select from "react-select";
 import MultiSelect from "react-awesome-multiselect";
@@ -7,11 +9,15 @@ import CustomStepper from "../../../components/CustomStepper";
 
 import Profile from "../ProfilePage";
 import API_END_POINT from "../../../endpoint/apiRoute";
-import { PROFILE_KEY, readLocalCache, storeOnLocalCache } from "../../../db/localSessionData";
 import { age_options, education_options, farm_item_options, gender_options } from "../../../db/optionsData";
 import AddBusinessProfilePage from "./AddBusinessProfilePage";
+import { getSession, setSession } from "../../../session/appSession";
+import { PROFILE_SESSION } from "../../../session/constant";
+import ProfileBusinessPage from "../business/ProfileBusinessPage";
 
 const AddIndividualProfilePage = () => {
+
+  const navigate = useNavigate();
 
   const inputGender = useRef(null);
   const inputAge = useRef(null); 
@@ -45,7 +51,7 @@ const AddIndividualProfilePage = () => {
   };
 
   useEffect(() => {
-    const stored_data = readLocalCache(PROFILE_KEY);
+    const stored_data = getSession(PROFILE_SESSION);
     if(stored_data){
       setStoreData(stored_data);
     }
@@ -128,6 +134,7 @@ const AddIndividualProfilePage = () => {
             Loading.remove(1523);
             setTimeout(() => {
               setButtonDisabled(buttonDisabled); 
+              navigate('/dashboard/default');
             }, 3000);
         });
     })
@@ -330,14 +337,19 @@ const AddIndividualProfilePage = () => {
   };
 
   if(trackDataChange === true){
-    storeOnLocalCache(PROFILE_KEY,storeData);
+    setSession(PROFILE_SESSION,storeData);
   }
+  
   if(storeData[0]?.is_profile_completed === 0 && storeData[0]?.entity_type === "individual"){
     return <StepperIndiviualContainer />;
   }else if(storeData[0]?.is_profile_completed === 0 && storeData[0]?.entity_type === "business"){
     return <AddBusinessProfilePage />;
   }else{
-    return <Profile />;
+    if(storeData[0]?.account_type === "farmer"){
+      return <Profile />;
+    }else{
+      return <ProfileBusinessPage />;
+    }
   }
 
 };
