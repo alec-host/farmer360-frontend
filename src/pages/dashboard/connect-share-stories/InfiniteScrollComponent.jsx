@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
 import axios from 'axios';
 import Avatar from "react-avatar";
 import LazyLoad from 'react-lazy-load';
+import { isProfane } from 'no-profanity';
 
 import Notiflix from 'notiflix';
 import { Loading } from 'notiflix/build/notiflix-loading-aio';
@@ -13,11 +14,9 @@ import formattedDateTime from "../../../utility/format-current-date";
 import API_END_POINT from '../../../endpoint/apiRoute';
 import { getSession } from '../../../session/appSession';
 import { PROFILE_SESSION } from '../../../session/constant';
-import { COMMENT_KEY, readLocalCache } from '../../../db/localSessionData';
+import { COMMENT_KEY, clearLocalCache, readLocalCache, storeOnLocalCache } from '../../../db/localSessionData';
 
 import  styles from '../../../css/modal.module.css';
-
-
 
 const InfiniteScrollComponent = () => {
 
@@ -29,13 +28,14 @@ const InfiniteScrollComponent = () => {
     const [page, setPage] = useState(1);
 
     const [comments, setComments] = useState([]);
-    const [replyComment,setReplyComment] = useState(null);
     const [showComment,setShowComment] = useState(false);
     const [componentId,setComponentId] = useState(0);
     const [storyID,setStoryID] = useState(0);
     const [fullName,setFullName] = useState(null);
     const [UUID,setUUID] = useState(null);
     const [thumbUpCount,setThumbUpCount] = useState(0);
+    const [filter, setFilter] = useState(items);
+    const [replyComment, setReplyComment] = useState('');
 
     useEffect(() => {
         const stored_data = getSession(PROFILE_SESSION);
@@ -75,6 +75,8 @@ const InfiniteScrollComponent = () => {
 
             if(items.length <= dataSize){
                 setItems((prevItems) => [...prevItems, ...newData]);
+                setFilter((prevItems) => [...prevItems, ...newData]);
+
                 setHasMore(newData.length === 10);
                 setPage((prevPage) => prevPage + 1);
             }else{
@@ -89,22 +91,16 @@ const InfiniteScrollComponent = () => {
     };
 
     const handleLikeClick = (e,id) => {
-        console.log(id);  
         setComponentId(id);
         setThumbUpCount(thumbUpCount+1);
     };
 
-    //(e,storyData?.$id,storyData?.post_uuid,storyData?.commenters_name,storyData?.owner_reference_number)
-    const handleCommentClick = (e,id,post_uuid,name,uuid) => {
+    const handleCommentClick = (e,id,post_uuid) => {
         setComponentId(id);
         setStoryID(post_uuid);
-        setFullName(name);
-        setUUID(uuid);
+        setFullName(storeData[0]?.first_name+' '+storeData[0]?.last_name);
+        setUUID(storeData[0]?.reference_number);
         setShowComment(!showComment);
-    };
-
-    const handleOnChange = (e) => {
-        setReplyComment(e.target.value);
     };
 
     const handleSubmit = (e) => {
@@ -112,8 +108,11 @@ const InfiniteScrollComponent = () => {
 
         let formData = {};
 
+        const hasProfaneWords = isProfane(replyComment);
+
         formData.post_uuid = storyID;
         formData.posted_comment = replyComment;
+        formData.is_profane = hasProfaneWords;
         formData.owner_reference_number = UUID;
         formData.full_name = fullName;
         formData.date_created = formattedDateTime;
@@ -122,6 +121,20 @@ const InfiniteScrollComponent = () => {
 
         console.log(formData);
     };
+
+    const formatDate = (date) => {
+        // Options for formatting the date
+        const options = {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+        };
+    
+        // Format the date
+        const formattedDate = new Date(date).toLocaleString('en-US', options);
+    
+        return formattedDate;
+    };   
 
     const httpPost = (formData) => {
 
@@ -143,7 +156,8 @@ const InfiniteScrollComponent = () => {
                     setStoryID(null);
                     setUUID(null);
                     setFullName(null);
-                    setReplyComment(null);
+                    clearLocalCache(COMMENT_KEY);
+                    storeOnLocalCache(COMMENT_KEY,data?.data);
                     Notiflix.Notify.info('Comment posted',{
                         ID:'SWA',
                         timeout:2950,
@@ -170,29 +184,28 @@ const InfiniteScrollComponent = () => {
 
     const commentReplyForm = (storyData) => {
         return(
-            <>
-                <div key={storyData.$id} style={{display:showComment && componentId === storyData.$id ? "" : "none"}}>
-                    <p></p>
-                    <form onSubmit={handleSubmit}>
-                        <input 
-                            className="form-control" 
-                            type="text" 
-                            id="Comment" 
-                            name="Comment"
-                            onChange={handleOnChange}
-                            placeholder='Add a comment'
-                            required
-                        />
-                        <p><input type="hidden" className="form-control" id="StoryID" name="StoryID" defaultValue={storyID ? storyID : ''} readOnly /></p>
-                        <p><input type="hidden" className="form-control" id="Name" name="Name" defaultValue={fullName ? fullName : ''} readOnly /></p>
-                        <p><input type="hidden" className="form-control" id="UUID" name="UUID" defaultValue={UUID ? UUID : ''} readOnly /></p>
-                        <div className="content" style={{textAlign:"end"}}>
-                            <button id="Reply" className="my-2 mx-auto btn btn-success" type="submit">Post</button>
-                        </div>
-                    </form>
-                    <div>{renderCommentList(storyID)}</div>
-                </div>
-            </>
+            <div key={storyData.$id} style={{display:showComment && componentId === storyData.$id ? "" : "none"}}>
+                <p></p>
+                <form onSubmit={handleSubmit}>
+                    <input 
+                        className="form-control" 
+                        type="text" 
+                        id="Comment" 
+                        name="Comment"
+                        onChange={(e) => setReplyComment(e.target.value)}
+                        placeholder='Add a comment'
+                        required
+                    />
+                    <p><input type="hidden" className="form-control" id="StoryID" name="StoryID" defaultValue={storyID ? storyID : ''} readOnly /></p>
+                    <p><input type="hidden" className="form-control" id="Name" name="Name" defaultValue={fullName ? fullName : ''} readOnly /></p>
+                    <p><input type="hidden" className="form-control" id="UUID" name="UUID" defaultValue={UUID ? UUID : ''} readOnly /></p>
+                    <div className="content" style={{textAlign:"end"}}>
+                        <button id="Reply" className="my-2 mx-auto btn btn-success" type="submit">Send</button>
+                    </div>
+                </form>
+                <hr/>
+                <div>{renderCommentList(storyID)}</div>
+            </div>
         );
     };
 
@@ -211,37 +224,75 @@ const InfiniteScrollComponent = () => {
         return filtered_comments.length;
     };
 
+    const filterStoryByTopic = () => {
+        const searchWord = document.getElementById("MySearch").value;
+        let filteredStoryList = null;
+        if(searchWord && searchWord.length > 0){
+            filteredStoryList = items.filter((data) => data.topic && data.topic?.trim().toLowerCase().includes(searchWord?.trim().toLowerCase()));;
+        }else{
+            filteredStoryList = [];
+        }
+        
+        setFilter(filteredStoryList);
+        console.log(filter);
+    };
+
+    const handleOnClick = (e) => {
+        filterStoryByTopic();
+    };
+
     const commentList = (comment) => {
         return (
-            <div key={comment.$id} className="row" style={{margin:"2px"}}>
+            <div key={comment.$id} className="row">
                 <table>
                     <thead><tr><th/></tr></thead>
                     <tbody>
                         <tr>
-                            <td><small><strong>{comment?.commenters_name}</strong></small></td>
-                            <td style={{textAlign:"end"}}><small>{comment?.date_created ? comment?.date_created.split('T')[0] : null}</small></td>
-                        </tr>
-                        <tr>
+                            <td width={"8%"} valign="top">
+                                <table width={"100%"}>
+                                    <thead><tr><th/></tr></thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <Avatar 
+                                                    color="#198754"
+                                                    size={40}
+                                                    name={ comment?.commenters_name !== "" || typeof(comment?.commenters_name) !== "undefined" ? comment?.commenters_name : "" }
+                                                    round={true}  
+                                                />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
                             <td colSpan={2}>
-                                <textarea
-                                    className={styles.button_like_input} 
-                                    style={{fontSize:"16px",color:"#000",background:"#F2F2F2"}}
-                                    rows={2}
-                                    placeholder={comment?.comment ? comment?.comment : null}
-                                    readOnly
-                                />
+                                <div className={styles.message_container}>
+                                    <div className={styles.message_bubble}>
+                                        <table width={"100%"}>
+                                            <thead><tr><th/></tr></thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td><small style={{fontSize:"12px"}}><strong>{comment?.commenters_name}</strong></small></td>
+                                                    <td colSpan={2} style={{textAlign:"end"}}><small style={{fontSize:"12px"}}>{comment?.date_created ? formatDate(comment?.date_created) : null}</small></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <p></p>
+                                        <i>{comment?.comment ? comment?.comment : null}</i>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         );
-    }; 
+    };
     
     const renderStoryCardList = (storyData) =>{
         const forms = [];
         forms.push (
-            <div className="card" key={storyData.$id} style={{marginTop:"5px",padding:"10px"}}>
+            <div className="card" key={storyData.$id} style={{marginTop:"25px",padding:"10px"}}>
                 <div className="content">
                     <table style={{width:"100%",marginTop:"10px"}}>
                         <thead><tr><th/></tr></thead>
@@ -261,10 +312,10 @@ const InfiniteScrollComponent = () => {
                                         <tbody>
                                             <tr>
                                                 <td><small><strong>{ storyData?.full_name !== "" || typeof(storyData?.full_name) !== "undefined" ? storyData?.full_name : "" }</strong></small></td>
-                                                <td align="right"><small>{(storyData?.date_created).split('T')[0]}</small></td>
+                                                <td align="right"><small>{formatDate(storyData?.date_created)}</small></td>
                                             </tr>
                                         </tbody>
-                                    </table>
+                                    </table>  
                                 </td>
                             </tr>
                             <tr>
@@ -272,7 +323,12 @@ const InfiniteScrollComponent = () => {
                             </tr>
                             <tr>
                                 <td colSpan={2}>
-                                    <div className="content">{ storyData?.story !== "" || typeof(storyData?.story) !== "undefined" ? storyData?.story : "" }</div>
+                                    <div className="content py-1"><small><strong>{ storyData?.topic !== "" || typeof(storyData?.topic) !== "undefined" ? storyData?.topic : "" }</strong></small></div>
+                                    <div className={styles.message_container}>
+                                        <div className={styles.message_bubble}>  
+                                            <div className="content">{ storyData?.story !== "" || typeof(storyData?.story) !== "undefined" ? storyData?.story : "" }</div>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
                             <tr>
@@ -302,46 +358,77 @@ const InfiniteScrollComponent = () => {
                         <thead><tr><th/></tr></thead>
                         <tbody>
                             <tr><td><div key={storyData?.$id}><small></small></div></td></tr>
-                            <tr><td>{/*(componentId === storyData?.$id) ? thumbUpCount : 0 */}</td></tr>
                             <tr>
-                                <td colSpan={3} style={{textAlign:"end"}}>
-                                    <small>{renderCommentCount(storyData?.post_uuid) ? renderCommentCount(storyData?.post_uuid) + " comment(s)" : null }</small>
+                                <td colSpan={2} style={{textAlign:"end"}}>
+                                    <small style={{fontSize:"11px"}}>{renderCommentCount(storyData?.post_uuid) ? renderCommentCount(storyData?.post_uuid) + " comment(s)" : null }</small>
                                 </td>
                             </tr>
-                            <tr><td colSpan={3}><hr/></td></tr>
-                            <tr>
+                            <tr style={{color:"GrayText",display:"none"}}>
                                 <td>
-                                    <NavLink className="nav-link" key={storyData?.$id} onClick={e=>{handleLikeClick(e,storyData?.$id)}}><strong style={{color:"GrayText",display:"none"}}>  
+                                    <NavLink className="nav-link" key={storyData?.$id} onClick={e=>{handleLikeClick(e,storyData?.$id)}}><strong>  
                                         <span className="fa-regular fa-thumbs-up me-1"></span>Like</strong>
                                     </NavLink>
                                 </td>
-                                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                                <td style={{textAlign:"end"}}>
-                                    <NavLink className="nav-link" key={storyData?.$id} onClick={e=>handleCommentClick(e,storyData?.$id,storyData?.post_uuid,storyData?.full_name,storyData?.user_uuid)}>
-                                        <strong style={{color:"#198754"}}><span key={storyData?.$id}></span><span className="fa-regular fa-comment me-1"></span>Comment</strong>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td colSpan={2}>
+                                    <NavLink className="nav-link" key={storyData?.$id} onClick={e=>handleCommentClick(e,storyData?.$id,storyData?.post_uuid)}>
+                                        <strong style={{color:"#198754",fontSize:"14px"}}><span key={storyData?.$id}></span><span className="fa-regular fa-comment me-1"></span>Comment</strong>
                                     </NavLink>
-                                    <NavLink></NavLink>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
+                    {commentReplyForm(storyData)}
                 </div>
-                {commentReplyForm(storyData)}
             </div>
         );
         return forms;
     };
 
+    const SearchBar = () => {
+        return(
+            <div className="bg-white-opacity-40 backdrop-filter backdrop-blur-l px-4 pt-4 pb-6 rounded shadow max-w-[1100px] border border mx-auto">
+                <div className="row mb-4 py-1">
+                    <table style={{width:"100%"}}>     
+                        <thead><tr><th/></tr></thead>
+                            <tbody>
+                            <tr>
+                                <td style={{width:"90%"}}>
+                                    <input 
+                                        type="search" 
+                                        className="form-control" 
+                                        id="MySearch" 
+                                        name="MySearch"
+                                        aria-label="Search" 
+                                        placeholder="Type a search word i.e topic"/>
+                                </td>
+                                <td>
+                                    <button className="btn btn-outline-dark" onClick={handleOnClick}>Search</button>
+                                </td>
+                            </tr>
+                        </tbody> 
+                    </table>
+                </div>
+            </div>
+        );
+    };  
+    
     return (
+        <>
+        {<SearchBar/>}
         <InfiniteScroll
+            key={1}
             dataLength={items.length}
             next={getStories}
             hasMore={hasMore}
             loader={<center><small><strong><span id="end">Loading...</span></strong></small></center>}
         >
-            {items?.map((item) => (renderStoryCardList(item)))}
+            {filter?.map((item) => (renderStoryCardList(item)))}
             
         </InfiniteScroll>
+        </>
     );
 };
 

@@ -1,48 +1,50 @@
 import React from "react";
 import { Footer, Navbar } from "../components";
+
+import buttonStyle from "../css/custom.button.module.css";
+
 const ContactPage = () => {
   return (
     <>
       <Navbar />
-      <div className="container my-3 py-3" style={{height:"80vh"}}>
+      <div className="container my-3 py-3" style={{height:"100vh"}}>
         <h5 className="text-center">Contact Us</h5>
         <hr />
-        <div class="row my-4 h-100">
+        <div className="row my-4 h-100">
           <div className="col-md-4 col-lg-4 col-sm-8 mx-auto">
             <form>
-              <div class="form my-3">
-                <label for="Name">Name</label>
+              <div className="my-3">
+                <label htmlFor="Name" className="form-label text-black-50 m-0 small">Name</label>
                 <input
-                  type="email"
-                  class="form-control"
+                  type="text"
+                  className="form-control"
                   id="Name"
                   placeholder="Enter your name"
+                  maxLength={50}
                 />
               </div>
-              <div class="form my-3">
-                <label for="Email">Email</label>
+              <div className="my-3">
+                <label htmlFor="Email" className="form-label text-black-50 m-0 small">Email</label>
                 <input
                   type="email"
-                  class="form-control"
+                  className="form-control"
                   id="Email"
                   placeholder="name@example.com"
+                  maxLength={30}
                 />
               </div>
-              <div class="form  my-3">
-                <label for="Password">Message</label>
+              <div className="my-3">
+                <label htmlFor="Password" className="form-label text-black-50 m-0 small">Message</label>
                 <textarea
                   rows={5}
-                  class="form-control"
+                  className="form-control"
                   id="Password"
                   placeholder="Enter your message"
+                  maxLength={450}
                 />
               </div>
               <div className="text-right">
-                <button
-                  class="my-2 px-4 mx-auto btn btn-success"
-                  type="submit"
-                  disabled
-                >
+                <button className={"my-2 px-4 mx-auto fw-bold btn "+buttonStyle.custom_theme_button} type="submit" disabled>
                   Send
                 </button>
               </div>

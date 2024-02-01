@@ -5,6 +5,18 @@ const PRODUCT_KEY = "winwnapstartupsproduct";
 const INBOX_KEY = "winwnapstartupsinbox";
 const STORY_KEY = "winwnapstartupsstory";
 const COMMENT_KEY = "winwnapstartupscomment";
+const API_REQUEST_KEY = "winwnapstartupsapirequest";
+const SURVEY_REQUEST_KEY = "winwnapstartupssurveyrequest";
+const FARMER_FULL_SCOPE_KEY = "winwnapstartupsfarmerfullscope";
+const FARMER_LIMITED_SCOPE_KEY = "winwnapstartupsfarmerlimitedscope";
+const BUSINESS_LIMITED_SCOPE_KEY = "winwnapstartupsbusinesslimitedscope";
+const BASIC_STAT_KEY = "winwnapstartupsbasicstat";
+const RANGE_STAT_FARMER_KEY = "winwnapstartupsrangestatfarmer";
+const RANGE_STAT_BUSINESS_KEY = "winwnapstartupsrangestatbusiness";
+const RANGE_STAT_API_KEY = "winwnapstartupsrangestatapi";
+const RANGE_STAT_SURVEY_KEY = "winwnapstartupsrangestatsurvey";
+const RANGE_STAT_STORY_KEY = "winwnapstartupsrangestatapi";
+const RANGE_STAT_COMMENT_KEY = "winwnapstartupsrangestatapi";
 const DBASE_KEY = "_1234567890L";
 
 const storeInitialLocalData = (new_data) => {
@@ -34,4 +46,29 @@ const clearLocalCache = (key) => {
 };
 
 export default storeInitialLocalData;
-export {readLocalStoredData,clearLocalStoredData,storeOnLocalCache,readLocalCache,clearLocalCache,PROFILE_KEY,STORE_KEY,PRODUCT_KEY,INBOX_KEY,STORY_KEY,COMMENT_KEY,DBASE_KEY};
+export {
+    readLocalStoredData,
+    clearLocalStoredData,
+    storeOnLocalCache,
+    readLocalCache,
+    clearLocalCache,
+    PROFILE_KEY,
+    STORE_KEY,
+    PRODUCT_KEY,
+    INBOX_KEY,
+    STORY_KEY,
+    COMMENT_KEY,
+    API_REQUEST_KEY,
+    SURVEY_REQUEST_KEY,
+    FARMER_LIMITED_SCOPE_KEY,
+    BUSINESS_LIMITED_SCOPE_KEY,
+    FARMER_FULL_SCOPE_KEY,
+    BASIC_STAT_KEY,
+    RANGE_STAT_FARMER_KEY,
+    RANGE_STAT_BUSINESS_KEY,
+    RANGE_STAT_API_KEY,
+    RANGE_STAT_SURVEY_KEY,
+    RANGE_STAT_STORY_KEY,
+    RANGE_STAT_COMMENT_KEY,
+    DBASE_KEY
+};

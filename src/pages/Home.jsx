@@ -1,13 +1,12 @@
 import React from 'react';
-import { Navbar, Main, Footer } from "../components";
-import Products from '../components/Products';
+import { Navbar, Main, Footer, FarmerList } from "../components";
 
 function Home() {
   return (
     <>
       <Navbar />
       <Main />
-      <Products />
+      <FarmerList />
       <Footer />
     </>
   )

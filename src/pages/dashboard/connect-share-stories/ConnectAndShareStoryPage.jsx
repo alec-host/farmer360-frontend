@@ -22,9 +22,8 @@ const ConnectAndShareStoryPage = () => {
       <>
         <div className="container-fluid" style={{paddingTop:"10px",background:"",height:"auto"}}>
           <div className="container"> 
-            <div className="row" >
-                    <div className="card">
-                        <p></p>
+            <div className="row">
+                    <div className="card py-3 gy-3">
                         <table>
                             <thead><tr><th/></tr></thead>
                             <tbody>
@@ -45,7 +44,6 @@ const ConnectAndShareStoryPage = () => {
                                 <tr><td colSpan={2}></td></tr>
                             </tbody>
                         </table>
-                        <p></p>
                     </div>
                     <table>
                         <thead><tr><th/></tr></thead>
@@ -53,14 +51,10 @@ const ConnectAndShareStoryPage = () => {
                             <tr><td><InfiniteScrollComponent/></td></tr>
                         </tbody>
                     </table>
-                    <div className="card">
-                        <p></p>
-                        <p></p>
-                        <p></p>
-                        <p></p>
+                    <div className="card py-3 gy-3">
                         <div className="content">
                             <hr/>
-                            <p><span className="fa-regular fa-thumbs-up me-1"></span>Like<span className="me-5"></span><span className="fa-regular fa-comment me-1"></span>Comment</p>
+                            <p style={{fontSize:"14px"}}><span className="fa-regular fa-thumbs-up me-1"></span>Like<span className="me-5"></span><span className="fa-regular fa-comment me-1"></span>Comment</p>
                         </div>
                     </div>
             </div>

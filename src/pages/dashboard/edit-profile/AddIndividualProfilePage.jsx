@@ -134,7 +134,7 @@ const AddIndividualProfilePage = () => {
             Loading.remove(1523);
             setTimeout(() => {
               setButtonDisabled(buttonDisabled); 
-              navigate('/dashboard/default');
+              //navigate('/dashboard/default');
             }, 3000);
         });
     })

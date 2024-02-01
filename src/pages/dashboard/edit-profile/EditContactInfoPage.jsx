@@ -146,7 +146,7 @@ const EditContactInfoPage = () => {
                         <tr><td><h5><strong>Basic Information</strong></h5></td></tr>
                         <tr><td colSpan={2}><hr /></td></tr>
                         <tr>
-                            <td><h5><strong>Contact Info</strong></h5></td>
+                            <td><h6><strong>Contact Info</strong></h6></td>
                             <td style={{textAlign:"end"}}>
                                 {
                                 storeData[0]?.first_name === "N/A" && storeData[0]?.last_name === "N/A" ?
@@ -195,7 +195,7 @@ const EditContactInfoPage = () => {
                                                     />
                                                 </td>
                                             </tr>
-                                            <tr><td height={"18px"}></td></tr> 
+                                            <tr><td style={{height:"10px"}}></td></tr> 
                                             <tr>
                                                 <td colSpan={2}>
                                                     <input
@@ -213,7 +213,7 @@ const EditContactInfoPage = () => {
                                                     />
                                                 </td>
                                             </tr> 
-                                            <tr><td height={"18px"}></td></tr> 
+                                            <tr><td style={{height:"10px"}}></td></tr>
                                             <tr>
                                                 <td colSpan={2}>
                                                     <label htmlFor="Email"><small><strong>Email</strong></small></label>
@@ -277,7 +277,7 @@ const EditContactInfoPage = () => {
                         </tr>
                         <tr><td colSpan={2}><hr/></td></tr>
                         <tr>
-                            <td><h5><strong>Location</strong></h5></td>
+                            <td><h6><strong>Location</strong></h6></td>
                             <td style={{textAlign:"end"}}>
                                 <NavLink to="#" className="btn btn-outline-success m-2" onClick={toggleLocationHide}><i></i> Edit</NavLink>
                             </td>                    
@@ -296,7 +296,7 @@ const EditContactInfoPage = () => {
                                     </tbody> 
                                 </table>
                             </td>
-                        </tr>                                        
+                        </tr>                                       
                         <tr>
                             <td colSpan={2}>
                                 <form onSubmit={onSubmitHandler}> 
@@ -318,6 +318,7 @@ const EditContactInfoPage = () => {
                                                     />
                                                 </td>
                                             </tr>
+                                            <tr><td style={{height:"10px"}}></td></tr>
                                             <tr>    
                                                 <td colSpan={2}>     
                                                     <RegionDropdown

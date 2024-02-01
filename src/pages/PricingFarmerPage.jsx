@@ -7,7 +7,7 @@ const PricingFarmerPage = () => {
   return (
     <>
       <Navbar />
-        <div className="container my-3 py-3" style={{height:"80vh"}}>
+        <div className="container my-3 py-3" style={{height:"auto"}}>
             <h5 className="text-center">Farmer Account Plan</h5>
             <hr />
             <div className="row my-4 h-100">
@@ -15,7 +15,7 @@ const PricingFarmerPage = () => {
                     <div className="card-deck mb-3 text-center">
                         <div className="card mb-4 box-shadow">
                             <div className="card-header">
-                                <h4 className="my-0 font-weight-normal">Free</h4>
+                                <h4 className="my-0 font-weight-normal">Basic</h4>
                             </div>
                             <div className="card-body">
                                 <h1 className="card-title pricing-card-title">$0 <small className="text-muted">/ month</small></h1>
@@ -29,7 +29,7 @@ const PricingFarmerPage = () => {
                                     <li>24/7 support <i className="fa fa-multiply mr-1" style={{color:"#EA4335"}}></i></li>
                                 </ul>
                                 <NavLink to={"/register/?subscription=basic"}>
-                                    <button type="button" className="btn btn-md btn-block btn-outline-success">Sign up for free</button>
+                                    <button type="button" className="btn btn-md btn-block btn-outline-success font-weight-bold">Sign up for Free</button>
                                 </NavLink>
                             </div>
                         </div>
@@ -49,7 +49,7 @@ const PricingFarmerPage = () => {
                                     <li>24/7 support <i className="fa fa-check mr-1" style={{color:"#FFA600"}}></i></li>
                                 </ul>
                                 <NavLink to={"/register/?subscription=advance"}>
-                                    <button type="button" className="btn btn-md btn-block btn-success">Get started</button>
+                                    <button type="button" className="btn btn-md btn-block btn-success font-weight-bold">Get Started</button>
                                 </NavLink>
                             </div>
                         </div>

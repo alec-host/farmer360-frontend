@@ -83,6 +83,23 @@
         { value: '1', label: 'Unpublish' },
     ];  
 
+    const search_options = [
+        { value: '', label: '--Choose an option--',disabled: true},
+        { value: '0', label: 'Search by Name' },
+        { value: '1', label: 'Search by Country' },
+        { value: '2', label: 'Search by Farmed Item' },
+    ];
+    
+    const stat_options = [
+        { value: '', label: '--Choose an option--',disabled: true},
+        { value: '0', label: 'Farmers' },
+        { value: '1', label: 'Businesses' },
+        { value: '2', label: 'Stories' },
+        { value: '3', label: 'Comments' },
+        { value: '4', label: 'API Requests' },
+        { value: '5', label: 'Survey Requests' },
+    ];    
+
   export default 1;
   
   export {
@@ -93,5 +110,7 @@
     entity_options,
     shop_publish_options,
     category_options,
-    account_type_options
+    account_type_options,
+    search_options,
+    stat_options
   };

@@ -27,3 +27,4 @@ yarn-error.log*
 # extra files
 uploads
 node_app
+firebase

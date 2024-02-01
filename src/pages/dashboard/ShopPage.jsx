@@ -1,7 +1,8 @@
 import React,{ useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { STORE_KEY, readLocalCache } from "../../db/localSessionData";
-import Avatar from "react-avatar";
+
+import ProfileAvatar from "../../components/ProfileAvatar";
 
 const ShopPage = () => {
 
@@ -31,18 +32,13 @@ const ShopPage = () => {
         <div className="container-fluid">
           <div className="row">
             <div className="col-md-3">
-              <div className="nav flex-column" style={{paddingTop:"10px",paddingLeft:"20px",paddingBottom:"10px"}}>
-                <Avatar 
-                    colors={['#FCCF0A', '#0B51C1', '#3A6024','#B3003C','#7E3794','#F2855C']}
-                    name={storeShopData[0]?.name ? storeShopData[0]?.name : "My Shop"}
-                    size={85}
-                    round={true} 
+              <div className="nav flex-column">
+                <ProfileAvatar 
+                  personEmail={storeShopData[0]?.name ? storeShopData[0]?.name : "My Shop"}
+                  personName={storeShopData[0]?.name ? storeShopData[0]?.name : "My Shop"}
                 />
               </div>
               <ul className="nav flex-column">
-                <li className="nav-item">
-                  <h5 style={{paddingLeft:"20px"}}><strong>{storeShopData[0]?.name ? storeShopData[0]?.name : "My Shop"}</strong></h5>
-                </li>
                 <li className="nav-item">
                   <span>&nbsp;</span>
                 </li>                

@@ -1,16 +1,20 @@
 import React,{useEffect, useRef,useState} from 'react';
 import Select from "react-select";
 import PhoneInput from "react-phone-input-2";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import 'react-phone-input-2/lib/style.css'
 
 import Notiflix from 'notiflix';
 import { Loading } from 'notiflix/build/notiflix-loading-aio';
 
+import { RegionDropdown } from 'react-country-region-selector';
+
 import { Footer, Navbar } from "../components";
 import { category_options, entity_options } from '../db/optionsData';
 import formattedDateTime from '../utility/format-current-date';
 import API_END_POINT from '../endpoint/apiRoute';
+
+import buttonStyle from "../css/custom.button.module.css";
 
 const Register = () => {
 
@@ -22,6 +26,7 @@ const Register = () => {
     const inputOwnerFullName = useRef(null);
     const inputEmail = useRef(null);
     const inputPhone = useRef(null);
+    const inputCity = useRef(null);
     const inputPassword = useRef(null);
     const inputConfirmPassword = useRef(null);
 
@@ -33,6 +38,7 @@ const Register = () => {
     const [phone,setPhone] = useState('');
     const [country,setCountry] = useState('');
     const [currentDate, setCurrentDate] = useState('');
+    const [region, setRegion] = useState(null);
 
     const subscription = new URLSearchParams(window?.location?.search).get('subscription');
 
@@ -85,9 +91,16 @@ const Register = () => {
 
     const handleInputChange = () => {};
 
+    const handlePayment = () => {
+        alert('sssss');
+        return;
+    };
+
     const handleRegistredByChange = (event) => {
         setSelectedCategory(event.value);
     };
+
+    const navigate = useNavigate();
 
     const handleSubmit = (event) => {
 
@@ -135,6 +148,7 @@ const Register = () => {
                     formData.business_name = "N/A";
                     formData.email = inputEmail?.current?.value || "";
                     formData.phone = inputPhone?.current?.value || phone;
+                    formData.city = region || "";
                     formData.full_name = "N/A";
                     formData.subscription = subscription || "";
                     formData.country = country;
@@ -147,6 +161,7 @@ const Register = () => {
                     formData.business_name = inputBusinessName?.current.value || "";
                     formData.email = inputEmail?.current?.value || "";
                     formData.phone = inputPhone?.current?.value || phone;
+                    formData.city = region || "";
                     formData.full_name = inputOwnerFullName?.current?.value || "";
                     formData.subscription = subscription || "";
                     formData.country = country;
@@ -175,8 +190,7 @@ const Register = () => {
                     inputBusinessName.current.value='';
                     inputEmail.current.value='';
                     inputPhone.current.value='';
-                    setPhone('');
-                    setCountry('');
+                    inputCity.current.value='';
                     input.Password='';
                     input.ConfirmPassword='';
                     Notiflix.Notify.info('Registration was successful',{
@@ -184,6 +198,10 @@ const Register = () => {
                         timeout:2950,
                         showOnlyTheLastOne:true                      
                     });
+                    navigate('/phone-verification/?entity=farmer&phone='+phone);
+                    setPhone('');
+                    setCountry('');
+                    setRegion('');
                 }else{
                     let msg = null;
                     console.log(data?.message);
@@ -210,14 +228,14 @@ const Register = () => {
     return (
         <>
             <Navbar />
-                <div className="container my-3 py-3">
+                <div className="container my-3 py-3" style={{height:"auto"}}>
                     <h5 className="text-center">Register</h5>
                     <hr />
                     <div className="row my-4 h-100">
                         <div className="col-md-4 col-lg-4 col-sm-8 mx-auto">
                             <form onSubmit={handleSubmit}>
-                                <div className="form my-3">
-                                    <label htmlFor="Name">Entity Type</label> 
+                                <div className="form text-black-50 my-3">
+                                    <label htmlFor="Name" className="form-label m-0"><small>Select Entity Type</small></label> 
                                     <Select 
                                         onChange={handleChange}
                                         options={entity_options}
@@ -225,7 +243,7 @@ const Register = () => {
                                         required
                                     />
                                 </div>
-                                <div className="form my-3">
+                                <div className="my-3">
                                     <input
                                         type="hidden"
                                         className="form-control"
@@ -235,8 +253,8 @@ const Register = () => {
                                         ref={inputEntityType}
                                     />
                                 </div>                           
-                                <div className="form my-3" id="DivFirstName" style={{display: selectedEntity === "business" ? "none" : "block"}}>
-                                    <label htmlFor="Name">First Name</label>
+                                <div className="my-3" id="DivFirstName" style={{display: selectedEntity === "business" ? "none" : "block"}}>
+                                    <label htmlFor="Name" className="form-label text-black-50 m-0"><small>First Name</small></label>
                                     <input
                                         type="text"
                                         className="form-control"
@@ -245,12 +263,12 @@ const Register = () => {
                                         onChange={handleInputChange}
                                         ref={inputFirstName}
                                         maxLength={40}
-                                        placeholder="Enter First Name"
+                                        placeholder="First Name"
                                         required={selectedEntity === "business" ? false : true}
                                     />
                                 </div>
-                                <div className="form my-3" id="DivLastName" style={{display: selectedEntity === "business" ? "none" : "block"}}>
-                                    <label htmlFor="Name">Last Name</label>
+                                <div className="my-3" id="DivLastName" style={{display: selectedEntity === "business" ? "none" : "block"}}>
+                                    <label htmlFor="Name" className="form-label text-black-50 m-0"><small>Last Name</small></label>
                                     <input
                                         type="text"
                                         className="form-control"
@@ -259,12 +277,12 @@ const Register = () => {
                                         onChange={handleInputChange}
                                         ref={inputLastName}
                                         maxLength={40}
-                                        placeholder="Enter Last Name"
+                                        placeholder="Last Name"
                                         required={selectedEntity === "business" ? false : true}
                                     />
                                 </div>
                                 <div className="form my-3" id="DivBusinessName" style={{display: selectedEntity === "business" ? "block" : "none"}}>
-                                    <label htmlFor="Name">Business Name</label>
+                                    <label htmlFor="Name" className="form-label text-black-50 m-0"><small>Business Name</small></label>
                                     <input
                                         type="text"
                                         className="form-control"
@@ -273,21 +291,20 @@ const Register = () => {
                                         onChange={handleInputChange}
                                         ref={inputBusinessName}
                                         maxLength={40}
-                                        placeholder="Enter Business Name"
+                                        placeholder="Business Name"
                                         required={selectedEntity === "business" ? true: false}
                                     />
                                 </div>                   
                                 <div className="form my-3" id="DivRegisteredBy" style={{display: selectedEntity === "business" ? "block" : "none"}}>
-                                    <label htmlFor="Name">Registered By</label>
+                                    <label htmlFor="Name" className="form-label text-black-50 m-0"><small>Select Registered By</small></label>
                                     <Select
-                                        className="form-control"
                                         onChange={handleRegistredByChange}
                                         options={category_options}
                                         isOptionDisabled={(option) => option.disabled}
                                         required={selectedEntity === "business" ? true: false}
                                     />
                                 </div>
-                                <div className="form my-3">
+                                <div className="my-3">
                                     <input
                                         type="hidden"
                                         className="form-control"
@@ -297,8 +314,8 @@ const Register = () => {
                                         ref={inputRegisteredBy}
                                     />
                                 </div>                       
-                                <div className="form my-3" id="DivFullName" style={{display: selectedEntity === "business" && selectedCategory === "owner" ? "block" : "none"}}>
-                                    <label htmlFor="Name">Owners Name</label>
+                                <div className="my-3" id="DivFullName" style={{display: selectedEntity === "business" && selectedCategory === "owner" ? "block" : "none"}}>
+                                    <label htmlFor="Name" className="form-label text-black-50 m-0"><small>Owners Name</small></label>
                                     <input
                                         type="text"
                                         className="form-control"
@@ -307,12 +324,12 @@ const Register = () => {
                                         onChange={handleInputChange}
                                         ref={inputOwnerFullName}
                                         maxLength={60}
-                                        placeholder="Enter Owners Name"
+                                        placeholder="Owners Name"
                                         required={selectedEntity === "business" && selectedCategory === "owner" ? true: false}
                                     />
                                 </div> 
-                                <div className="form my-3">
-                                    <label htmlFor="Email">Email</label>
+                                <div className="my-3">
+                                    <label htmlFor="Email" className="form-label text-black-50 m-0"><small>Email</small></label>
                                     <input
                                         type="email"
                                         className="form-control"
@@ -325,11 +342,12 @@ const Register = () => {
                                         required
                                     />
                                 </div>
-                                <div className="form my-3">
-                                    <label htmlFor="Phone">Mobile Number</label>
+                                <div className="my-3">
+                                    <label htmlFor="Phone" className="form-label text-black-50 m-0"><small>Mobile Number</small></label>
                                     <PhoneInput
                                         id="Phone"
                                         name="Phone"
+                                        inputStyle={{width:"100%"}}
                                         country='ke'
                                         onlyCountries={['ke', 'za', 'ng','gb']}
                                         regions={['africa','europe']}
@@ -351,8 +369,22 @@ const Register = () => {
                                         required={true}
                                     />
                                 </div>
-                                <div className="form my-3">
-                                    <label htmlFor="Password">Password</label>
+                                <div className="my-3">
+                                    <label htmlFor="Phone" className="form-label text-black-50 m-0"><small>Region</small></label>
+                                    <RegionDropdown
+                                        id="City"
+                                        name="City"
+                                        classes="form-control"
+                                        country={country}
+                                        countryValueType="full"
+                                        value={region}
+                                        onChange={(val) => setRegion(val)}
+                                        ref={inputCity}
+                                        required
+                                    />
+                                </div>
+                                <div className="my-3">
+                                    <label htmlFor="Password" className="form-label text-black-50 m-0"><small>Set New Password</small></label>
                                     <input
                                         type="password"
                                         className="form-control"
@@ -369,8 +401,8 @@ const Register = () => {
                                     />
                                     {error.Password && <span className='err' style={{color:"red"}}><small>{error.Password}</small></span>}
                                 </div>
-                                <div className="form my-3">
-                                    <label htmlFor="Confirm Password">Confirm Password</label>
+                                <div className="my-3">
+                                    <label htmlFor="Confirm Password" className="form-label text-black-50 m-0"><small>Confirm Password</small></label>
                                     <input
                                         type="password"
                                         className="form-control"
@@ -387,7 +419,7 @@ const Register = () => {
                                     />
                                     {error.ConfirmPassword && <span className='err' style={{color:"red"}}><small>{error.ConfirmPassword}</small></span>}
                                 </div>
-                                <div className="form my-3">
+                                <div className="my-3">
                                     <input
                                         type="hidden"
                                         className="form-control"
@@ -395,18 +427,25 @@ const Register = () => {
                                         placeholder="package"
                                     />
                                 </div>                                                     
-                                <div className="my-3">
+                                <div className="my-1">
                                     <p>Already has an account? <Link to="/login" className="text-decoration-underline text-info">Login</Link> </p>
                                 </div>
                                 <div className="text-right">
-                                    <button className="my-2 mx-auto btn btn-success" type="submit" disabled={buttonDisabled}> 
-                                        Register
-                                    </button>
+                                    {
+                                        subscription  && subscription === "basic" ?
+                                        <button className={"my-2 mx-auto btn fw-bold "+ buttonStyle.custom_theme_button} type="submit" disabled={buttonDisabled}>
+                                            Register 
+                                        </button>
+                                    :
+                                        <button className={"my-2 mx-auto fw-bold btn btn-outline-danger"} type="submit" onClick={handlePayment} disabled={!buttonDisabled}> 
+                                            Pay Now
+                                        </button>                               
+                                    }
                                 </div>
                             </form>
+                            </div>
                         </div>
                     </div>
-                </div>
             <Footer />
         </>
     )

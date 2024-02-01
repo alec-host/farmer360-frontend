@@ -11,10 +11,14 @@ import parse from 'html-react-parser';
 
 import API_END_POINT from "../endpoint/apiRoute";
 import FlyingAgricButton from "./FlyingAgricButton";
+import { PROFILE_SESSION } from "../session/constant";
+import { getSession } from "../session/appSession";
 
 const Products = () => {
-  const [data, setData] = useState([]);
-  const [filter, setFilter] = useState(data);
+
+  const [storeProfileData,setStoreProfileData] = useState([]);
+  const [productData, setProductData] = useState([]);
+  const [filter, setFilter] = useState(productData);
   const [loading, setLoading] = useState(false);
   let componentMounted = true;
 
@@ -25,29 +29,33 @@ const Products = () => {
   }
 
   useEffect(() => {
-    const getProducts = async () => {
-      setLoading(true);
-      const url = `${API_END_POINT}/api/v1/getProducts?owner_reference_number=f9268420-4d4f-4a36-8a1d-d80200d793c2&email=pirate@ymail.com&_page=1&_limit=10`;
-      const response = await fetch(url);
-      if(componentMounted){
-        await response.clone().json().then(data=>{
-          console.log(data);
-          setData(data?.data);
-          console.log(data?.data);
-          setFilter(data?.data);
-        });
-        setLoading(false);
-      }
-      return () => {
-        componentMounted = false;
-      };
-    };
+    const stored_data = getSession(PROFILE_SESSION);
+    if(stored_data) {
+        setStoreProfileData(stored_data);
+    }
     getProducts();
   },[]);
 
-  console.log(data);
+  const getProducts = async () => {
+    setLoading(true);
+    const url = `${API_END_POINT}/api/v1/getProducts?reference_number=f9268420-4d4f-4a36-8a1d-d80200d793c2&email=pirate@ymail.com&_page=1&_limit=10`;
+    const response = await fetch(url);
+    if(componentMounted){
+      await response.clone().json().then(data=>{
+        console.log(data);
+        setProductData(data?.data);
+        setFilter(data?.data);
+      });
+      setLoading(false);
+    }
+    return () => {
+      componentMounted = false;
+    };
+  };
 
-  const Loading = () => {
+  console.log(productData);
+
+  const ProductLoading = () => {
     return (
       <>
         <div className="col-12 py-5 text-center">
@@ -76,7 +84,7 @@ const Products = () => {
   };
 
   const filterProduct = (cat) => {
-    const updatedList = data?.filter((item) => item.category === cat);
+    const updatedList = productData?.filter((item) => item.category === cat);
     setFilter(updatedList);
   }
   const ShowProducts = () => {
@@ -118,8 +126,11 @@ const Products = () => {
                 </div>
                 <ul className="list-group list-group-flush">
                   <li className="list-group-item lead">{product.currency} {product.price}</li>
-                  {/* <li className="list-group-item">Dapibus ac facilisis in</li>
-                    <li className="list-group-item">Vestibulum at eros</li> */}
+                  {
+                  /* <li className="list-group-item">Dapibus ac facilisis in</li>
+                    <li className="list-group-item">Vestibulum at eros</li> 
+                  */
+                  }
                 </ul>
                 <div className="card-body">
                   <Link to={"/product/" + product.product_reference_number} className="btn btn-dark m-1">
@@ -152,7 +163,7 @@ const Products = () => {
           </div>
         </div>
         <div className="row justify-content-center">
-          {loading ? <Loading /> : <ShowProducts />}
+          {loading ? <ProductLoading /> : <ShowProducts />}
         </div>
       </div>
     </>

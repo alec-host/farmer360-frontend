@@ -1,19 +1,25 @@
 import React, { useState,useEffect } from 'react';
 
+import { isProfane } from 'no-profanity';
+
 import Notiflix from 'notiflix';
 import { Loading } from 'notiflix/build/notiflix-loading-aio';
 
-import  styles from '../../../../css/modal.module.css';
+import styles from '../../../../css/modal.module.css';
 import formattedDateTime from "../../../../utility/format-current-date";
-import { PROFILE_KEY, readLocalCache } from '../../../../db/localSessionData';
 import API_END_POINT from '../../../../endpoint/apiRoute';
 
 import customCss from "../../../../css/custom.loading.module.css";
+import { getSession } from '../../../../session/appSession';
+import { PROFILE_SESSION } from '../../../../session/constant';
+import { STORY_KEY, clearLocalCache, storeOnLocalCache } from '../../../../db/localSessionData';
+
 
 const StoryModalComponent = () => {
 
     const [isOpen, setIsOpen] = useState(false);
     const [storeData, setStoreData] = useState([]);
+    const [topic, setTopic] = useState(null);
     const [story, setStory] = useState(null);
     const [selectedFile, setSelectedFile] = useState(null);
     const [buttonDisabled, setButtonDisabled] = useState(false);
@@ -38,7 +44,7 @@ const StoryModalComponent = () => {
     };
 
     useEffect(() => {
-        const stored_data = readLocalCache(PROFILE_KEY);
+        const stored_data = getSession(PROFILE_SESSION);
         if(stored_data) {
             setStoreData(stored_data);
         }
@@ -59,24 +65,35 @@ const StoryModalComponent = () => {
         setStory(value);
     };
 
+    const handleTopicInputChange = (e) => {
+        const { name, value } = e.target;
+        setTopic(value);
+    };
+
     const handleSubmit = (e) => {
         
         e.preventDefault();
+
+        const hasProfaneWords = isProfane(story);
+
         if(selectedFile !== null){
             const formData = new FormData();
+            formData.append('topic',topic);
             formData.append('posted_story',story);
+            formData.append('is_profane',hasProfaneWords);
             formData.append('owner_reference_number', storeData[0].reference_number || "");
             formData.append('full_name', storeData[0].first_name +" "+ storeData[0].last_name || "");
             formData.append('file', selectedFile);
             formData.append('original_file_name', selectedFile?.name || null);
             formData.append('date_created', formattedDateTime);
             formData.append('action','file');
-            console.log('Form submitted with data:', formData);
 
             httpPost(formData,'createStoryFile');
         }else{
             let formData = {};
+            formData.topic = topic;
             formData.posted_story = story;
+            formData.is_profane = hasProfaneWords;
             formData.owner_reference_number = storeData[0].reference_number || "";
             formData.full_name = storeData[0].first_name +" "+ storeData[0].last_name || "";
             formData.date_created = formattedDateTime;
@@ -105,11 +122,12 @@ const StoryModalComponent = () => {
             headers: contentType,
         })
         .then(async(response) => {
-            await response.json().then(data=>{
-                console.log(data);
-                if(data?.success){
+            await response.json().then(response=>{
+                if(response?.success){
                     setStory(null);
                     setSelectedFile(null);
+                    clearLocalCache(STORY_KEY);
+                    storeOnLocalCache(STORY_KEY,response?.data);
                     Notiflix.Notify.info('Story posted',{
                         ID:'SWA',
                         timeout:2950,
@@ -136,7 +154,7 @@ const StoryModalComponent = () => {
 
   return (
     <div>
-      <button className={styles.button_like_input} onClick={openModal}>Start a story</button>
+      <button className={styles.button_like_input+" fs-6"} onClick={openModal}><i className="fas fa-plus fw-bolder fs-6"></i>  Start a story</button>
       {isOpen && (
         <div className="container-fluid">
             <div className="container">
@@ -144,18 +162,28 @@ const StoryModalComponent = () => {
                     <div className={styles.modal_overlay}>
                         <div className={styles.modal}>
                             <div className="content" style={{textAlign:"end",paddingBottom:"10px"}}>
-                                <span className={styles.close} onClick={closeModal}><strong>&times;</strong></span>
+                                <span className={styles.close} onClick={closeModal}><strong style={{fontSize:"30px"}}>&times;</strong></span>
                             </div>
                             <form onSubmit={handleSubmit}>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    name="Topic"
+                                    onChange={handleTopicInputChange}
+                                    placeholder="Topic"
+                                    required
+                                />
+                                <hr/>                              
                                 <textarea
                                     className="form-control"
                                     name="story"
                                     style={{fontSize:"18px",color:"#000"}}
-                                    rows={6}
+                                    rows={4}
                                     onChange={handleInputChange}
                                     placeholder="What is your story today?"
                                     required
                                 />
+                                 <hr/>
                                 <label htmlFor="imag_path"><small><strong>*</strong>Image file is optional, & should not exceed <strong>2MB</strong></small></label>
                                 <input
                                     type="file"
@@ -166,10 +194,9 @@ const StoryModalComponent = () => {
                                 />
                                  {error && <p style={{color:"red",fontSize:"11px",marginTop:"2px",marginBottom:"2px"}}>{error}</p>}
                                 <div className="content" style={{textAlign:"end"}}>
-                                    <button className="my-2 mx-auto btn btn-primary" type="submit">Post</button>
+                                    <button className="my-2 mx-auto btn btn-outline-success" type="submit">Send</button>
                                 </div>
                             </form>
-                            <hr/>
                         </div>
                     </div>
                 </div>

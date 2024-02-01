@@ -8,7 +8,7 @@ import Notiflix from 'notiflix';
 import { Loading } from 'notiflix/build/notiflix-loading-aio';
 
 import formattedDateTime from "../../../utility/format-current-date";
-import { PRODUCT_KEY, STORE_KEY, readLocalCache } from "../../../db/localSessionData";
+import { PRODUCT_KEY, STORE_KEY, clearLocalCache, readLocalCache, storeOnLocalCache } from "../../../db/localSessionData";
 import API_END_POINT from "../../../endpoint/apiRoute";
 
 import customCss from "../../../css/custom.loading.module.css";
@@ -138,7 +138,8 @@ const AddProductPage = () => {
   };
 
   if(trackDataChange === true){
-    //storeOnLocalCache(PRODUCT_KEY,storeProductData);
+    clearLocalCache(PRODUCT_KEY);
+    storeOnLocalCache(PRODUCT_KEY,storeProductData);
   }
 
   return (
@@ -152,7 +153,7 @@ const AddProductPage = () => {
                         <tr><td><h5><strong>Product Information</strong></h5></td></tr>
                         <tr><td colSpan={2}><hr /></td></tr>
                         <tr style={{display: storeShopData[0]?.name  ? "" : "none"}}>
-                            <td><h5><strong>Products</strong></h5></td>
+                            <td><h5><strong></strong></h5></td>
                             <td style={{textAlign:"end"}}>
                                 <NavLink to="#" className="btn btn-outline-success m-2" onClick={toggleProfileHide}><i className="" ></i>  Add</NavLink>
                             </td>
@@ -182,7 +183,6 @@ const AddProductPage = () => {
                                                 <td colSpan={2}>
                                                 <label htmlFor="ProductName"><small><strong>Product Name</strong> (title)</small></label>
                                                     <input
-                                                        style={{width:"100%"}}
                                                         type="text" 
                                                         className="form-control"
                                                         id="ProductName"
@@ -196,9 +196,8 @@ const AddProductPage = () => {
                                             </tr>
                                             <tr>
                                                 <td colSpan={2}>
-                                                    <label htmlFor="ProductPrice"><small><strong>Price</strong></small></label>
+                                                    <label htmlFor="ProductPrice" className="fw-bold small">Price</label>
                                                     <input
-                                                        style={{width:"100%"}}
                                                         type="number" 
                                                         className="form-control"
                                                         id="ProductPrice"
@@ -212,9 +211,8 @@ const AddProductPage = () => {
                                             </tr>
                                             <tr>
                                                 <td colSpan={2}>
-                                                    <label htmlFor="Quantity"><small><strong>Quantity</strong></small></label>
+                                                    <label htmlFor="Quantity" className="fw-bold small">Quantity</label>
                                                     <input
-                                                        style={{width:"100%"}}
                                                         type="number" 
                                                         className="form-control"
                                                         id="ProductQuantity"
@@ -231,10 +229,10 @@ const AddProductPage = () => {
                                     </table>
 
                                     <div style={{position:"relative",paddingBottom:"0%",width:"100%",height:"100%",display: hideProfile ? "" : "none"}}>
-                                        <label htmlFor="Description"><small><strong>Description</strong></small></label>  
+                                        <label htmlFor="Description" className="fw-bold small">Description</label>  
                                         <ReactQuill 
                                             class="form-control"
-                                            style={{position:"sticky",top:"25px",left:"0px",bottom:"0px",width:"100%",height:"100%" }}
+                                            style={{position:"relative",top:"0px",left:"0px",bottom:"0px",width:"100%",height:"100%" }}
                                             id="Description"
                                             name="Description"
                                             ref={inputDescription}
@@ -266,7 +264,7 @@ const AddProductPage = () => {
                                                         Cancel
                                                     </button>
                                                 </td>
-                                                <td style={{textAlign:"end"}}>
+                                                <td className="text-end">
                                                     <button className="my-2 mx-auto btn btn-dark" type="submit" disabled={buttonDisabled}>
                                                         Save
                                                     </button>

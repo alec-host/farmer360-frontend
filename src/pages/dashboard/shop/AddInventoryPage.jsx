@@ -9,7 +9,7 @@ import 'react-quill/dist/quill.snow.css';
 import Notiflix from 'notiflix';
 import { Loading } from 'notiflix/build/notiflix-loading-aio';
 
-import { PRODUCT_KEY, STORE_KEY, readLocalCache, storeOnLocalCache } from "../../../db/localSessionData";
+import { PRODUCT_KEY, readLocalCache, storeOnLocalCache } from "../../../db/localSessionData";
 import API_END_POINT from "../../../endpoint/apiRoute";
 
 import customCss from "../../../css/custom.loading.module.css";
@@ -24,6 +24,7 @@ const AddInventoryPage = () => {
     const [hideProfile, setHideProfile] = useState(false);
  
     const [storeProductData, setStoreProductData] = useState([]);
+    const [filter, setFilter] = useState(storeProductData);
     const [buttonDisabled, setButtonDisabled] = useState(false);
     const [trackDataChange,setTrackDataChange] = useState(false);
 
@@ -46,6 +47,7 @@ const AddInventoryPage = () => {
         const stored_data = readLocalCache(PRODUCT_KEY);
         if(stored_data){
             setStoreProductData(stored_data);
+            setFilter(stored_data);
         }
         Loading.init({className:customCss.notiflix_loading,});
     },[]); 
@@ -85,6 +87,21 @@ const AddInventoryPage = () => {
 
     const handleButtonClick = (buttonName) => {
         setClickedButtonName(buttonName);
+    };
+
+    const filterProducts = (name) => {
+        let filteredProductList = null;
+        if(name){
+            filteredProductList = storeProductData.filter((item) => item.product_name?.trim().toLowerCase() === (name?.toLowerCase()));
+        }else{
+            filteredProductList = storeProductData;
+        }
+        setFilter(filteredProductList);
+    } 
+    
+    const handleOnChange = (e) => {
+        const search = e.target.value;
+        filterProducts(search.trim());
     };
 
     const handleSubmit = (formId,event) => {
@@ -134,18 +151,18 @@ const AddInventoryPage = () => {
             console.log(collectionIdArr[formId]);
 
             if(isPublishedArr[formId] === "0"){
-                if(textChanged.length === 0){
+                if(textChanged === 0){
                     publish_status = 1;
                 }else{
                     publish_status = 0;
                 }
             }else{
-                if(textChanged.length === 0){
+                if(textChanged === 0){
                     publish_status = 0;
                 }else{
                     publish_status = 1;
                 }
-            }  
+            } 
 
             if(clickedButtonName && clickedButtonName === "publishButton"){
                 formUpdateData = {
@@ -185,6 +202,7 @@ const AddInventoryPage = () => {
                 if(data?.success){
                     setFormData({});
                     setStoreProductData(data?.data);
+                    setFilter(data?.data);
                     Notiflix.Notify.info('Update successful',{
                         ID:'SWA',
                         timeout:2950,
@@ -214,13 +232,9 @@ const AddInventoryPage = () => {
         storeOnLocalCache(PRODUCT_KEY,storeProductData);
     }
 
-    console.log('DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDd');
-    console.log(storeProductData.length);
-    console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
-
-    const renderForms = () => {
+    const renderForms = (data) => {
         const forms = [];
-        for(let j=0;j<storeProductData.length;j++){
+        for(let j=0;j<data.length;j++){
             forms.push(
                 <form key={j} onSubmit={e=>handleSubmit(j,e)} >
                     <table style={{width:"100%"}}> 
@@ -228,89 +242,79 @@ const AddInventoryPage = () => {
                         <tbody>
                             <tr>
                                 <td>
-                                    <div className="card w-100">
-                                        <div className="column">
+                                    <div className="card border-success mb-3">
+                                        <div className="card-body">
                                             <table style={{width:"100%"}}>
                                                 <thead><tr><th/></tr></thead>
                                                 <tbody>
-                                                    <tr><td height={"25px"}></td></tr>
                                                     <tr>
                                                         <td align="center">
-                                                            <table style={{width:"100%"}}>
-                                                                <thead><tr><th/></tr></thead>
-                                                                <tbody>
-                                                                    <tr>
-                                                                        <td align="center">
-                                                                            <div className="body">
-                                                                                {
-                                                                                storeProductData[j]?.image_url !== null ?
-                                                                                <img
-                                                                                    className="card-img-top"
-                                                                                    src={storeProductData[j]?.image_url}
-                                                                                    alt="Card"
-                                                                                    style={{maxWidth:"60%", maxHeight:"60%"}}
-                                                                                />
-                                                                                :null
-                                                                                }
-                                                                            </div>
-                                                                        </td>
-                                                                    </tr>
-                                                                </tbody>
-                                                            </table>
+                                                            <div>
+                                                                {
+                                                                data[j]?.image_url !== null ?
+                                                                <img
+                                                                    className="card-img-top"
+                                                                    src={data[j]?.image_url}
+                                                                    alt="product image"
+                                                                    style={{maxWidth:"0%", maxHeight:"0%"}}
+                                                                />
+                                                                :null
+                                                                }
+                                                            </div>
                                                         </td>
                                                     </tr>                                                                                              
                                                     <tr>
                                                         <td align="center">
-                                                            <table style={{width:"85%"}}>
+                                                            <table style={{width:"90%"}}>
                                                                 <thead><tr><th/></tr></thead>
                                                                 <tbody>
                                                                     <tr>
                                                                         <td style={{width:"100%"}}>
-                                                                            <label htmlFor="ProductName"><small><strong>Product Name</strong></small></label>
+                                                                            <label htmlFor="ProductName" className="fw-bold small">Product Name</label>
                                                                             <input 
                                                                                 type="text" 
-                                                                                className="form-control" 
+                                                                                className="form-control form-control-sm" 
                                                                                 id={`ProductName-${j}`}
                                                                                 name={`ProductName`}
                                                                                 placeholder="Product Name"
                                                                                 onChange={e=>handleInputChange(j,e)}
-                                                                                defaultValue={storeProductData[j].product_name}
+                                                                                defaultValue={data[j]?.product_name}
                                                                                 maxLength={25}
                                                                                 required 
                                                                             />
                                                                         </td>
                                                                         <td align="end">
                                                                             <label>&nbsp;</label>
-                                                                            <button id={uuidv4()} className="my-2 mx-auto btn btn-outline-success" type="submit">Update</button>
+                                                                            <button id={uuidv4()} className="my-2 mx-auto btn btn-outline-success btn-sm" type="submit" onClick={()=>{handleButtonClick('')}}>Update</button>
                                                                         </td>
                                                                     </tr>
                                                                 </tbody>
-                                                            </table>
+                                                            </table>                                                            
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td align="center">
-                                                            <table style={{width:"85%"}}>
+                                                            <table style={{width:"90%"}}>
                                                                 <thead><tr><th/></tr></thead>
                                                                 <tbody>
                                                                     <tr>
                                                                         <td style={{width:"100%"}}>
-                                                                            <label htmlFor="ProductQuantity"><small><strong>Description</strong></small></label>
+                                                                            <label htmlFor="ProductQuantity" className="fw-bold small">Description</label>
                                                                             <ReactQuill 
-                                                                                className="form-control"
-                                                                                style={{position:"sticky",top:"0px",left:"0px",bottom:"0px",width:"100%",height:"100%",padding:"4px" }}
+                                                                                class="form-control form-control-sm"
+                                                                                style={{position:"relative",top:"0px",left:"0px",bottom:"0px",width:"100%",height:"100%" }}
                                                                                 id={`ProductDescription-${j}`}
                                                                                 name={`ProductDescription`}
                                                                                 placeholder="Product Description"
                                                                                 onChange={e=>handleInputChange(j,e)}
-                                                                                defaultValue={storeProductData[j].description}
+                                                                                defaultValue={data[j]?.description}
                                                                                 required 
                                                                             />
                                                                         </td>
                                                                     </tr>
                                                                     <tr>
                                                                         <td align="end" valign="bottom">
-                                                                            <button id={uuidv4()} className="my-2 mx-auto btn btn-outline-success" type="submit">Update</button>
+                                                                            <button id={uuidv4()} className="my-2 mx-auto btn btn-outline-success btn-sm" type="submit" onClick={()=>{handleButtonClick('')}}>Update</button>
                                                                         </td>
                                                                     </tr>
                                                                 </tbody>
@@ -319,27 +323,27 @@ const AddInventoryPage = () => {
                                                     </tr>                                        
                                                     <tr>
                                                         <td align="center">
-                                                            <table style={{width:"85%"}}>
+                                                            <table style={{width:"90%"}}>
                                                                 <thead><tr><th/></tr></thead>
                                                                 <tbody>
                                                                     <tr>
                                                                         <td style={{width:"100%"}}>
-                                                                            <label htmlFor="ProductPrice"><small><strong>Price</strong></small></label>
+                                                                            <label htmlFor="ProductPrice" className="fw-bold small">Price</label>
                                                                             <input 
                                                                                 type="number" 
-                                                                                className="form-control" 
+                                                                                className="form-control form-control-sm" 
                                                                                 id={`ProductPrice-${j}`}
                                                                                 name={`ProductPrice`}
                                                                                 placeholder="Enter Price"
                                                                                 onChange={e=>handleInputChange(j,e)}
-                                                                                defaultValue={storeProductData[j].price === 0 ? 0 : storeProductData[j].price}
+                                                                                defaultValue={data[j]?.price === 0 ? 0 : data[j]?.price}
                                                                                 maxLength={10}
                                                                                 required 
                                                                             />
                                                                         </td>
                                                                         <td align="end">
                                                                             <label>&nbsp;</label>
-                                                                            <button id={uuidv4()} className="my-2 mx-auto btn btn-outline-success" type="submit">Update</button>
+                                                                            <button id={uuidv4()} className="my-2 mx-auto btn btn-outline-success btn-sm" type="submit" onClick={()=>{handleButtonClick('')}}>Update</button>
                                                                         </td>
                                                                     </tr>
                                                                 </tbody>                                                                                       
@@ -348,27 +352,27 @@ const AddInventoryPage = () => {
                                                     </tr> 
                                                     <tr>
                                                         <td align="center">
-                                                            <table style={{width:"85%"}}>
+                                                            <table style={{width:"90%"}}>
                                                                 <thead><tr><th/></tr></thead>
                                                                 <tbody>
                                                                     <tr>
                                                                         <td style={{width:"100%"}}>
-                                                                            <label htmlFor="ProductQuantity"><small><strong>Quantity</strong></small></label>
+                                                                            <label htmlFor="ProductQuantity" className="fw-bold small">Quantity</label>
                                                                             <input 
                                                                                 type="number" 
-                                                                                className="form-control" 
+                                                                                className="form-control form-control-sm" 
                                                                                 id={`ProductQuantity-${j}`}
                                                                                 name={`ProductQuantity`}
                                                                                 placeholder="Enter Qty"
                                                                                 onChange={e=>handleInputChange(j,e)}
-                                                                                defaultValue={storeProductData[j].quantity === 0 ? 0 : storeProductData[j].quantity}
+                                                                                defaultValue={data[j]?.quantity === 0 ? 0 : data[j]?.quantity}
                                                                                 maxLength={5}
                                                                                 required
                                                                             />
                                                                         </td>
                                                                         <td align="end">
                                                                             <label>&nbsp;</label>
-                                                                            <button id={uuidv4()} className="my-2 mx-auto btn btn-outline-success" type="submit">Update</button>
+                                                                            <button id={uuidv4()} className="my-2 mx-auto btn btn-outline-success btn-sm" type="submit" onClick={()=>{handleButtonClick('')}}>Update</button>
                                                                         </td>
                                                                     </tr>
                                                                 </tbody>                                                                                       
@@ -377,19 +381,21 @@ const AddInventoryPage = () => {
                                                     </tr>
                                                     <tr>
                                                         <td align="center">
-                                                            <table style={{width:"85%"}}>
+                                                            <table style={{width:"90%"}}>
                                                                 <thead><tr><th/></tr></thead>
                                                                 <tbody>
                                                                     <tr>
                                                                         <td>
+                                                                            <div>
                                                                             <button 
                                                                                 id={`pub${uuidv4()}`} 
                                                                                 name={`pub${uuidv4()}`}
-                                                                                className={storeProductData[j].is_published === 0 || storeProductData[j].is_published === "0" ? "my-2 mx-auto btn btn-primary btn-md btn-block": "my-2 mx-auto btn btn-danger btn-md btn-block"} 
+                                                                                className={data[j]?.is_published === 0 || data[j]?.is_published === "0" ? "btn btn-primary btn-md btn-block fw-bold": "btn btn-danger btn-md btn-block fw-bold"} 
                                                                                 type="submit"
                                                                                 onClick={()=>{handleButtonClick('publishButton')}}>
-                                                                                {storeProductData[j].is_published === 0 || storeProductData[j].is_published === "0" ? "Publish": "Unpublish"}
+                                                                                {data[j]?.is_published === 0 || data[j]?.is_published === "0" ? "Publish": "Unpublish"}
                                                                             </button>
+                                                                            </div>
                                                                         </td>
                                                                     </tr>
                                                                 </tbody>
@@ -403,7 +409,7 @@ const AddInventoryPage = () => {
                                                                 className="form-control a" 
                                                                 id={`ProductIsPublished-${j}`}
                                                                 name="ProductIsPublished"
-                                                                defaultValue={storeProductData[j].is_published}
+                                                                defaultValue={data[j]?.is_published}
                                                                 ref={inputProductReferenceNumber}
                                                                 readOnly
                                                             />
@@ -416,7 +422,7 @@ const AddInventoryPage = () => {
                                                                 className="form-control b" 
                                                                 id={`ProductId-${j}`}
                                                                 name="ProductId"
-                                                                defaultValue={storeProductData[j].product_reference_number}
+                                                                defaultValue={data[j]?.product_reference_number}
                                                                 ref={inputProductReferenceNumber}
                                                                 readOnly
                                                             />
@@ -429,7 +435,7 @@ const AddInventoryPage = () => {
                                                                 className="form-control c" 
                                                                 id={`DatabaseId-${j}`}
                                                                 name="DatabaseId"
-                                                                defaultValue={storeProductData[j].$databaseId}
+                                                                defaultValue={data[j]?.$databaseId}
                                                                 ref={inputProductDatabaseId}
                                                                 readOnly
                                                             />
@@ -442,7 +448,7 @@ const AddInventoryPage = () => {
                                                                 className="form-control d" 
                                                                 id={`DocumentId-${j}`}
                                                                 name="DocumentId"
-                                                                defaultValue={storeProductData[j].$id}
+                                                                defaultValue={data[j]?.$id}
                                                                 ref={inputProductDocumentId}
                                                                 readOnly
                                                             />
@@ -455,13 +461,12 @@ const AddInventoryPage = () => {
                                                                 className="form-control e" 
                                                                 id={`CollectionId-${j}`}
                                                                 name="CollectionId"
-                                                                defaultValue={storeProductData[j].$collectionId}
+                                                                defaultValue={data[j]?.$collectionId}
                                                                 ref={inputProductCollectionId}
                                                                 readOnly
                                                             />
                                                         </td>
                                                     </tr>
-                                                    <tr><td height={"10px"}></td></tr>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -473,51 +478,60 @@ const AddInventoryPage = () => {
                 </form>
                 );
             }
-            return forms;
+        return forms;
     };
 
     return (
         <>
-            <div className="container-fluid" style={{width:"100%"}}>
-                <div className="container" style={{marginTop:"15px"}}>
+            <div className="container-fluid">
+                <div className="container mt-3">
                     <div className="row">
-                            <table style={{width:"100%"}}>
-                                <thead><tr><th/></tr></thead>
-                                <tbody>
-                                    <tr><td><h5><strong>Inventory List</strong></h5></td></tr>
-                                    <tr><td colSpan={2}><hr /></td></tr>
-                                    <tr style={{display: storeProductData[0]?.product_name  ? "" : "none"}}>
-                                        <td><h5><strong></strong></h5></td>
-                                        <td style={{textAlign:"end"}}>
-                                            <NavLink to="#" className="btn btn-outline-success m-2" onClick={toggleProfileHide}><i className="" ></i>  View</NavLink>
-                                        </td>
-                                    </tr> 
-                                    <tr style={{display: storeProductData[0]?.product_name  ? "none" : ""}}>
-                                        <td colSpan={2} style={{textAlign:"center"}}>
-                                            The Inventory is Empty, please add a Product.
-                                        </td>
-                                    </tr>                     
-                                    <tr>
-                                        <td colSpan={2}>
-                                            <table style={{width:"100%",display: hideProfile ? "" :"none"}}>
-                                                <thead><tr><th/></tr></thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>{renderForms()}</td>
-                                                    </tr>
-                                                    <tr><td height={"10px"}>&nbsp;</td></tr>
-                                                </tbody>
-                                            </table>
-                                        </td>
-                                    </tr>
-                                    <tr><td colSpan={2}><hr /></td></tr>
-                                </tbody>
-                            </table>
+                        <table style={{width:"100%"}}>
+                            <thead><tr><th/></tr></thead>
+                            <tbody>
+                                <tr><td><h5><strong>Inventory List</strong></h5></td></tr>
+                                <tr><td colSpan={2}><hr /></td></tr>
+                                <tr style={{display: storeProductData[0]?.product_name  ? "" : "none"}}>
+                                    <td><h5><strong></strong></h5></td>
+                                    <td style={{textAlign:"end"}}>
+                                        <NavLink to="#" className="btn btn-outline-success m-2" onClick={toggleProfileHide}> View</NavLink>
+                                    </td>
+                                </tr> 
+                                <tr style={{display: storeProductData[0]?.product_name  ? "none" : ""}}>
+                                    <td colSpan={2} style={{textAlign:"center"}}>
+                                        The Inventory is Empty, please add a Product.
+                                    </td>
+                                </tr>                     
+                                <tr>
+                                    <td colSpan={2}>
+                                        <div className="content" style={{display: hideProfile ? "" :"none"}}>
+                                            <p></p>
+                                            <div className="bg-white-opacity-40 backdrop-filter backdrop-blur-l px-4 pt-4 pb-6 rounded shadow max-w-[1100px] border border mx-auto fw-bold fs-6">
+                                                    Search
+                                                    <table style={{width:"100%"}}>     
+                                                        <thead><tr><th/></tr></thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>
+                                                                    <input type="search" className="form-control" aria-label="Search" onChange={handleOnChange} placeholder="Search by product name..." />
+                                                                </td>
+                                                            </tr>
+                                                        </tbody> 
+                                                    </table>
+                                                <br/>
+                                            </div>
+                                            <p></p>
+                                            {filter?.map((data) => (renderForms([data])))}
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </>
     );
-    };
+};
 
 export default AddInventoryPage;

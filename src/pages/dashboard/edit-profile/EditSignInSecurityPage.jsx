@@ -102,7 +102,7 @@ const EditSignInSecurityPage = () => {
             });
 
             formData.action = "pass";
-            formData.phone = storeData[0]?.msisdn || "";
+
             formData.email = storeData[0]?.email || "";
             formData.account_type = storeData[0]?.account_type || "";
             formData.password = inputPassword?.current?.value || "";
@@ -111,48 +111,62 @@ const EditSignInSecurityPage = () => {
             formData.table_id = storeData[0]?.$collectionId || "";
             formData.record_id = storeData[0]?.$id || "";
 
-            fetch(`${API_END_POINT}/api/v1/changeUserPassword`,{
-                method:'PATCH',
-                body: JSON.stringify(formData),
-                headers:{
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(async(response) => {
-                await response.json().then(data => {
-                    if(data?.success){
-                        inputPassword.current.value='';
-                        inputConfirmPassword.current.value='';
-                        Notiflix.Notify.info('Password change was Successful',{
-                            ID:'SWA',
-                            timeout:2950,
-                            showOnlyTheLastOne:true                      
-                        }); 
-                        setStoreData(data?.data);
-                        setTrackDataChange(!trackDataChange);
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 2000); 
-                    }else{
-                        Notiflix.Notify.warning('Password change has Failed',{
-                            ID:'FWA',
-                            timeout:2950,
-                            showOnlyTheLastOne:true
-                        }); 
-                    }
-                    setButtonDisabled(false);
-                    Loading.remove(1523);
-                });
-            })
-            .catch(async(error) => {
-                console.error(await error);
-            });
+            if(storeData[0]?.account_type === "farmer"){
+                formData.phone = storeData[0]?.msisdn || "";
+                const url = `${API_END_POINT}/api/v1/changeUserAccountPassword`;
+
+                httpPost(formData,url);
+            }else{
+                formData.phone = storeData[0]?.phone || "";
+                const url = `${API_END_POINT}/api/v1/changeBusinessAccountPassword`;
+
+                httpPost(formData,url);
+            }
+ 
         }
     };
-
-    if(trackDataChange === true){
-        setSession(PROFILE_SESSION,storeData);
-    }
+    
+    const httpPost = (formData,url) => {
+        fetch(url,{
+        method:'PATCH',
+        body: JSON.stringify(formData),
+        headers:{
+            'Content-Type': 'application/json'
+        }
+        }).then(async(response) => {
+        await response.json().then(data => {
+            if(data?.success){
+                inputPassword.current.value='';
+                inputConfirmPassword.current.value='';
+                Notiflix.Notify.info('Password change was Successful',{
+                    ID:'SWA',
+                    timeout:2950,
+                    showOnlyTheLastOne:true                      
+                }); 
+                setStoreData(data?.data);
+                setTrackDataChange(!trackDataChange);
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000); 
+                
+                if(trackDataChange === true){
+                    setSession(PROFILE_SESSION,storeData);
+                }
+            }else{
+                Notiflix.Notify.warning('Password change has Failed',{
+                    ID:'FWA',
+                    timeout:2950,
+                    showOnlyTheLastOne:true
+                }); 
+            }
+            setButtonDisabled(false);
+            Loading.remove(1523);
+        });
+    })
+    .catch(async(error) => {
+        console.error(await error);
+    });
+    };
 
     return (
         <>
@@ -165,7 +179,7 @@ const EditSignInSecurityPage = () => {
                                 <tr><td><h5><strong>Sign-in & Security</strong></h5></td></tr>
                                 <tr><td colSpan={2}><hr /></td></tr>
                                 <tr>
-                                    <td><h6><strong>&nbsp;&nbsp;Password</strong></h6></td>
+                                    <td><h6><strong>&nbsp;&nbsp;Change Password</strong></h6></td>
                                     <td colSpan={2} style={{textAlign:"end"}}>
                                         <NavLink to="#" className="btn btn-outline-success m-2" onClick={toggleChangePassword} ><i className=""></i> Edit</NavLink>
                                     </td>

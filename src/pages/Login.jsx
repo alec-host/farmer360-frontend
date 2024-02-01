@@ -8,11 +8,14 @@ import { Loading } from 'notiflix/build/notiflix-loading-aio';
 import {useNavigate } from 'react-router-dom';
 
 import { Footer, Navbar } from "../components";
-import { COMMENT_KEY, INBOX_KEY, PRODUCT_KEY, STORE_KEY, storeOnLocalCache } from "../db/localSessionData";
+
 import API_END_POINT from "../endpoint/apiRoute";
 import { setSession } from "../session/appSession";
 import { PROFILE_SESSION } from "../session/constant";
 import { account_type_options } from "../db/optionsData";
+import { COMMENT_KEY, INBOX_KEY, PRODUCT_KEY, STORE_KEY, storeOnLocalCache } from "../db/localSessionData";
+
+import buttonStyle from "../css/custom.button.module.css";
 
 const getShop = async(reference_number,email) => {
   const config = {
@@ -82,7 +85,6 @@ const getComment = async(reference_number,email) => {
   });
 };
 
-
 const Login = () => {
 
     const inputUsername = useRef(null);
@@ -93,16 +95,13 @@ const Login = () => {
 
     const navigate = useNavigate();
 
-    const onSubmitHandler = async(event) => {
+    const handleSubmit = async(event) => {
     
     let formData = {};
 
     event.preventDefault();
 
     setButtonDisabled(true);
-
-
-    console.log(selectedAccountType);
 
     Loading.standard({
       backgroundColor: 'rgba(0,0,0,0.1)',
@@ -162,15 +161,17 @@ const Login = () => {
   return (
     <>
       <Navbar />
-      <div className="container my-3 py-3" style={{height:"80vh"}}>
+      <div className="container my-3 py-3" style={{height:"auto"}}>
         <h5 className="text-center">Login</h5>
         <hr />
         <div className="row my-4 h-100">
           <div className="col-md-4 col-lg-4 col-sm-8 mx-auto">
-            <form onSubmit={onSubmitHandler}>
+            <form onSubmit={handleSubmit}>
             <div className="my-3">
-                <label htmlFor="Email display-4">Account type</label>
+                <label htmlFor="AccountType" className="form-label text-black-50 m-0 small">Account Type</label>
                 <Select
+                    id="AccountType"
+                    name="AccountType"
                     onChange={handleAccountTypeChange}
                     options={account_type_options}
                     isOptionDisabled={(option) => option.disabled}
@@ -178,7 +179,7 @@ const Login = () => {
                 />
               </div>              
               <div className="my-3">
-                <label htmlFor="Email display-4">Email address</label>
+                <label htmlFor="Username" className="form-label text-black-50 m-0 small">Email Address</label>
                 <input
                   input="text"
                   className="form-control"
@@ -191,7 +192,7 @@ const Login = () => {
                 />
               </div>
               <div className="my-3">
-                <label htmlFor="Password display-4">Password</label>
+                <label htmlFor="Password" className="form-label text-black-50 m-0 small">Password</label>
                 <input
                   type="password"
                   className="form-control"
@@ -208,7 +209,7 @@ const Login = () => {
                 <p>Don't have an account? <Link to="/account-type" className="text-decoration-underline text-info">Register</Link> </p>
               </div>
               <div className="text-right">
-                <button className="my-2 mx-auto btn btn-success" type="submit" disabled={buttonDisabled}>
+                <button className={"my-2 mx-auto btn fw-bold " + buttonStyle.custom_theme_button} type="submit" disabled={buttonDisabled}>
                   Login
                 </button>
               </div>

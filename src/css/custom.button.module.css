@@ -1,0 +1,16 @@
+.custom_theme_button,
+.custom_theme_button:active,
+.custom_theme_button:visited {
+  background-color: #28A745 !important;
+  border: solid #28A745 1px;
+  color: white !important;; 
+}
+
+.custom_theme_button:hover {
+  background-color: #22863a !important;
+  transition: all 1s ease;
+  -webkit-transition: all 1s ease;
+  -moz-transition: all 1s ease;
+  -o-transition: all 1s ease;
+  -ms-transition: all 1s ease;
+}

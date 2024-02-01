@@ -22,6 +22,7 @@ const CreateShopPage = () => {
   const inputAboutUs = React.useRef();  
   const inputWebsiteUrl = React.useRef(null);
   const inputFacebookLink = React.useRef(null);
+  const inputInstagramLink = React.useRef(null);
 
   const [country,setCountry] = useState([]);
   const [hideCreateShop, setHideCreateShop] = useState(false);
@@ -32,6 +33,13 @@ const CreateShopPage = () => {
   const [inputUpdate,setInputUpdate] = useState("");
   const [hideSocialSection,sethideSocialSection] = useState(false);
   const [currentDate, setCurrentDate] = useState('');
+
+  const [facebookSocialLink, setFacebookSocialLink] = useState('');
+  const [instagramSocialLink, setInstagramSocialLink] = useState('');
+  const [isFacebookUrlValid, setIsFacebookUrlValid] = useState(false);
+  const [isInstagramUrlValid, setIsInstagramUrlValid] = useState(false);
+
+  const [social, setSocial] = useState('');
 
   const toggleShopHide = () => {
     setHideCreateShop(!hideCreateShop);
@@ -70,6 +78,61 @@ const CreateShopPage = () => {
     }
   },[]);
 
+
+  const validateFacebookSocialLink = (link) => {
+    // Regular expressions for validating social media links
+    const facebookRegex = /^(https?:\/\/)?(www\.)?facebook.com\/.*/i;
+    //const twitterRegex = /^(https?:\/\/)?(www\.)?twitter.com\/.*/i;
+
+    // Check if the link matches any of the social media platforms
+    if(link){
+        setIsFacebookUrlValid(
+            facebookRegex.test(link)
+        );
+    }else{
+        setIsFacebookUrlValid(
+            true
+        );
+    }
+  };
+
+  
+  const validateInstagramSocialLink = (link) => {
+    // Regular expressions for validating social media links
+    //const twitterRegex = /^(https?:\/\/)?(www\.)?twitter.com\/.*/i;
+    const instagramRegex = /^(https?:\/\/)?(www\.)?instagram.com\/.*/i;
+
+    // Check if the link matches any of the social media platforms
+    if(link){
+        setIsInstagramUrlValid(
+            instagramRegex.test(link)
+        );
+    }else{
+        setIsInstagramUrlValid(
+            true
+        );        
+    }
+  };
+
+  const handleFacebookChange = (event) => {
+    const linkValue = event.target.value;
+    setFacebookSocialLink(linkValue);
+    validateFacebookSocialLink(linkValue);
+    console.log(isFacebookUrlValid);
+  };
+
+  const handleClick = (value) => {
+    setSocial(value);
+    console.log(value);
+  };
+
+  const handleInstagramChange = (event) => {
+    const linkValue = event.target.value;
+    setInstagramSocialLink(linkValue);
+    validateInstagramSocialLink(linkValue);
+    console.log(isInstagramUrlValid);
+  };
+
   const onSubmitHandler = (event) => {
 
     let formData = {};
@@ -105,15 +168,38 @@ const CreateShopPage = () => {
 
             updateShop(formData);
         break;
-        case "socials":  
-            formData.phone_number = storeShopData[0]?.phone_number || "";       
-            formData.website_url = inputWebsiteUrl?.current?.value || "";
-            formData.facebook_link = inputFacebookLink?.current?.value || "";
+        case "socials": 
+
+            formData.phone_number = storeShopData[0]?.phone_number || ""; 
+            if(social === "1"){
+                formData.website_url = inputWebsiteUrl?.current?.value || "";
+            }else if(social === "2"){
+                formData.facebook_link = inputFacebookLink?.current?.value || "";
+            }else if(social === "3"){
+                formData.instagram_url = inputInstagramLink?.current?.value || "";
+            }
             formData.database_id = storeShopData[0]?.$databaseId || "";
             formData.table_id = storeShopData[0]?.$collectionId || "";
             formData.record_id = storeShopData[0]?.$id || "";
-
-            updateShop(formData);
+            console.log(isFacebookUrlValid || isInstagramUrlValid);
+            console.log(isInstagramUrlValid);
+            if(social === "1"){
+                updateShop(formData);
+            }else if(social === "2" && isFacebookUrlValid){
+                updateShop(formData);
+            }else if(social === "3" &&  isInstagramUrlValid){
+                updateShop(formData);                
+            }else{
+                if(facebookSocialLink || instagramSocialLink){
+                    Notiflix.Notify.info('Invalid facebook or instagram',{
+                        ID:'SWA',
+                        timeout:2950,
+                        showOnlyTheLastOne:true                      
+                    }); 
+                }
+                setButtonDisabled(false);
+                Loading.remove(1523);
+            }
         break;
         default:
         break;
@@ -238,7 +324,7 @@ const CreateShopPage = () => {
                             </td>
                         </tr>
                         <tr>
-                            <td><h5><strong>Shop</strong></h5></td>
+                            <td><h5><strong></strong></h5></td>
                             <td style={{textAlign:"end"}}>
                                 {
                                 storeShopData[0]?.name ? 
@@ -369,10 +455,13 @@ const CreateShopPage = () => {
                                                     <thead><tr><th/></tr></thead>
                                                     <tbody>
                                                         <tr>
-                                                            <td style={{textAlign:"left"}}>Website URL:   {storeShopData[0]?.website_url ?  storeShopData[0]?.website_url : storeData[0]?.website_url } </td>
+                                                            <td style={{textAlign:"left"}}>Website URL:   {storeShopData[0]?.website_url ?  storeShopData[0]?.website_url : storeData[0]?.website_url }</td>
                                                         </tr>
                                                         <tr>
                                                             <td style={{textAlign:"left"}}>Facebook Link: {storeShopData[0]?.facebook_link ?  storeShopData[0]?.facebook_link : storeData[0]?.facebook_link }</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style={{textAlign:"left"}}>Instagram Link: {storeShopData[0]?.instagram_url ?  storeShopData[0]?.instagram_url : storeData[0]?.instagram_url }</td>
                                                         </tr>
                                                     </tbody>  
                                                 </table>
@@ -389,7 +478,7 @@ const CreateShopPage = () => {
                                         <thead><tr><th/></tr></thead>
                                         <tbody>
                                             <tr>
-                                                <td colSpan={2}>
+                                                <td width={"91%"}>
                                                     <input
                                                         style={{width:"100%"}}
                                                         type="text" 
@@ -400,13 +489,18 @@ const CreateShopPage = () => {
                                                         ref={inputWebsiteUrl}
                                                         placeholder="Website URL"
                                                         maxLength={35}
-                                                        required
+                                                        required={social === "1" ? true : false}
                                                     />
                                                 </td>
+                                                <td>
+                                                    <button className="my-2 mx-auto btn btn-outline-success" type="submit" onClick={e=>{handleClick('1')}} disabled={buttonDisabled}>
+                                                        Update
+                                                    </button>
+                                                </td>
                                             </tr>
-                                            <tr><td height={"18px"}></td></tr> 
+                                            <tr><td colSpan={2} height={"18px"}></td></tr> 
                                             <tr>
-                                                <td colSpan={2}>
+                                                <td>
                                                     <input 
                                                         style={{width:"100%"}}
                                                         type="text" 
@@ -414,15 +508,44 @@ const CreateShopPage = () => {
                                                         id="FacebookLink"
                                                         name="FacebookLink"
                                                         defaultValue={storeShopData[0]?.facebook_link ?  storeShopData[0]?.facebook_link : storeData[0]?.facebook_link }
+                                                        onChange={handleFacebookChange}
                                                         ref={inputFacebookLink}
                                                         placeholder="Facebook Link"
-                                                        maxLength={35}
-                                                        required
+                                                        maxLength={50}
+                                                        required={social === "2" ? true : false}
                                                     />
+                                                </td>
+                                                <td>
+                                                    <button className="my-2 mx-auto btn btn-outline-success" type="submit" onClick={e=>{handleClick('2')}} disabled={buttonDisabled}>
+                                                        Update
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr><td colSpan={2} height={"18px"}></td></tr> 
+                                            <tr>
+                                                <td>
+                                                    <input 
+                                                        style={{width:"100%"}}
+                                                        type="text" 
+                                                        className="form-control"
+                                                        id="InstagramLink"
+                                                        name="InstagramLink"
+                                                        defaultValue={storeShopData[0]?.facebook_link ?  storeShopData[0]?.instagram_url : storeData[0]?.instagram_url }
+                                                        onChange={handleInstagramChange}
+                                                        ref={inputInstagramLink}
+                                                        placeholder="Instagram Link"
+                                                        maxLength={50}
+                                                        required={social === "3" ? true : false}
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <button className="my-2 mx-auto btn btn-outline-success" type="submit" onClick={e=>{handleClick('3')}} disabled={buttonDisabled}>
+                                                        Update
+                                                    </button>
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td>
+                                                <td colSpan={2}>
                                                     <input
                                                         type="hidden"
                                                         id="Operation"
@@ -433,15 +556,10 @@ const CreateShopPage = () => {
                                                 </td>
                                             </tr> 
                                             <tr>
-                                                <td style={{textAlign:"end",width:"90%"}}>
-                                                <button id="btnCancelLocation" className="my-2 mx-auto btn btn-dark" type="button" onClick={toggleSocialHide}>
-                                                    Cancel
-                                                </button>
-                                                </td>
-                                                <td style={{textAlign:"end"}}>
-                                                <button className="my-2 mx-auto btn btn-dark" type="submit" disabled={buttonDisabled}>
-                                                    Save
-                                                </button>
+                                                <td colSpan={2} style={{textAlign:"end"}}>
+                                                    <button id="btnCancelLocation" className="my-2 mx-auto btn btn-dark" type="button" onClick={toggleSocialHide}>
+                                                        Cancel
+                                                    </button>
                                                 </td>
                                             </tr>
                                         </tbody>                           

@@ -1,4 +1,5 @@
 import React,{ useState, useEffect, useRef } from "react";
+import axios from  'axios';
 
 import DataTable from 'react-data-table-component';
 
@@ -6,13 +7,17 @@ import Notiflix from 'notiflix';
 import { Loading } from 'notiflix/build/notiflix-loading-aio';
 
 
+import datatableStyle from "../../../css/datatable.module.css";
+import FilterComponent from "../../../components/FilterComponent";
+import makeTextBold from "../../../components/BoldTextComponent";
+
 import formattedDateTime from "../../../utility/format-current-date";
 import API_END_POINT from "../../../endpoint/apiRoute";
-import { INBOX_KEY, readLocalCache } from "../../../db/localSessionData";
+
 import { getSession } from "../../../session/appSession";
 import { PROFILE_SESSION } from "../../../session/constant";
 
-import datatableStyle from "../../../css/datatable.module.css";
+import { INBOX_KEY, clearLocalCache, readLocalCache, storeOnLocalCache } from "../../../db/localSessionData";
 
 const InboxPage = () => {
 
@@ -40,7 +45,6 @@ const InboxPage = () => {
 
     useEffect(() => {
         const stored_data = getSession(PROFILE_SESSION);
-        console.log(stored_data);
         if(stored_data){
             setStoreData(stored_data);
         }
@@ -52,6 +56,41 @@ const InboxPage = () => {
             setStoreInboxData(stored_data);
         }
     },[]);
+
+    const filteredItems = storeInboxData.filter(
+        item =>
+          JSON.stringify(item)
+            .toLowerCase()
+            .indexOf(filterText.toLowerCase()) !== -1
+    );
+
+    const handleRefresh = () => {
+        Loading.standard({
+            backgroundColor: 'rgba(0,0,0,0)',
+        });
+        clearLocalCache(INBOX_KEY);
+        console.log(storeData);
+        getInbox();
+        Loading.remove(1523);
+    };
+
+    const getInbox = async() => {
+        const config = {
+        method: 'GET',
+        url: API_END_POINT+'/api/v1/getInbox?owner_reference_number='+storeData[0]?.reference_number+'&email='+storeData[0]?.email,
+        headers: { 
+          'Content-Type': 'application/json'
+        }};
+        await axios(config).then((resp) => {
+          if(resp){
+            console.log(resp?.data?.data);
+            storeOnLocalCache(INBOX_KEY,resp?.data?.data);
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    };
 
     const handleSubmit = (event) => {
 
@@ -121,6 +160,13 @@ const InboxPage = () => {
         //storeOnLocalCache(INBOX_KEY,inboxData);
     }
 
+    const Export = ({ onExport }) => <button className="me-2 btn btn-outline-dark btn-sm px-3" onClick={e=> onExport(e.target.value)}>
+                                       <i className="fas fa-file-excel mx-1"></i>Export data
+                                     </button>;
+    const Refresh = ({ onRefresh }) => <button className="me-2 btn btn-outline-dark btn-sm px-3" onClick={e=> onRefresh(e.target.value)}>
+                                        <i className="fas fa-sync-alt mx-1"></i>Refresh
+                                       </button>;
+
     const handleClick = (e,row) => {
         e.preventDefault();
         setHideReply(!hideReply);
@@ -135,39 +181,39 @@ const InboxPage = () => {
     const columns = [
         {
             right: false,
-            name: 'Reply message',
+            name:  makeTextBold('REPLY MESSAGE',0),
         },   
         {
-            name: '#',
+            name:  makeTextBold('UUID',0),
             selector: row => row.message_uuid,
             sortable: true,
         },    
         {
-            name: 'Sender',
+            name:  makeTextBold('SENDER',0),
             selector: row => row.sender_name,
             sortable: true,
-            grow: 1,
         },
         {
-            name: 'Message',
+            name:  makeTextBold('MESSAGE',0),
             selector: row => row.body,
             sortable: false,
             right: false,
-            allowOverflow: true,
+            wrap: 'yes',
             grow: 2
         },
         {
-            name: 'Date',
+            name: makeTextBold('DATE',0),
             selector: row => row.date_created.split('T')[0],
             sortable: false,
-            right: true,
-            grow: 1
+            right: false,
         },        
         {
+            /*
             cell: (row) => <button className="btn btn-outline-success m-2" onClick={(e)=>handleClick(e,row)}>View</button>,
             ignoreRowClick: true,
             allowOverFlow: true,
             button: true
+            */
         }        
     ];
 
@@ -226,37 +272,30 @@ const InboxPage = () => {
         );
     };
 
-
     const subHeaderComponentMemo = React.useMemo(() => {
-        /*
 		const handleClear = () => {
 			if (filterText) {
 				setResetPaginationToggle(!resetPaginationToggle);
-				setFilterText('');
+				setFilterText("");
 			}
 		};
-        */
-        if(filterText) {
-            setResetPaginationToggle(!resetPaginationToggle);
-            setFilterText('');
-        }
-
-        /*
+    
 		return (
 			<FilterComponent onFilter={e => setFilterText(e.target.value)} onClear={handleClear} filterText={filterText} />
 		);
-        */
 	}, [filterText, resetPaginationToggle]);
 
     const ExpandedComponent = ({ data }) => {
         return <>{replyBoxB(data)}</>;
     };
 
+    const actionsMemo = React.useMemo(() => <div><Refresh onRefresh={handleRefresh}/></div>, []);
+
     return (
         <>
             <div className="container-fluid">
-                <div className="container" style={{marginTop:"15px"}}>
-                    <div className="row">
+                <div className="row" style={{marginTop:"15px"}}>
+                    <div className="content">
                         <table style={{width:"100%"}}>
                             <thead><tr><th/></tr></thead>
                             <tbody>
@@ -275,21 +314,23 @@ const InboxPage = () => {
                                             <tbody>
                                                 <tr>
                                                     <td>
-                                                        <DataTable
-                                                            columns={columns}
-                                                            style={datatableStyle}
-                                                            data={storeInboxData}
-                                                            pagination
-                                                            paginationResetDefaultPage={resetPaginationToggle} 
-                                                            subHeader
-                                                            selectableRows
-                                                            subHeaderComponent={subHeaderComponentMemo}
-                                                            highlightOnHover
-                                                            pointerOnHover
-                                                            expandableRows 
-                                                            expandableRowsComponent={ExpandedComponent}
-                                                            dense
-                                                        />
+                                                        <div className="bg-white-opacity-40 backdrop-filter backdrop-blur-l px-4 pt-4 pb-6 rounded shadow max-w-[1100px] border border mx-auto">
+                                                            <DataTable
+                                                                columns={columns}
+                                                                style={datatableStyle}
+                                                                data={filteredItems}
+                                                                pagination
+                                                                paginationResetDefaultPage={resetPaginationToggle} 
+                                                                subHeader
+                                                                subHeaderComponent={subHeaderComponentMemo}
+                                                                highlightOnHover
+                                                                pointerOnHover
+                                                                expandableRows 
+                                                                expandableRowsComponent={ExpandedComponent}
+                                                                striped
+                                                                actions={actionsMemo}
+                                                            />
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             </tbody>

@@ -1,16 +1,20 @@
 import React,{useEffect, useRef,useState} from 'react';
 import Select from "react-select";
 import PhoneInput from "react-phone-input-2";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import 'react-phone-input-2/lib/style.css'
 
 import Notiflix from 'notiflix';
 import { Loading } from 'notiflix/build/notiflix-loading-aio';
 
+import { RegionDropdown } from 'react-country-region-selector';
+
 import { Footer, Navbar } from "../components";
 import { category_options } from '../db/optionsData';
 import formattedDateTime from '../utility/format-current-date';
 import API_END_POINT from '../endpoint/apiRoute';
+
+import buttonStyle from "../css/custom.button.module.css";
 
 const RegisterBusiness = () => {
 
@@ -19,6 +23,7 @@ const RegisterBusiness = () => {
     const inputOwnerFullName = useRef(null);
     const inputEmail = useRef(null);
     const inputPhone = useRef(null);
+    const inputCity = useRef(null);
     const inputPassword = useRef(null);
     const inputConfirmPassword = useRef(null);
 
@@ -30,6 +35,7 @@ const RegisterBusiness = () => {
     const [phone,setPhone] = useState('');
     const [country,setCountry] = useState('');
     const [currentDate, setCurrentDate] = useState('');
+    const [region, setRegion] = useState(null);
 
     const subscription = new URLSearchParams(window?.location?.search).get('subscription');
 
@@ -82,6 +88,8 @@ const RegisterBusiness = () => {
         setSelectedCategory(event.value);
     };
 
+    const navigate = useNavigate();
+
     const handleSubmit = (event) => {
 
         let formData = {};
@@ -125,11 +133,10 @@ const RegisterBusiness = () => {
             formData.phone = inputPhone?.current?.value || phone;
             formData.owner_full_name = inputOwnerFullName?.current?.value || "";
             formData.subscription = subscription || "";
+            formData.city = region || "";
             formData.country = country;
             formData.password = inputPassword?.current?.value || "";
             formData.date_created = currentDate;
-
-            console.log(formData);
 
             httpPost(formData);
         }
@@ -150,6 +157,7 @@ const RegisterBusiness = () => {
                     inputBusinessName.current.value='';
                     inputEmail.current.value='';
                     inputPhone.current.value='';
+                    inputCity.current.value='';
                     inputOwnerFullName.current.value='';
                     setPhone('');
                     setCountry('');
@@ -160,9 +168,9 @@ const RegisterBusiness = () => {
                         timeout:2950,
                         showOnlyTheLastOne:true                      
                     });
+                    navigate('/phone-verification/?entity=business');
                 }else{
                     let msg = null;
-                    console.log(data?.message);
                     if(data?.message.includes('Document with the requested ID already exists')){
                         msg = 'Phone/Email is already in use';
                     }else{
@@ -186,14 +194,14 @@ const RegisterBusiness = () => {
     return (
         <>
             <Navbar />
-                <div className="container my-3 py-3">
+                <div className="container my-3 py-3" style={{height:"auto"}}>
                     <h5 className="text-center">Register</h5>
                     <hr />
                     <div className="row my-4 h-100">
                         <div className="col-md-4 col-lg-4 col-sm-8 mx-auto">
                             <form onSubmit={handleSubmit}>
-                                <div className="form my-3" id="DivBusinessName">
-                                    <label htmlFor="Name">Business Name</label>
+                                <div className="my-3" id="DivBusinessName">
+                                    <label htmlFor="Name" className="form-label text-black-50 m-0"><small>Business Name</small></label>
                                     <input
                                         type="text"
                                         className="form-control"
@@ -202,12 +210,12 @@ const RegisterBusiness = () => {
                                         onChange={handleInputChange}
                                         ref={inputBusinessName}
                                         maxLength={40}
-                                        placeholder="Enter Business Name"
+                                        placeholder="Business Name"
                                         required
                                     />
                                 </div>                   
-                                <div className="form my-3" id="DivRegisteredBy">
-                                    <label htmlFor="Name">Registered By</label>
+                                <div className="my-3" id="DivRegisteredBy">
+                                    <label htmlFor="Name" className="form-label text-black-50 m-0"><small>Select Registered By</small></label>
                                     <Select
                                         onChange={handleRegistredByChange}
                                         options={category_options}
@@ -215,7 +223,7 @@ const RegisterBusiness = () => {
                                         required
                                     />
                                 </div>
-                                <div className="form my-3">
+                                <div className="my-3">
                                     <input
                                         type="hidden"
                                         className="form-control"
@@ -225,8 +233,8 @@ const RegisterBusiness = () => {
                                         ref={inputRegisteredBy}
                                     />
                                 </div>                       
-                                <div className="form my-3" id="DivFullName">
-                                    <label htmlFor="Name">Owners Name</label>
+                                <div className="my-3" id="DivFullName">
+                                    <label htmlFor="Name" className="form-label text-black-50 m-0"><small>Owners Name</small></label>
                                     <input
                                         type="text"
                                         className="form-control"
@@ -235,12 +243,12 @@ const RegisterBusiness = () => {
                                         onChange={handleInputChange}
                                         ref={inputOwnerFullName}
                                         maxLength={60}
-                                        placeholder="Enter Owners Name"
+                                        placeholder="Owners Name"
                                         required
                                     />
                                 </div> 
-                                <div className="form my-3">
-                                    <label htmlFor="Email">Email</label>
+                                <div className="my-3">
+                                    <label htmlFor="Email" className="form-label text-black-50 m-0"><small>Email</small></label>
                                     <input
                                         type="email"
                                         className="form-control"
@@ -253,11 +261,12 @@ const RegisterBusiness = () => {
                                         required
                                     />
                                 </div>
-                                <div className="form my-3">
-                                    <label htmlFor="Phone">Mobile Number</label>
+                                <div className="my-3">
+                                    <label htmlFor="Phone" className="form-label text-black-50 m-0"><small>Mobile Number</small></label>
                                     <PhoneInput
                                         id="Phone"
                                         name="Phone"
+                                        inputStyle={{width:"100%"}}
                                         country='ke'
                                         onlyCountries={['ke', 'za', 'ng','gb']}
                                         regions={['africa','europe','usa']}
@@ -279,8 +288,22 @@ const RegisterBusiness = () => {
                                         required={true}
                                     />
                                 </div>
-                                <div className="form my-3">
-                                    <label htmlFor="Password">Password</label>
+                                <div className="my-3">
+                                    <label htmlFor="Phone" className="form-label text-black-50 m-0"><small>Region</small></label>
+                                    <RegionDropdown
+                                        id="City"
+                                        name="City"
+                                        classes="form-control"
+                                        country={country}
+                                        countryValueType="full"
+                                        value={region}
+                                        onChange={(val) => setRegion(val)}
+                                        ref={inputCity}
+                                        required
+                                    />
+                                </div>                                
+                                <div className="my-3">
+                                    <label htmlFor="Password" className="form-label text-black-50 m-0"><small>Set New Password</small></label>
                                     <input
                                         type="password"
                                         className="form-control"
@@ -297,8 +320,8 @@ const RegisterBusiness = () => {
                                     />
                                     {error.Password && <span className='err' style={{color:"red"}}><small>{error.Password}</small></span>}
                                 </div>
-                                <div className="form my-3">
-                                    <label htmlFor="Confirm Password">Confirm Password</label>
+                                <div className="my-3">
+                                    <label htmlFor="Confirm Password" className="form-label text-black-50 m-0"><small>Confirm Password</small></label>
                                     <input
                                         type="password"
                                         className="form-control"
@@ -315,7 +338,7 @@ const RegisterBusiness = () => {
                                     />
                                     {error.ConfirmPassword && <span className='err' style={{color:"red"}}><small>{error.ConfirmPassword}</small></span>}
                                 </div>
-                                <div className="form my-3">
+                                <div className="my-3">
                                     <input
                                         type="hidden"
                                         className="form-control"
@@ -327,9 +350,17 @@ const RegisterBusiness = () => {
                                     <p>Already has an account? <Link to="/login" className="text-decoration-underline text-info">Login</Link> </p>
                                 </div>
                                 <div className="text-right">
-                                    <button className="my-2 mx-auto btn btn-success" type="submit" disabled={buttonDisabled}> 
-                                        Register
-                                    </button>
+                                    {
+                                        subscription  && subscription === "free" 
+                                        ? 
+                                        <button className={"my-2 mx-auto fw-bold btn "+buttonStyle.custom_theme_button} type="submit" disabled={buttonDisabled}> 
+                                            Register
+                                        </button>
+                                        :
+                                        <button className={"my-2 mx-auto btn btn-outline-danger fw-bold"} type="submit" disabled={!buttonDisabled}> 
+                                            Pay Now
+                                        </button> 
+                                    }                                   
                                 </div>
                             </form>
                         </div>

@@ -34,7 +34,9 @@ const UpgradeSubscriptionPage = () => {
 
     formData.email = storeData[0]?.email || "";
     formData.owner_reference_number = storeData[0]?.reference_number || "";
-    formData.subscription = storeData[0]?.subscription === "basic" ? "advance" : "basic";
+    if(storeData[0]?.account_type === "farmer"){
+      formData.subscription = storeData[0]?.subscription === "basic" ? "advance" : "basic";
+    }
     formData.database_id = storeData[0]?.$databaseId || "";
     formData.table_id = storeData[0]?.$collectionId || "";
     formData.record_id = storeData[0]?.$id || "";
@@ -96,12 +98,18 @@ const UpgradeSubscriptionPage = () => {
                                     <thead><tr><th/></tr></thead>
                                       <tbody>
                                         <tr>
-                                            <td><h6><strong>Active package</strong></h6></td>
+                                            <td><h6><strong></strong></h6></td>
                                             <td style={{textAlign:"end"}}>
-                                                <button className={storeData[0]?.subscription  === "basic" ? "btn btn-success m-2" : "btn btn-danger m-2"} type="button"><i></i> {storeData[0]?.subscription  === "advance" ? "Downgrade" : "Upgrade"}</button>
+                                                {
+                                                  storeData[0]?.account_type && storeData[0]?.account_type === "farmer"
+                                                  ?
+                                                  <button className={storeData[0]?.subscription  === "basic" ? "btn btn-success m-2" : "btn btn-primary m-2"} type="button"  disabled={storeData[0]?.subscription  === "basic" ? false : true}><i></i>Upgrade</button>
+                                                  :
+                                                  <button className={storeData[0]?.subscription  === "free" ? "btn btn-success m-2" : "btn btn-primary m-2"} type="button"  disabled={storeData[0]?.subscription  === "free" ? false : true}><i></i>Upgrade</button>
+                                                }
                                             </td>                    
                                         </tr>
-                                        <tr><td colSpan={2}><span style={{color:"#008000",fontSize:"18px",textTransform:"uppercase"}}><strong>{storeData[0]?.subscription}</strong></span></td></tr>
+                                        <tr><td colSpan={2}><strong>Active package</strong>:&nbsp;&nbsp;<span style={{color:"#008000",fontSize:"16px",textTransform:"uppercase"}}><strong>{storeData[0]?.subscription}</strong></span></td></tr>
                                         <tr><td colSpan={2}><hr /></td></tr>
                                       </tbody>
                                   </table>

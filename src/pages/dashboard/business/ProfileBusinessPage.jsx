@@ -4,6 +4,7 @@ import Avatar from "react-avatar";
 
 import { getSession } from "../../../session/appSession";
 import { PROFILE_SESSION } from "../../../session/constant";
+import ProfileAvatar from "../../../components/ProfileAvatar";
 
 const ProfileBusinessPage = () => {
 
@@ -29,30 +30,27 @@ const ProfileBusinessPage = () => {
 
   return (
     <>
-      <div className="container-fluid" style={{marginTop:"0px",background:"#F9F9F9",height:"auto"}}>
+      <div className="container-fluid" style={{background:"#F9F9F9",height:"auto"}}>
         <div className="container-fluid">
           <div className="row">
             <div className="col-md-3">
-              <div className="nav flex-column" style={{paddingTop:"10px",paddingLeft:"20px",paddingBottom:"10px"}}>
-                <Avatar 
-                    colors={['#FCCF0A', '#0B51C1', '#3A6024','#B3003C','#7E3794','#F2855C']}
-                    name={storeData[0]?.email} 
-                    size={85}
-                    round={true} 
+              <div className="nav flex-column">
+                <ProfileAvatar
+                 personEmail={storeData[0]?.email}
+                 personName={storeData[0]?.business_name} 
                 />
               </div>
               <ul className="nav flex-column">
                 <li className="nav-item">
-                  <h5 style={{paddingLeft:"18px"}}><strong>{ storeData[0]?.business_name }</strong></h5>
-                </li>
-                <li className="nav-item">
                   <span>&nbsp;</span>
-                </li>                
+                </li>    
+                {
+                /*            
                 <li className="nav-item">
                     <Link className="nav-link d-flex align-items-center gap-3" onClick={(e)=>handleOnClick(e,"/dashboard/business/edit-profile/contact")} style={{color:"#0B51C1"}} to="#">
                       Basic Info
                     </Link>
-                </li>  
+                </li> 
                 <li className="nav-item">
                     <Link className="nav-link d-flex align-items-center gap-3" onClick={(e)=>handleOnClick(e,"/dashboard/wallet/wallet")} style={{color:"#0B51C1"}} to="#">
                       Wallet
@@ -68,6 +66,8 @@ const ProfileBusinessPage = () => {
                       Sign-in and Security
                     </Link>
                 </li>
+                */
+                }
               </ul>
             </div>
             <div className="col-md-9">

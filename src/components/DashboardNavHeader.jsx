@@ -3,26 +3,28 @@ import { NavLink } from "react-router-dom";
 import Avatar from 'react-avatar';
 
 import styles from "../css/nav.module.css";
-import { COMMENT_KEY, PRODUCT_KEY, STORE_KEY, clearLocalCache } from "../db/localSessionData";
+import { COMMENT_KEY, INBOX_KEY, PRODUCT_KEY, STORE_KEY, STORY_KEY, clearLocalCache } from "../db/localSessionData";
 import { deleteSession, getSession } from "../session/appSession";
 import { PROFILE_SESSION } from "../session/constant";
 
-const DashboardNavHeader = () => {
+const  DashboardNavHeader = () => {
 
-const [storeData, setStoreData] = useState([]);
+const [storeProfileData, setStoreProfileData] = useState([]);
 
     useEffect(() => {
         const stored_data = getSession(PROFILE_SESSION);
         if(stored_data) {
-            setStoreData(stored_data);
+            setStoreProfileData(stored_data);
         }
     },[]); 
 
     const handleOnClick = () => {
         deleteSession(PROFILE_SESSION);
         clearLocalCache(COMMENT_KEY);
+        clearLocalCache(STORY_KEY);
         clearLocalCache(STORE_KEY);
         clearLocalCache(PRODUCT_KEY);
+        clearLocalCache(INBOX_KEY);
     };
 
     return (
@@ -40,15 +42,15 @@ const [storeData, setStoreData] = useState([]);
                                 &nbsp;&nbsp;
                                 <Avatar 
                                     colors={['#FCCF0A', '#0B51C1', '#3A6024','#B3003C','#7E3794','#F2855C']}
-                                    name={storeData[0]?.email}
+                                    name={storeProfileData[0]?.email}
                                     size={45}
                                     round={true} 
                                 />
                                 {
-                                storeData[0]?.account_type === "farmer" ? 
-                                <span>&nbsp;{storeData[0]?.first_name === "N/A" && storeData[0]?.last_name === "N/A" ? storeData[0]?.business_name : storeData[0]?.first_name }&nbsp;</span>
+                                storeProfileData[0]?.account_type === "farmer" ? 
+                                <span>&nbsp;{storeProfileData[0]?.first_name === "N/A" && storeProfileData[0]?.last_name === "N/A" ? storeProfileData[0]?.business_name : storeProfileData[0]?.first_name }&nbsp;</span>
                                 :
-                                <span>&nbsp;{ storeData[0]?.business_name }&nbsp;</span>
+                                <span>&nbsp;{ storeProfileData[0]?.business_name }&nbsp;</span>
                                 }
                             </a>
                             <ul className="dropdown-menu text-small shadow text-left">
@@ -57,22 +59,6 @@ const [storeData, setStoreData] = useState([]);
                                     <NavLink className="nav-link" to="/login" onClick={handleOnClick}>&nbsp;&nbsp;&nbsp;&nbsp;Sign out</NavLink>
                                 </li>                                                                                                                                                          
                             </ul>
-                        </div> 
-                        <div>
-                            {/*
-                            <ul class="nav navbar-nav" id="navbarSupportedContent">
-                                <li><a href="/#">Dashboard</a>
-                                </li>
-                                <li><a href="">Profile</a>
-                                </li>
-                                <li><a href="">Inbox</a>
-                                </li>
-                                <li><a href="">Shop</a>
-                                </li>   
-                                <li><a href="">Settings</a>
-                                </li>                                 
-                            </ul> 
-                            */}   
                         </div>                     
                     </div>
                 </div>
