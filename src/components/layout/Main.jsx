@@ -1,6 +1,5 @@
 import React from "react";
 
-
 const Home = () => {
   return (
     <>
@@ -12,7 +11,7 @@ const Home = () => {
                 <div className="input-group mt-2">
                     <input type="text" className="form-control border-end-0 border rounded-pill" />
                     <span className="input-group-append">
-                        <button className={"btn btn-outline-secondary bg-white border-bottom-0 border rounded-pill"} style={{marginLeft:"-40px"}} type="button">
+                        <button className={"btn btn-outline-secondary bg-white border-bottom-0 border rounded-pill"}  type="button" style={{marginLeft:"-40px"}}>
                           <i className="fa fa-search"></i>
                         </button>
                     </span>
