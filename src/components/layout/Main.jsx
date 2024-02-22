@@ -1,24 +1,23 @@
 import React from "react";
 
+
 const Home = () => {
   return (
     <>
-      <div className="hero border-1 pb-3">
-        <div className="card bg-dark text-white border-0 mx-3">
-          {
-            /* 
-            <img
-            className="card-img img-fluid"
-            src="#"
-            alt="Card"
-            height={100}
-            />
-            */
-          }
-          <div className="card-img-overlay d-flex align-items-center">
-            <div className="container">
-              <h5 className="card-title fs-1 text fw-lighter">&nbsp;</h5>
-              <p className="card-text fs-5 d-none d-sm-block ">&nbsp;</p>
+      <div className="container shadow min-vh-100 py-4">
+        <div className="hero border-1 pb-3 mt-3">
+          <div className="row border-0 mx-0">
+            <div className="card d-flex align-items-center">
+              <div className="container mb-3 pt-2">
+                <div className="input-group mt-2">
+                    <input type="text" className="form-control border-end-0 border rounded-pill" />
+                    <span className="input-group-append">
+                        <button className={"btn btn-outline-secondary bg-white border-bottom-0 border rounded-pill"} style={{marginLeft:"-40px"}} type="button">
+                          <i className="fa fa-search"></i>
+                        </button>
+                    </span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
