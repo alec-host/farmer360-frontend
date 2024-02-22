@@ -11,7 +11,7 @@ A Website made with React.js Framework.
 
 ## Screenshots
 
-![App Screenshot](public/assets/main.PNG)
+![App Screenshot](public/assets/main.png.PNG)
 
 
 ## Run Locally
