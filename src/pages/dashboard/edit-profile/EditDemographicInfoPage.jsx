@@ -9,6 +9,8 @@ import API_END_POINT from "../../../endpoint/apiRoute";
 import { getSession, setSession } from "../../../session/appSession";
 import { PROFILE_SESSION } from "../../../session/constant";
 
+import customCss from "../../../css/custom.loading.module.css";
+
 const EditDemographicInfoPage = () => {
 
   const inputAge = React.useRef(null);
@@ -36,6 +38,7 @@ const EditDemographicInfoPage = () => {
     if(store_data) {
       setStoreData(store_data);
     }
+    Loading.init({className:customCss.notiflix_loading,});
   },[]);
 
   const handleAgeChange = item => {
@@ -121,7 +124,7 @@ const EditDemographicInfoPage = () => {
     setSession(PROFILE_SESSION,storeData);
   }
   
-  return (
+  return storeData?.length > 0 ? (
     <>
         <div className="container-fluid">
             <div className="container" style={{marginTop:"15px"}}>
@@ -291,7 +294,7 @@ const EditDemographicInfoPage = () => {
             </div>
         </div>
     </>
-  );
+  ):<></>;
 };
 
 export default EditDemographicInfoPage;

@@ -27,7 +27,7 @@ const WalletPage = () => {
     setIframeUrl(page);
   };  
 
-  return (
+  return storeData?.length > 0 ? (
     <>
       <div className="container-fluid" style={{background:"#F9F9F9",height:"auto"}}>
         <div className="container-fluid">
@@ -68,7 +68,7 @@ const WalletPage = () => {
         </div>
       </div>
     </>
-  );
+  ):<></>;
 };
 
 export default WalletPage;

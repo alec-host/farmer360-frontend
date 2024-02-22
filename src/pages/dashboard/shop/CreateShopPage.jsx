@@ -6,8 +6,6 @@ import 'react-quill/dist/quill.snow.css';
 import Notiflix from 'notiflix';
 import { Loading } from 'notiflix/build/notiflix-loading-aio';
 
-import countryList from "../../../db/countryList";
-
 import formattedDateTime from "../../../utility/format-current-date";
 import API_END_POINT from "../../../endpoint/apiRoute";
 import { getSession } from "../../../session/appSession";
@@ -24,12 +22,10 @@ const CreateShopPage = () => {
   const inputFacebookLink = React.useRef(null);
   const inputInstagramLink = React.useRef(null);
 
-  const [country,setCountry] = useState([]);
   const [hideCreateShop, setHideCreateShop] = useState(false);
-  const [storeData, setStoreData] = useState([]);
+  const [storeProfileData, setStoreProfileData] = useState([]);
   const [storeShopData, setStoreShopData] = useState([]);
   const [buttonDisabled, setButtonDisabled] = useState(false);
-  const [trackDataChange,setTrackDataChange] = useState(false);
   const [inputUpdate,setInputUpdate] = useState("");
   const [hideSocialSection,sethideSocialSection] = useState(false);
   const [currentDate, setCurrentDate] = useState('');
@@ -63,10 +59,9 @@ const CreateShopPage = () => {
 
   useEffect(() => {
     setCurrentDate(formattedDateTime);
-    setCountry(countryList);
     const stored_data = getSession(PROFILE_SESSION);
     if(stored_data){
-      setStoreData(stored_data);
+      setStoreProfileData(stored_data);
     }
     Loading.init({className:customCss.notiflix_loading,});
   },[]); 
@@ -76,15 +71,13 @@ const CreateShopPage = () => {
     if(stored_data){
         setStoreShopData(stored_data);
     }
-  },[]);
-
+  },[readLocalCache]);
 
   const validateFacebookSocialLink = (link) => {
-    // Regular expressions for validating social media links
+    //-.Regular expressions for validating social media links
     const facebookRegex = /^(https?:\/\/)?(www\.)?facebook.com\/.*/i;
-    //const twitterRegex = /^(https?:\/\/)?(www\.)?twitter.com\/.*/i;
+    //-.const twitterRegex = /^(https?:\/\/)?(www\.)?twitter.com\/.*/i;
 
-    // Check if the link matches any of the social media platforms
     if(link){
         setIsFacebookUrlValid(
             facebookRegex.test(link)
@@ -96,13 +89,11 @@ const CreateShopPage = () => {
     }
   };
 
-  
   const validateInstagramSocialLink = (link) => {
-    // Regular expressions for validating social media links
-    //const twitterRegex = /^(https?:\/\/)?(www\.)?twitter.com\/.*/i;
+    //-.Regular expressions for validating social media links
+    //-.const twitterRegex = /^(https?:\/\/)?(www\.)?twitter.com\/.*/i;
     const instagramRegex = /^(https?:\/\/)?(www\.)?instagram.com\/.*/i;
 
-    // Check if the link matches any of the social media platforms
     if(link){
         setIsInstagramUrlValid(
             instagramRegex.test(link)
@@ -118,26 +109,23 @@ const CreateShopPage = () => {
     const linkValue = event.target.value;
     setFacebookSocialLink(linkValue);
     validateFacebookSocialLink(linkValue);
-    console.log(isFacebookUrlValid);
   };
 
   const handleClick = (value) => {
     setSocial(value);
-    console.log(value);
   };
 
   const handleInstagramChange = (event) => {
     const linkValue = event.target.value;
     setInstagramSocialLink(linkValue);
     validateInstagramSocialLink(linkValue);
-    console.log(isInstagramUrlValid);
   };
 
   const onSubmitHandler = (event) => {
 
-    let formData = {};
-
     event.preventDefault();
+
+    const formData = {};
 
     setButtonDisabled(true);
 
@@ -146,9 +134,9 @@ const CreateShopPage = () => {
     });
 
     formData.action = inputUpdate;
-    formData.phone = storeData[0]?.msisdn || "";
-    formData.email = storeData[0]?.email || "";
-    formData.owner_reference_number = storeData[0]?.reference_number|| "";
+    formData.phone = storeProfileData[0]?.msisdn || "";
+    formData.email = storeProfileData[0]?.email || "";
+    formData.owner_reference_number = storeProfileData[0]?.reference_number|| "";
     formData.date_created = currentDate;
     switch(inputUpdate){
         case "contact":
@@ -168,8 +156,7 @@ const CreateShopPage = () => {
 
             updateShop(formData);
         break;
-        case "socials": 
-
+        case "socials":
             formData.phone_number = storeShopData[0]?.phone_number || ""; 
             if(social === "1"){
                 formData.website_url = inputWebsiteUrl?.current?.value || "";
@@ -181,8 +168,7 @@ const CreateShopPage = () => {
             formData.database_id = storeShopData[0]?.$databaseId || "";
             formData.table_id = storeShopData[0]?.$collectionId || "";
             formData.record_id = storeShopData[0]?.$id || "";
-            console.log(isFacebookUrlValid || isInstagramUrlValid);
-            console.log(isInstagramUrlValid);
+
             if(social === "1"){
                 updateShop(formData);
             }else if(social === "2" && isFacebookUrlValid){
@@ -207,7 +193,6 @@ const CreateShopPage = () => {
   };
 
   const createShop = (formData) => {
-    console.log(formData);
     fetch(`${API_END_POINT}/api/v1/createNewShop`,{
         method:'POST',
         body: JSON.stringify(formData),
@@ -216,8 +201,7 @@ const CreateShopPage = () => {
         }
     })
     .then(async(response) => {
-        await response.json().then(data=>{
-            console.log(data);
+        await response.json().then(data => {
             if(data?.success){
                 inputShopName.current.value='';
                 inputContactPhone.current.value='';
@@ -227,7 +211,6 @@ const CreateShopPage = () => {
                     timeout:2950,
                     showOnlyTheLastOne:true                      
                 }); 
-                setTrackDataChange(!trackDataChange); 
                 setTimeout(() => {
                     window.location.reload();
                 }, 2000);                
@@ -248,7 +231,6 @@ const CreateShopPage = () => {
   };
 
   const updateShop = (formData) => {
-    console.log(formData);
     fetch(`${API_END_POINT}/api/v1/modifyShop`,{
         method:'PATCH',
         body: JSON.stringify(formData),
@@ -262,14 +244,13 @@ const CreateShopPage = () => {
                 inputShopName.current.value='';
                 inputContactPhone.current.value='';
                 inputAboutUs.current.value='';
-                console.log(data?.data);
                 setStoreShopData(data?.data);
                 Notiflix.Notify.info('Update successful',{
                     ID:'SWA',
                     timeout:2950,
                     showOnlyTheLastOne:true                      
                 }); 
-                setTrackDataChange(!trackDataChange); 
+                storeOnLocalCache(STORE_KEY,data?.data); 
                 setTimeout(() => {
                     window.location.reload();
                 }, 2000);                
@@ -288,10 +269,6 @@ const CreateShopPage = () => {
         console.error(await error);
     });
   };
-
-  if(trackDataChange === true){
-    storeOnLocalCache(STORE_KEY,storeShopData);
-  }
  
   return (
     <>
@@ -306,10 +283,10 @@ const CreateShopPage = () => {
                         <tr>
                             <td colSpan={2}>
                                 {
-                                storeData[0]?.subscription === "basic" ?
+                                storeProfileData[0]?.subscription === "basic" ?
                                 <div className="content">
                                     {
-                                    storeData[0]?.is_profile_completed === 1 ?
+                                    storeProfileData[0]?.is_profile_completed === 1 ?
                                     <>
                                     <p>To unlock the Shop upgrade current subscription from Basic package to Advance package.</p>
                                     <NavLink to="/dashboard/edit-profile/upgrade" className="btn btn-primary m-2">Change Subscription</NavLink>
@@ -330,7 +307,7 @@ const CreateShopPage = () => {
                                 storeShopData[0]?.name ? 
                                 <button className="btn btn-success m-2" onClick={toggleShopHide}><i className=""></i> Edit</button>
                                 :
-                                <button className="btn btn-success m-2" onClick={toggleShopHide} disabled={storeData[0]?.subscription === "basic" || parseInt(storeData[0]?.is_profile_completed === 0 ) ? true : false} ><i className=""></i> Add</button>
+                                <button className="btn btn-success m-2" onClick={toggleShopHide} disabled={storeProfileData[0]?.subscription === "basic" || parseInt(storeProfileData[0]?.is_profile_completed === 0 ) ? true : false} ><i className=""></i> Add</button>
                                 }
                             </td>
                         </tr> 
@@ -347,7 +324,7 @@ const CreateShopPage = () => {
                             </td>
                         </tr>                                  
                         <tr>
-                            <td colSpan={2} style={{display: storeData[0]?.subscription === "advance" ? "" : "none"}}>
+                            <td colSpan={2} style={{display: storeProfileData[0]?.subscription === "advance" ? "" : "none"}}>
                                 <form onSubmit={onSubmitHandler}> 
                                     <table style={{width:"100%",display: hideCreateShop  ? "" : "none"}}>
                                         <thead><tr><th/></tr></thead>
@@ -378,7 +355,7 @@ const CreateShopPage = () => {
                                                         className="form-control"
                                                         id="ContactPhone"
                                                         name="ContactPhone"
-                                                        defaultValue={storeShopData[0]?.phone_number ? storeShopData[0]?.phone_number : storeData[0]?.msisdn }
+                                                        defaultValue={storeShopData[0]?.phone_number ? storeShopData[0]?.phone_number : storeProfileData[0]?.msisdn }
                                                         ref={inputContactPhone}
                                                         placeholder={"Phone Number"}
                                                         maxLength={15}
@@ -432,7 +409,7 @@ const CreateShopPage = () => {
                             </td> 
                         </tr>
                         <tr><td colSpan={2}><hr/></td></tr>
-                        <tr style={{width:"100%",display: storeShopData[0]?.name && storeData[0]?.subscription === "advance" ? "" : "none"}} >
+                        <tr style={{width:"100%",display: storeShopData[0]?.name && storeProfileData[0]?.subscription === "advance" ? "" : "none"}} >
                             <td colSpan={2}>
                                 <table style={{display: hideSocialSection ?  "none" : ""}}>
                                     <thead><tr><th/></tr></thead>
@@ -455,13 +432,13 @@ const CreateShopPage = () => {
                                                     <thead><tr><th/></tr></thead>
                                                     <tbody>
                                                         <tr>
-                                                            <td style={{textAlign:"left"}}>Website URL:   {storeShopData[0]?.website_url ?  storeShopData[0]?.website_url : storeData[0]?.website_url }</td>
+                                                            <td style={{textAlign:"left"}}>Website URL:   {storeShopData[0]?.website_url ?  storeShopData[0]?.website_url : storeProfileData[0]?.website_url }</td>
                                                         </tr>
                                                         <tr>
-                                                            <td style={{textAlign:"left"}}>Facebook Link: {storeShopData[0]?.facebook_link ?  storeShopData[0]?.facebook_link : storeData[0]?.facebook_link }</td>
+                                                            <td style={{textAlign:"left"}}>Facebook Link: {storeShopData[0]?.facebook_link ?  storeShopData[0]?.facebook_link : storeProfileData[0]?.facebook_link }</td>
                                                         </tr>
                                                         <tr>
-                                                            <td style={{textAlign:"left"}}>Instagram Link: {storeShopData[0]?.instagram_url ?  storeShopData[0]?.instagram_url : storeData[0]?.instagram_url }</td>
+                                                            <td style={{textAlign:"left"}}>Instagram Link: {storeShopData[0]?.instagram_url ?  storeShopData[0]?.instagram_url : storeProfileData[0]?.instagram_url }</td>
                                                         </tr>
                                                     </tbody>  
                                                 </table>
@@ -485,7 +462,7 @@ const CreateShopPage = () => {
                                                         className="form-control"
                                                         id="WebsiteUrl"
                                                         name="WebsiteUrl"
-                                                        defaultValue={storeShopData[0]?.website_url ?  storeShopData[0]?.website_url : storeData[0]?.website_url }
+                                                        defaultValue={storeShopData[0]?.website_url ?  storeShopData[0]?.website_url : storeProfileData[0]?.website_url }
                                                         ref={inputWebsiteUrl}
                                                         placeholder="Website URL"
                                                         maxLength={35}
@@ -507,7 +484,7 @@ const CreateShopPage = () => {
                                                         className="form-control"
                                                         id="FacebookLink"
                                                         name="FacebookLink"
-                                                        defaultValue={storeShopData[0]?.facebook_link ?  storeShopData[0]?.facebook_link : storeData[0]?.facebook_link }
+                                                        defaultValue={storeShopData[0]?.facebook_link ?  storeShopData[0]?.facebook_link : storeProfileData[0]?.facebook_link }
                                                         onChange={handleFacebookChange}
                                                         ref={inputFacebookLink}
                                                         placeholder="Facebook Link"
@@ -530,7 +507,7 @@ const CreateShopPage = () => {
                                                         className="form-control"
                                                         id="InstagramLink"
                                                         name="InstagramLink"
-                                                        defaultValue={storeShopData[0]?.facebook_link ?  storeShopData[0]?.instagram_url : storeData[0]?.instagram_url }
+                                                        defaultValue={storeShopData[0]?.facebook_link ?  storeShopData[0]?.instagram_url : storeProfileData[0]?.instagram_url }
                                                         onChange={handleInstagramChange}
                                                         ref={inputInstagramLink}
                                                         placeholder="Instagram Link"
@@ -574,7 +551,7 @@ const CreateShopPage = () => {
         </div>
       </div>
     </>
-  );
+  )
 };
 
 export default CreateShopPage;

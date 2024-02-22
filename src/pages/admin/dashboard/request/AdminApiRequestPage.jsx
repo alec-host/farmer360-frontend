@@ -137,7 +137,7 @@ const AdminApiRequestPage = () => {
 
     const actionsMemo = React.useMemo(() => <div><Export onExport={() => downloadCSV(filteredItems,filteredItems)} /><Refresh onRefresh={handleRefresh}/></div>, [filteredItems,storeRequestData]);
 
-    return (
+    return storeProfileData?.length > 0 ? (
         <>
             <div className="container-fluid">
                 <div className="row" style={{marginTop:"15px"}}>
@@ -150,7 +150,7 @@ const AdminApiRequestPage = () => {
                                 <tr style={{display: true  ? "" : "none"}}>
                                     <td><h5><strong></strong></h5></td>
                                     <td style={{textAlign:"end"}}>
-                                        <button className="btn btn-success m-2" onClick={toggleDataGridHide} > View Requests</button>
+                                        <button className="btn btn-success m-2" onClick={toggleDataGridHide} > View</button>
                                     </td>
                                 </tr>                    
                                 <tr>
@@ -189,7 +189,7 @@ const AdminApiRequestPage = () => {
                 </div>
             </div>
         </>
-    );
+    ):<></>;
 };
 
 export default AdminApiRequestPage;

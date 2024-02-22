@@ -217,7 +217,7 @@ const AdminFarmerPage = () => {
 
     const actionsMemo = React.useMemo(() => <div><Export onExport={() => downloadCSV(filteredItems,filteredItems)} /><Refresh onRefresh={handleRefresh}/></div>, [filteredItems,storeFarmerData]);
 
-    return (
+    return storeProfileData?.length > 0? (
         <>
             <div className="container-fluid">
                 <div className="row" style={{marginTop:"15px"}}>
@@ -269,7 +269,7 @@ const AdminFarmerPage = () => {
                 </div>
             </div>
         </>
-    );
+    ):<></>;
 };
 
 export default AdminFarmerPage;

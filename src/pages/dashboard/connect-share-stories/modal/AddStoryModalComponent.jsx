@@ -18,7 +18,7 @@ import { STORY_KEY, clearLocalCache, storeOnLocalCache } from '../../../../db/lo
 const StoryModalComponent = () => {
 
     const [isOpen, setIsOpen] = useState(false);
-    const [storeData, setStoreData] = useState([]);
+    const [storeProfileData, setStoreProfileData] = useState([]);
     const [topic, setTopic] = useState(null);
     const [story, setStory] = useState(null);
     const [selectedFile, setSelectedFile] = useState(null);
@@ -46,7 +46,7 @@ const StoryModalComponent = () => {
     useEffect(() => {
         const stored_data = getSession(PROFILE_SESSION);
         if(stored_data) {
-            setStoreData(stored_data);
+            setStoreProfileData(stored_data);
         }
         Loading.init({className:customCss.notiflix_loading,});
     },[]);
@@ -61,12 +61,12 @@ const StoryModalComponent = () => {
     };
 
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
+        const { value } = e.target;
         setStory(value);
     };
 
     const handleTopicInputChange = (e) => {
-        const { name, value } = e.target;
+        const { value } = e.target;
         setTopic(value);
     };
 
@@ -81,8 +81,8 @@ const StoryModalComponent = () => {
             formData.append('topic',topic);
             formData.append('posted_story',story);
             formData.append('is_profane',hasProfaneWords);
-            formData.append('owner_reference_number', storeData[0].reference_number || "");
-            formData.append('full_name', storeData[0].first_name +" "+ storeData[0].last_name || "");
+            formData.append('owner_reference_number', storeProfileData[0].reference_number || "");
+            formData.append('full_name', storeProfileData[0].first_name +" "+ storeProfileData[0].last_name || "");
             formData.append('file', selectedFile);
             formData.append('original_file_name', selectedFile?.name || null);
             formData.append('date_created', formattedDateTime);
@@ -94,8 +94,8 @@ const StoryModalComponent = () => {
             formData.topic = topic;
             formData.posted_story = story;
             formData.is_profane = hasProfaneWords;
-            formData.owner_reference_number = storeData[0].reference_number || "";
-            formData.full_name = storeData[0].first_name +" "+ storeData[0].last_name || "";
+            formData.owner_reference_number = storeProfileData[0].reference_number || "";
+            formData.full_name = storeProfileData[0].first_name +" "+ storeProfileData[0].last_name || "";
             formData.date_created = formattedDateTime;
             formData.action = 'nofile';
             console.log( JSON.stringify(formData));  

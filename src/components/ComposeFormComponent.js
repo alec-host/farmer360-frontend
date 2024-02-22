@@ -13,8 +13,6 @@ import { PROFILE_SESSION } from '../session/constant';
 import { FARMER_LIMITED_SCOPE_KEY, INBOX_KEY, clearLocalCache, readLocalCache, storeOnLocalCache } from '../db/localSessionData';
 import SelectSearch from 'react-select-search';
 import 'react-select-search/style.css'
-import downloadCSV from '../utils/downloadCSV';
-
 
 const ComposeFormComponent = () => {
 
@@ -95,8 +93,6 @@ const ComposeFormComponent = () => {
         })
         .then(async(response) => {
             await response.json().then(response=>{
-                //console.log(response);
-                //console.log(JSON.stringify(response?.data));
                 if(response?.success){
                     setSubject(null);
                     setMessage(null);

@@ -7,7 +7,7 @@ import 'react-phone-input-2/lib/style.css'
 import Notiflix from 'notiflix';
 import { Loading } from 'notiflix/build/notiflix-loading-aio';
 
-import { RegionDropdown } from 'react-country-region-selector';
+import { RegionDropdown } from "react-country-region-selector";
 
 import { Footer, Navbar } from "../components";
 import { category_options } from '../db/optionsData';
@@ -15,6 +15,7 @@ import formattedDateTime from '../utility/format-current-date';
 import API_END_POINT from '../endpoint/apiRoute';
 
 import buttonStyle from "../css/custom.button.module.css";
+import PaymentPage from '../components/payment/PaymentPage';
 
 const RegisterBusiness = () => {
 
@@ -38,6 +39,7 @@ const RegisterBusiness = () => {
     const [region, setRegion] = useState(null);
 
     const subscription = new URLSearchParams(window?.location?.search).get('subscription');
+    const fee = new URLSearchParams(window?.location?.search).get('fee');
 
     useEffect(() =>{
         setCurrentDate(formattedDateTime);
@@ -357,9 +359,7 @@ const RegisterBusiness = () => {
                                             Register
                                         </button>
                                         :
-                                        <button className={"my-2 mx-auto btn btn-outline-danger fw-bold"} type="submit" disabled={!buttonDisabled}> 
-                                            Pay Now
-                                        </button> 
+                                        <PaymentPage SubscriptionFee={fee} ButtonLabel={"Pay Now"} />
                                     }                                   
                                 </div>
                             </form>

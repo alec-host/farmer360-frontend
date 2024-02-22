@@ -13,7 +13,6 @@ import API_END_POINT from "../../../../endpoint/apiRoute";
 import datatableStyle from "../../../../css/datatable.module.css";
 import { getSession } from "../../../../session/appSession";
 import { PROFILE_SESSION } from "../../../../session/constant";
-import { INBOX_KEY, clearLocalCache, readLocalCache, storeOnLocalCache } from "../../../../db/localSessionData";
 import FilterComponent from "../../../../components/FilterComponent";
 import makeTextBold from "../../../../components/BoldTextComponent";
 import downloadCSV from "../../../../utils/downloadCSV";
@@ -21,6 +20,7 @@ import ComposeFormComponent from "../../../../components/ComposeFormComponent";
 
 import customCss from "../../../../css/custom.loading.module.css";
 
+import { INBOX_KEY, clearLocalCache, readLocalCache, storeOnLocalCache } from "../../../../db/localSessionData";
 
 const AdminInboxPage = () => {
 
@@ -243,7 +243,7 @@ const AdminInboxPage = () => {
 
     const actionsMemo = React.useMemo(() => <div><Export onExport={() => downloadCSV(filteredItems)} /><Refresh onRefresh={handleRefresh}/></div>, [filteredItems,storeInboxData]);
 
-    return (
+    return storeProfileData.length > 0 ? (
         <>
             <div className="container-fluid">
                 <div className="row" style={{marginTop:"15px"}}>
@@ -256,7 +256,7 @@ const AdminInboxPage = () => {
                                 <tr style={{display: true  ? "" : "none"}}>
                                     <td><h5><strong></strong></h5></td>
                                     <td style={{textAlign:"end"}}>
-                                        <button className="btn btn-success m-2" onClick={toggleDataGrid} > View Inbox</button>
+                                        <button className="btn btn-success m-2" onClick={toggleDataGrid} > View</button>
                                     </td>
                                 </tr>                    
                                 <tr>
@@ -297,7 +297,7 @@ const AdminInboxPage = () => {
                 </div>
             </div>
         </>
-    );
+    ):<></>;
 };
 
 export default AdminInboxPage;

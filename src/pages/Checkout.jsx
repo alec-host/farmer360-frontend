@@ -8,16 +8,24 @@ const Checkout = () => {
 
   const EmptyCart = () => {
     return (
-      <div className="container">
-        <div className="row">
-          <div className="col-md-12 py-5 bg-light text-center">
-            <h4 className="p-3 display-5">No item in Cart</h4>
-            <Link to="/" className="btn btn-outline-dark mx-4">
-              <i className="fa fa-arrow-left"></i> Continue Shopping
-            </Link>
+      <>
+        <div className="container">
+          <div className="row">
+            <div className="card-deck mb-3 text-center">
+                  <div className="card mb-4 box-shadow">
+                      <div className="card-header">
+                          <h4 className="my-0 fw-normal">Your Cart is Empty</h4>
+                      </div>
+                      <div className="card-body">
+                      <Link to="/" className="btn  btn-outline-success mx-4">
+                        <i className="fa fa-arrow-left"></i> Continue Shopping
+                      </Link>
+                      </div>
+                  </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </div> 
+      </>
     );
   };
 

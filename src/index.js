@@ -7,9 +7,9 @@ import { Provider } from 'react-redux';
 import store from './redux/store';
 
 
-import { Home, Product, Products, AboutPage, ContactPage, Cart, Login, Register, RegisterBusiness, Checkout, PageNotFound, Dashboard, ProfilePage, DefaultPage, ShopPage, SettingPage, PricingFarmerPage, EditContactInfoPage, EditDemographicInfoPage, EditSignInSecurityPage, AddIndividualProfilePage, UpgradeSubscriptionPage, CreateShopPage, AddProductPage, AddInventoryPage, WalletPage, InboxPage, ConnectAndShareStoryPage, SwitchBoardPage, PricingBusinessPage, EditBusinessContactInfoPage, EditBusinessSignInSecurityPage, UpgradeBusinessSubscriptionPage, ProfileBusinessPage, DeleteAccountPage, WalletBalancePage, ShareStoryPage, ApiSurveyRequestPage, ServiceRequestPage, AdminLogin, AdminDashboard, AdminDefaultPage, AdminInboxPage, AdminApiRequestPage, AdminSurveyRequestpage, AdminBlockedCommentPage, AdminBlockedStoryPage, AdminSettingPage, PhoneVerification } from "./pages"
+import { Home, Product, Products, AboutPage, ContactPage, Cart, Login, Register, RegisterBusiness, Checkout, PageNotFound, Dashboard, ProfilePage, DefaultPage, ShopPage, SettingPage, PricingFarmerPage, EditContactInfoPage, EditDemographicInfoPage, EditSignInSecurityPage, AddIndividualProfilePage, UpgradeSubscriptionPage, CreateShopPage, AddProductPage, AddInventoryPage, WalletPage, InboxPage, ConnectAndShareStoryPage, SwitchBoardPage, PricingBusinessPage, EditBusinessContactInfoPage, EditBusinessSignInSecurityPage, UpgradeBusinessSubscriptionPage, ProfileBusinessPage, DeleteAccountPage, WalletBalancePage, ShareStoryPage, ApiSurveyRequestPage, ServiceRequestPage, AdminLogin, AdminDashboard, AdminDefaultPage, AdminInboxPage, AdminApiRequestPage, AdminSurveyRequestpage, AdminBlockedCommentPage, AdminBlockedStoryPage, AdminSettingPage, PhoneVerification, PaymentMethod } from "./pages"
 import FarmerInformationPage from './pages/dashboard/business/farmer-data/FarmerInformationPage';
-import DashboardFarmerListPage from './pages/DashboardFarmerListPage';
+import FarmerInfoPage from './pages/FarmerInfoPage';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -24,7 +24,7 @@ root.render(
         <Route path="/cart" element={<Cart />} />
         <Route path="/login/*" element={<Login />} />
         <Route path="/register/*" element={<Register />} />
-        <Route path="/farmer-list/*" element={<DashboardFarmerListPage />} />
+        <Route path="/farmer-list/*" element={<FarmerInfoPage />} />
         <Route path="/request-service/*" element={<ServiceRequestPage />} />
         <Route path="/register/business/*" element={<RegisterBusiness />} />
         <Route path="/checkout" element={<Checkout />} />
@@ -59,17 +59,18 @@ root.render(
         <Route path="/dashboard/settings/delete" element={ <DeleteAccountPage /> } />
         <Route path="/dashboard/business/request-paid-service/*" element={ <ApiSurveyRequestPage /> } />
         <Route path="/admin/login" element={ <AdminLogin /> } />
-        <Route path='/admin/dashboard' element={<AdminDashboard />} />
-        <Route path="/admin/dashboard/default" element={<AdminDefaultPage />} />
-        <Route path="/admin/dashboard/*" element={<AdminDefaultPage />} />
-        <Route path='/admin/dashboard/inbox/inbox' element={<AdminInboxPage />} />
-        <Route path='/admin/dashboard/request/api' element={<AdminApiRequestPage />} />
-        <Route path='/admin/dashboard/request/survey' element={<AdminSurveyRequestpage />} />
-        <Route path='/admin/dashboard/request/survey/*' element={<AdminSurveyRequestpage />} />
-        <Route path='/admin/dashboard/story-comment/story' element={<AdminBlockedStoryPage />} />
-        <Route path='/admin/dashboard/story-comment/comment' element={<AdminBlockedCommentPage />} />
-        <Route path='/admin/dashboard/settings' element={<AdminSettingPage />} />
-        <Route path='/phone-verification/*' element={<PhoneVerification/>} />
+        <Route path='/admin/dashboard' element={ <AdminDashboard />} />
+        <Route path="/admin/dashboard/default" element={ <AdminDefaultPage />} />
+        <Route path="/admin/dashboard/*" element={ <AdminDefaultPage />} />
+        <Route path='/admin/dashboard/inbox/inbox' element={ <AdminInboxPage /> } />
+        <Route path='/admin/dashboard/request/api' element={ <AdminApiRequestPage /> } />
+        <Route path='/admin/dashboard/request/survey' element={<AdminSurveyRequestpage /> } />
+        <Route path='/admin/dashboard/request/survey/*' element={ <AdminSurveyRequestpage />} />
+        <Route path='/admin/dashboard/story-comment/story' element={ <AdminBlockedStoryPage /> } />
+        <Route path='/admin/dashboard/story-comment/comment' element={ <AdminBlockedCommentPage /> } />
+        <Route path='/admin/dashboard/settings' element={ <AdminSettingPage /> } />
+        <Route path='/phone-verification/*' element={ <PhoneVerification/> } />
+        <Route path='/payment-method' element={ <PaymentMethod /> } />
       </Routes>
     </Provider>
   </BrowserRouter>

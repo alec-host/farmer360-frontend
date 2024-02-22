@@ -28,7 +28,7 @@ const PricingFarmerPage = () => {
                                     <li>Sell items <i className="fa fa-multiply mr-1" style={{color:"#EA4335"}}></i></li>
                                     <li>24/7 support <i className="fa fa-multiply mr-1" style={{color:"#EA4335"}}></i></li>
                                 </ul>
-                                <NavLink to={"/register/?subscription=basic"}>
+                                <NavLink to={"/register/?subscription=basic&t=farmer&fee=0"}>
                                     <button type="button" className="btn btn-md btn-block btn-outline-success font-weight-bold">Sign up for Free</button>
                                 </NavLink>
                             </div>
@@ -48,7 +48,7 @@ const PricingFarmerPage = () => {
                                     <li>Sell items <i className="fa fa-check mr-1" style={{color:"#FFA600"}}></i></li>
                                     <li>24/7 support <i className="fa fa-check mr-1" style={{color:"#FFA600"}}></i></li>
                                 </ul>
-                                <NavLink to={"/register/?subscription=advance"}>
+                                <NavLink to={"/register/?subscription=advance&t=farmer&fee=$10"}>
                                     <button type="button" className="btn btn-md btn-block btn-success font-weight-bold">Get Started</button>
                                 </NavLink>
                             </div>

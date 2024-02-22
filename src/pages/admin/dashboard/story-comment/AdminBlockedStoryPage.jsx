@@ -132,7 +132,7 @@ const AdminBlockedStoryPage = () => {
 
     const actionsMemo = React.useMemo(() => <div><Export onExport={() => downloadCSV(filteredItems,filteredItems)} /><Refresh onRefresh={handleRefresh}/></div>, [filteredItems,storeStoryData]);
 
-    return (
+    return storeProfileData.length > 0 ? (
         <>
             <div className="container-fluid">
                 <div className="row" style={{marginTop:"15px"}}>
@@ -145,7 +145,7 @@ const AdminBlockedStoryPage = () => {
                                 <tr style={{display: true  ? "" : "none"}}>
                                     <td><h5><strong></strong></h5></td>
                                     <td style={{textAlign:"end"}}>
-                                        <button className="btn btn-success m-2" onClick={toggleDataGrid} > View Stories</button>
+                                        <button className="btn btn-success m-2" onClick={toggleDataGrid}> View</button>
                                     </td>
                                 </tr>                    
                                 <tr>
@@ -183,7 +183,7 @@ const AdminBlockedStoryPage = () => {
                 </div>
             </div>
         </>
-    );
+    ):<></>;
 };
 
 export default AdminBlockedStoryPage;

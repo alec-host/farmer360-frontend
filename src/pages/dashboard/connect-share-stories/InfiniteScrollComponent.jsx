@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
@@ -20,7 +20,7 @@ import  styles from '../../../css/modal.module.css';
 
 const InfiniteScrollComponent = () => {
 
-    const [storeData,setStoreData] = useState([]);
+    const [storeProfileData,setStoreProfileData] = useState([]);
     const [buttonDisabled, setButtonDisabled] = useState(false);
     const [items, setItems] = useState([]);
     const [hasMore, setHasMore] = useState(true);
@@ -43,7 +43,7 @@ const InfiniteScrollComponent = () => {
             if(typeof(stored_data[0]?.reference_number) !== "undefined"){
                 getStories(stored_data[0]?.reference_number,stored_data[0]?.email);
             }
-            setStoreData(stored_data);
+            setStoreProfileData(stored_data);
         };
     },[]);
 
@@ -62,7 +62,7 @@ const InfiniteScrollComponent = () => {
             if(typeof(reference_number) !== "undefined"){
                 url = `${API_END_POINT}/api/v1/getStories?owner_reference_number=${reference_number}&email=${email}&_page=${page}&_limit=10`;
             }else{
-                url = `${API_END_POINT}/api/v1/getStories?owner_reference_number=${storeData[0]?.reference_number}&email=${storeData[0]?.email}&_page=${page}&_limit=10`;
+                url = `${API_END_POINT}/api/v1/getStories?owner_reference_number=${storeProfileData[0]?.reference_number}&email=${storeProfileData[0]?.email}&_page=${page}&_limit=10`;
             }
             const response = await axios.get(url);
             const newData = response?.data?.data;
@@ -98,8 +98,8 @@ const InfiniteScrollComponent = () => {
     const handleCommentClick = (e,id,post_uuid) => {
         setComponentId(id);
         setStoryID(post_uuid);
-        setFullName(storeData[0]?.first_name+' '+storeData[0]?.last_name);
-        setUUID(storeData[0]?.reference_number);
+        setFullName(storeProfileData[0]?.first_name+' '+storeProfileData[0]?.last_name);
+        setUUID(storeProfileData[0]?.reference_number);
         setShowComment(!showComment);
     };
 
@@ -123,7 +123,6 @@ const InfiniteScrollComponent = () => {
     };
 
     const formatDate = (date) => {
-        // Options for formatting the date
         const options = {
           year: 'numeric',
           month: 'short',
@@ -228,7 +227,7 @@ const InfiniteScrollComponent = () => {
         const searchWord = document.getElementById("MySearch").value;
         let filteredStoryList = null;
         if(searchWord && searchWord.length > 0){
-            filteredStoryList = items.filter((data) => data.topic && data.topic?.trim().toLowerCase().includes(searchWord?.trim().toLowerCase()));;
+            filteredStoryList = items.filter((data) => data.topic && data.topic?.trim().toLowerCase().includes(searchWord?.trim().toLowerCase()));
         }else{
             filteredStoryList = [];
         }
@@ -237,9 +236,7 @@ const InfiniteScrollComponent = () => {
         console.log(filter);
     };
 
-    const handleOnClick = (e) => {
-        filterStoryByTopic();
-    };
+    const handleOnClick = () => {filterStoryByTopic();};
 
     const commentList = (comment) => {
         return (
@@ -415,19 +412,19 @@ const InfiniteScrollComponent = () => {
         );
     };  
     
-    return (
+    return  (
         <>
-        {<SearchBar/>}
-        <InfiniteScroll
-            key={1}
-            dataLength={items.length}
-            next={getStories}
-            hasMore={hasMore}
-            loader={<center><small><strong><span id="end">Loading...</span></strong></small></center>}
-        >
-            {filter?.map((item) => (renderStoryCardList(item)))}
-            
-        </InfiniteScroll>
+            {<SearchBar/>}
+            <InfiniteScroll
+                key={1}
+                dataLength={items.length}
+                next={getStories}
+                hasMore={hasMore}
+                loader={<center><small><strong><span id="end">Loading...</span></strong></small></center>}
+            >
+                {filter?.map((item) => (renderStoryCardList(item)))}
+                
+            </InfiniteScroll>
         </>
     );
 };

@@ -1,7 +1,7 @@
 import React,{ useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 
-import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
+import { CountryDropdown, RegionDropdown } from "react-country-region-selector";
 
 import Notiflix from 'notiflix';
 import { Loading } from 'notiflix/build/notiflix-loading-aio';
@@ -14,21 +14,21 @@ import { PROFILE_SESSION } from "../../../session/constant";
 
 import customCss from "../../../css/custom.loading.module.css";
 
+
 const EditContactInfoPage = () => {
 
-  const inputFirstName = React.useRef(null);
-  const inputLastName = React.useRef(null);  
-  const inputCity = React.useRef(null);
-  const inputCountry = React.useRef(null);
+  const inputFirstName = React.useRef('');
+  const inputLastName = React.useRef('');  
+  const inputCity = React.useRef('');
+  const inputCountry = React.useRef('');
 
   const [hideProfile, setHideProfile] = useState(false);
   const [hideLocation, setHideLocation] = useState(false);
-  const [storeData, setStoreData] = useState([]);
+  const [storeProfileData, setStoreProfileData] = useState([]);
   const [buttonDisabled, setButtonDisabled] = useState(false);
-  const [trackDataChange,setTrackDataChange] = useState(false);
-  const [inputUpdate,setInputUpdate] = useState("");
-  const [country, setCountry] = useState(null);
-  const [region, setRegion] = useState(null);
+  const [inputUpdate,setInputUpdate] = useState('');
+  const [country, setCountry] = useState('');
+  const [region, setRegion] = useState('');
 
   const toggleProfileHide = () => {
     setHideProfile(!hideProfile);
@@ -45,13 +45,16 @@ const EditContactInfoPage = () => {
   };
 
   useEffect(() => {
-    setCountry(countryList);
     const stored_data = getSession(PROFILE_SESSION);
     if(stored_data){
-      setStoreData(stored_data);
+      setStoreProfileData(stored_data);
     }
-    Loading.init({className:customCss.notiflix_loading,});
   },[]); 
+
+  useEffect(() => {
+    setCountry(countryList);
+    Loading.init({className:customCss.notiflix_loading,});
+  });
 
   const handleInputContactFocus = (edit_section) => {
     setInputUpdate(edit_section);
@@ -69,9 +72,9 @@ const EditContactInfoPage = () => {
         backgroundColor: 'rgba(0,0,0,0)',
     });
 
-    formData.phone = storeData[0]?.msisdn || "";
-    formData.email = storeData[0]?.email || "";
-    formData.account_type = storeData[0]?.account_type || "";
+    formData.phone = storeProfileData[0]?.msisdn || "";
+    formData.email = storeProfileData[0]?.email || "";
+    formData.account_type = storeProfileData[0]?.account_type || "";
 
     switch(inputUpdate){
         case "contact":
@@ -87,9 +90,9 @@ const EditContactInfoPage = () => {
         default:break;
     }
 
-    formData.database_id = storeData[0]?.$databaseId || "";
-    formData.table_id = storeData[0]?.$collectionId || "";
-    formData.record_id = storeData[0]?.$id || "";
+    formData.database_id = storeProfileData[0]?.$databaseId || "";
+    formData.table_id = storeProfileData[0]?.$collectionId || "";
+    formData.record_id = storeProfileData[0]?.$id || "";
 
     fetch(`${API_END_POINT}/api/v1/changeUserProfile`,{
         method:'PATCH',
@@ -105,13 +108,13 @@ const EditContactInfoPage = () => {
                 inputLastName.current.value='';
                 setCountry('');
                 setRegion('');
-                setStoreData(data?.data);
+                setStoreProfileData(data?.data);
+                setSession(PROFILE_SESSION,data?.data);
                 Notiflix.Notify.info('Update successful',{
                     ID:'SWA',
                     timeout:2950,
                     showOnlyTheLastOne:true                      
                 }); 
-                setTrackDataChange(!trackDataChange); 
                 setTimeout(() => {
                     window.location.reload();
                 }, 2000);                
@@ -131,11 +134,7 @@ const EditContactInfoPage = () => {
     });
   };
 
-  if(trackDataChange === true){
-    setSession(PROFILE_SESSION,storeData);
-  }
-
-  return (
+  return storeProfileData?.length > 0 ? (
     <>
       <div className="container-fluid">
         <div className="container" style={{marginTop:"15px"}}>
@@ -149,7 +148,7 @@ const EditContactInfoPage = () => {
                             <td><h6><strong>Contact Info</strong></h6></td>
                             <td style={{textAlign:"end"}}>
                                 {
-                                storeData[0]?.first_name === "N/A" && storeData[0]?.last_name === "N/A" ?
+                                storeProfileData[0]?.first_name === "N/A" && storeProfileData[0]?.last_name === "N/A" ?
                                 null
                                 :
                                 <NavLink to="#" className="btn btn-outline-success m-2" onClick={toggleProfileHide}><i className=""></i> Edit</NavLink>
@@ -162,10 +161,10 @@ const EditContactInfoPage = () => {
                                     <thead><tr><th/></tr></thead>
                                     <tbody>
                                         <tr>
-                                            <td><strong>{storeData[0]?.first_name === "N/A" && storeData[0]?.last_name === "N/A" ? storeData[0]?.business_name : storeData[0]?.first_name+" "+storeData[0]?.last_name}</strong></td>
+                                            <td><strong>{storeProfileData[0]?.first_name === "N/A" && storeProfileData[0]?.last_name === "N/A" ? storeProfileData[0]?.business_name : storeProfileData[0]?.first_name+" "+storeProfileData[0]?.last_name}</strong></td>
                                         </tr>
                                         <tr>
-                                            <td style={{textAlign:"left"}}>{storeData[0]?.email}</td>
+                                            <td style={{textAlign:"left"}}>{storeProfileData[0]?.email}</td>
                                         </tr> 
                                     </tbody> 
                                 </table>
@@ -187,7 +186,7 @@ const EditContactInfoPage = () => {
                                                         id="FirstName"
                                                         name="FirstName"
                                                         onFocus={()=>handleInputContactFocus("contact")}
-                                                        defaultValue={storeData[0]?.first_name}
+                                                        defaultValue={storeProfileData[0]?.first_name}
                                                         ref={inputFirstName}
                                                         placeholder={"First Name"}
                                                         maxLength={40}
@@ -205,7 +204,7 @@ const EditContactInfoPage = () => {
                                                         id="LastName"
                                                         name="LastName"
                                                         onFocus={()=>handleInputContactFocus("contact")}
-                                                        defaultValue={storeData[0]?.last_name}
+                                                        defaultValue={storeProfileData[0]?.last_name}
                                                         ref={inputLastName}
                                                         placeholder={"Last Name"}
                                                         maxLength={40}
@@ -223,7 +222,7 @@ const EditContactInfoPage = () => {
                                                         className="form-control"
                                                         id="Email"
                                                         name="Email"
-                                                        value={storeData[0]?.email}
+                                                        value={storeProfileData[0]?.email}
                                                         placeholder="Email" 
                                                         maxLength={40}
                                                         readOnly
@@ -239,7 +238,7 @@ const EditContactInfoPage = () => {
                                                         className="form-control"
                                                         id="Phone"
                                                         name="Phone"
-                                                        value={storeData[0]?.msisdn}
+                                                        value={storeProfileData[0]?.msisdn}
                                                         placeholder="Phone number"
                                                         maxLength={20}
                                                         readOnly
@@ -288,10 +287,10 @@ const EditContactInfoPage = () => {
                                     <thead><tr><th/></tr></thead>
                                     <tbody>
                                         <tr>
-                                            <td><strong>{storeData[0]?.city}</strong></td>
+                                            <td><strong>{storeProfileData[0]?.city}</strong></td>
                                         </tr>
                                         <tr>
-                                            <td style={{textAlign:"left"}}>{storeData[0]?.country}</td>
+                                            <td style={{textAlign:"left"}}>{storeProfileData[0]?.country}</td>
                                         </tr> 
                                     </tbody> 
                                 </table>
@@ -309,9 +308,9 @@ const EditContactInfoPage = () => {
                                                         id="Country"
                                                         name="Country"
                                                         classes="form-control"
-                                                        value={country}
+                                                        value={country || ''}
                                                         valueType="full"
-                                                        defaultValue={storeData[0]?.city === "Not specified" || storeData[0]?.city === null  ? null : storeData[0]?.city}
+                                                        defaultValue={storeProfileData[0]?.city === "Not specified" || storeProfileData[0]?.city === null  ? null : storeProfileData[0]?.city}
                                                         onChange={(val) => setCountry(val)}
                                                         ref={inputCountry}
                                                         required
@@ -327,7 +326,7 @@ const EditContactInfoPage = () => {
                                                         classes="form-control"
                                                         country={country}
                                                         countryValueType="full"
-                                                        value={region}
+                                                        value={region  || ''}
                                                         onChange={(val) => setRegion(val)}
                                                         ref={inputCity}
                                                         required
@@ -369,7 +368,7 @@ const EditContactInfoPage = () => {
         </div>
       </div>
     </>
-  );
+  ):<></>;
 };
 
 export default EditContactInfoPage;

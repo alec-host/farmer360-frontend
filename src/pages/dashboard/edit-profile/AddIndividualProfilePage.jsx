@@ -1,5 +1,4 @@
 import React,{ useState, useEffect, useRef } from "react";
-import { useNavigate } from 'react-router-dom';
 
 import Notiflix from "notiflix";
 import Select from "react-select";
@@ -17,8 +16,6 @@ import ProfileBusinessPage from "../business/ProfileBusinessPage";
 
 const AddIndividualProfilePage = () => {
 
-  const navigate = useNavigate();
-
   const inputGender = useRef(null);
   const inputAge = useRef(null); 
   const inputEducation = useRef(null);
@@ -27,12 +24,11 @@ const AddIndividualProfilePage = () => {
   const [selectedGender,setSelectedGender] = useState(gender_options[0].value);
   const [selectedAge,setSelectedAge] = useState(0);
   const [selectedEducation,setSelectedEducation] = useState(education_options[0].value);
-  const [storeData,setStoreData] = useState([]);
+  const [storeProfileData,setStoreProfileData] = useState([]);
   const [ activeStep, setActiveStep ] = useState(0);
   const [selectedFarmOption,setSelectedFarmOption] = useState([]);
   const [selectedFarmDisplayOption,setSelectedFarmDisplayOption] = useState([]);
   const [buttonDisabled,setButtonDisabled] = useState(false);
-  const [trackDataChange,setTrackDataChange] = useState(false);
 
   const steps = [
     { label: 'Add Gender & Age', onClick: () => setActiveStep(0) },
@@ -53,7 +49,7 @@ const AddIndividualProfilePage = () => {
   useEffect(() => {
     const stored_data = getSession(PROFILE_SESSION);
     if(stored_data){
-      setStoreData(stored_data);
+      setStoreProfileData(stored_data);
     }
   },[]);
   
@@ -92,15 +88,15 @@ const AddIndividualProfilePage = () => {
     setButtonDisabled(!buttonDisabled);
 
     formData.action = "profile";
-    formData.phone = storeData[0]?.msisdn || "";
-    formData.email = storeData[0]?.email || "";
+    formData.phone = storeProfileData[0]?.msisdn || "";
+    formData.email = storeProfileData[0]?.email || "";
     formData.gender = selectedGender.value || "";
     formData.age_bracket = selectedAge.value || "";
     formData.education_level = selectedEducation.value || "";
     formData.farmed_items = inputFarmItemList?.current?.value || "";
-    formData.database_id = storeData[0]?.$databaseId || "";
-    formData.table_id = storeData[0]?.$collectionId || "";
-    formData.record_id = storeData[0]?.$id || "";
+    formData.database_id = storeProfileData[0]?.$databaseId || "";
+    formData.table_id = storeProfileData[0]?.$collectionId || "";
+    formData.record_id = storeProfileData[0]?.$id || "";
     formData.is_profile_completed = 1; 
 
     fetch(`${API_END_POINT}/api/v1/updateUserDetails`,{
@@ -117,13 +113,13 @@ const AddIndividualProfilePage = () => {
                 setSelectedAge(0);
                 setSelectedEducation('');
                 inputFarmItemList.current.value='';
-                setStoreData(data?.data);
+                setSession(PROFILE_SESSION,data?.data);
+                setStoreProfileData(getSession(PROFILE_SESSION));
                 Notiflix.Notify.info('Update was successful',{
                     ID:'SWA',
                     timeout:2950,
                     showOnlyTheLastOne:true                      
                 });
-                setTrackDataChange(!trackDataChange);
             }else{
                 Notiflix.Notify.warning('Update has Failed',{
                     ID:'FWA',
@@ -134,7 +130,6 @@ const AddIndividualProfilePage = () => {
             Loading.remove(1523);
             setTimeout(() => {
               setButtonDisabled(buttonDisabled); 
-              //navigate('/dashboard/default');
             }, 3000);
         });
     })
@@ -335,17 +330,13 @@ const AddIndividualProfilePage = () => {
       </>
     );
   };
-
-  if(trackDataChange === true){
-    setSession(PROFILE_SESSION,storeData);
-  }
   
-  if(storeData[0]?.is_profile_completed === 0 && storeData[0]?.entity_type === "individual"){
+  if(storeProfileData[0]?.is_profile_completed === 0 && storeProfileData[0]?.entity_type === "individual"){
     return <StepperIndiviualContainer />;
-  }else if(storeData[0]?.is_profile_completed === 0 && storeData[0]?.entity_type === "business"){
+  }else if(storeProfileData[0]?.is_profile_completed === 0 && storeProfileData[0]?.entity_type === "business"){
     return <AddBusinessProfilePage />;
   }else{
-    if(storeData[0]?.account_type === "farmer"){
+    if(storeProfileData[0]?.account_type === "farmer"){
       return <Profile />;
     }else{
       return <ProfileBusinessPage />;

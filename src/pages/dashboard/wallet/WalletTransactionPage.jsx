@@ -15,53 +15,10 @@ import humanReadableDate from "../../../utility/date-human-readable-format";
 const WalletTransactionPage = () => {
 
     const [hideWallet, setHideWallet] = useState(false);
-    const [storeData, setStoreData] = useState([]);
+    const [storeProfileData, setStoreProfileData] = useState([]);
     const [storeTransactionData, setStoreTransactionData] = useState([]);
     const [columns, setColumns] = useState([]);
     const [pending, setPending] = React.useState(true);
-
-    const toggleProfileHide = () => {
-        setHideWallet(!hideWallet);
-    };
-
-    useEffect(() => {
-        const stored_data = getSession(PROFILE_SESSION);
-        if(stored_data){
-            setStoreData(stored_data);
-        }
-        getWalletTransactions(stored_data[0].reference_number);
-    },[]);
-
-    useEffect(() => {
-        const timeout = setTimeout(() => {
-            setColumns(columnsData);
-            setPending(false);
-        },2000);
-        return () => clearTimeout(timeout);
-    },[]);
-
-    const getWalletTransactions = async(reference_number) => {
-        try{
-          if(typeof(reference_number) !== 'undefined'){
-
-            const url = `${API_END_POINT}/api/v1/getWalletTransaction?owner_reference_number=${reference_number}`;
-          
-            const response = await axios.get(url);
-            const newData = response?.data?.data;
-
-            setStoreTransactionData(newData);
-          }
-        }catch(error){
-          setPending(true);  
-          console.error('Error fetching data:', error);
-        }
-      };
-
-    const CustomNoDataComponent = () => (
-    <div style={{ textAlign: 'center'}}>
-        <h2 style={{fontSize:'14px'}}>{storeTransactionData && storeTransactionData.length > 0 ? "Please wait..." : "There are no records to display"}</h2>
-    </div>
-    );
 
     const makeTextBold = (value,fontSize) => {
         return (
@@ -76,7 +33,7 @@ const WalletTransactionPage = () => {
             </>
         );
     };
-      
+
     const columnsData = [  
         {
             id:'date',
@@ -109,7 +66,50 @@ const WalletTransactionPage = () => {
         }     
     ];
 
-    return (
+    const toggleProfileHide = () => {
+        setHideWallet(!hideWallet);
+    };
+
+    useEffect(() => {
+        const stored_data = getSession(PROFILE_SESSION);
+        if(stored_data){
+            setStoreProfileData(stored_data);
+        }
+        getWalletTransactions(stored_data[0].reference_number);
+    },[]);
+
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            setColumns(columnsData);
+            setPending(false);
+        },2000);
+        return () => clearTimeout(timeout);
+    },[columns]);
+
+    const getWalletTransactions = async(reference_number) => {
+        try{
+          if(typeof(reference_number) !== 'undefined'){
+
+            const url = `${API_END_POINT}/api/v1/getWalletTransaction?owner_reference_number=${reference_number}`;
+          
+            const response = await axios.get(url);
+            const newData = response?.data?.data;
+
+            setStoreTransactionData(newData);
+          }
+        }catch(error){
+          setPending(true);  
+          console.error('Error fetching data:', error);
+        }
+      };
+
+    const CustomNoDataComponent = () => (
+    <div style={{ textAlign: 'center'}}>
+        <h2 style={{fontSize:'14px'}}>{storeTransactionData && storeTransactionData.length > 0 ? "Please wait..." : "There are no records to display"}</h2>
+    </div>
+    );
+
+    return storeProfileData?.length > 0 ? (
         <>
             <div className="container-fluid">
                 <div className="container" style={{marginTop:"15px"}}>
@@ -119,7 +119,7 @@ const WalletTransactionPage = () => {
                                 <tbody>
                                     <tr><td><h5><strong>Wallet Transaction</strong></h5></td></tr>
                                     <tr><td colSpan={2}><hr /></td></tr>
-                                    <tr style={{display: storeData[0]?.account_type === "farmer" || storeData[0]?.account_type === "business" ? "" : "none"}}>
+                                    <tr style={{display: storeProfileData[0]?.account_type === "farmer" || storeProfileData[0]?.account_type === "business" ? "" : "none"}}>
                                         <td><h5><strong></strong></h5></td>
                                         <td style={{textAlign:"end"}}>
                                             <NavLink to="#" className="btn btn-outline-success m-2" onClick={toggleProfileHide}><i className="" ></i>  View</NavLink>
@@ -156,7 +156,7 @@ const WalletTransactionPage = () => {
                 </div>
             </div>
         </>
-    );
+    ):<></>;
     };
 
 export default WalletTransactionPage;

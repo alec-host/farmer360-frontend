@@ -122,9 +122,7 @@ const Login = () => {
     .then(async(response) => {
         await response.json().then(data=>{
             if(data.success){
-                console.log(data?.data);
                 setSession(PROFILE_SESSION,data?.data);
-                //storeOnLocalCache(PROFILE_KEY,data?.data);
                 getShop(data?.data[0]?.reference_number,inputUsername?.current.value);
                 getProduct(data?.data[0]?.reference_number,inputUsername?.current.value);
                 getInbox(data?.data[0]?.reference_number,inputUsername?.current.value);

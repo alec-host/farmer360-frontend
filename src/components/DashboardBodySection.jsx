@@ -24,10 +24,9 @@ const DashboardBodySection = () => {
   const handleOnClick = (e,page) => {
     e.preventDefault();
     setIframeUrl(page);
-    //console.log(page?.split('?')[1]?.split('=')[1]);
   }; 
 
-  return (
+  return  (
     <>       
         <div className="container my-1 py-1">
             <div className="row g-1">
@@ -39,14 +38,14 @@ const DashboardBodySection = () => {
                                     <div className="col-auto">
                                         <div className="btn btn-success btn-sm" data-bs-toggle="" aria-expanded="true" onClick={(e)=>{handleOnClick(e,"/dashboard/default");}}>
                                             <div className="row">
-                                                <div className="col"><i class="fas fa-tachometer-alt"></i></div>
+                                                <div className="col"><i className="fas fa-tachometer-alt"></i></div>
                                                 <div><span className="fw-bold small d-none d-lg-block">Dashboard</span></div>
                                             </div>
                                         </div>
 
                                         <div className="btn btn-success btn-sm" data-bs-toggle="" aria-expanded="false" onClick={(e)=>handleOnClick(e,"/dashboard/edit-profile/stepper")}>
                                             <div className="row">
-                                                <div className="col"><i class="fas fa-user"></i></div>
+                                                <div className="col"><i className="fas fa-user"></i></div>
                                                 <div><span className="fw-bold small d-none d-lg-block">My Profile</span></div>
                                             </div>
                                         </div>
@@ -58,7 +57,7 @@ const DashboardBodySection = () => {
                                                 <div className="nav-link dropdown-toggle" data-toggle="dropdown" href="/#" role="button" aria-haspopup="true" aria-expanded="false">
                                                     <div className="row d-none d-xl-none">
                                                         <div className="col">
-                                                            <i class="fas fa-tractor"></i>
+                                                            <i className="fas fa-tractor"></i>
                                                         </div>
                                                     </div>
                                                     <span className="d-lg-block"><i class="fas fa-tractor"></i></span>
@@ -79,14 +78,14 @@ const DashboardBodySection = () => {
         
                                             <div className="btn btn-success btn-sm" data-bs-toggle="" aria-expanded="false" onClick={(e)=>handleOnClick(e,"/dashboard/business/request-paid-service/?service=1")}>
                                                 <div className="row">
-                                                    <div className="col"><i class="fas fa-database"></i></div>
+                                                    <div className="col"><i className="fas fa-database"></i></div>
                                                     <div><span className="fw-bold small d-none d-lg-block">Api Request</span></div>
                                                 </div>
                                             </div>                                        
     
                                             <div className="btn btn-success btn-sm" data-bs-toggle="" aria-expanded="false" onClick={(e)=>handleOnClick(e,"/dashboard/business/request-paid-service/?service=2")}>
                                                 <div className="row">
-                                                    <div className="col"><i class="fas fa-poll"></i></div>
+                                                    <div className="col"><i className="fas fa-poll"></i></div>
                                                     <div><span className="fw-bold small d-none d-lg-block">Survey Request</span></div>
                                                 </div>
                                             </div>                                      
@@ -99,28 +98,28 @@ const DashboardBodySection = () => {
 
                                         <div className="btn btn-success btn-sm" data-bs-toggle="" aria-expanded="false" onClick={(e)=>handleOnClick(e,"/dashboard/connect-share-stories")}>
                                             <div className="row">
-                                                <div className="col"><i class="fas fa-bullhorn"></i></div>
+                                                <div className="col"><i className="fas fa-bullhorn"></i></div>
                                                 <div><span className="fw-bold small d-none d-lg-block">Share Stories</span></div>
                                             </div>
                                         </div>                                    
     
                                         <div className="btn btn-success btn-sm" data-bs-toggle="" aria-expanded="false" onClick={(e)=>handleOnClick(e,"/dashboard/wallet")}>
                                             <div className="row">
-                                                <div className="col"><i class="fas fa-wallet"></i></div>
+                                                <div className="col"><i className="fas fa-wallet"></i></div>
                                                 <div><span className="fw-bold small d-none d-lg-block">Wallet</span></div>
                                             </div>
                                         </div>                                                                     
         
                                         <div className="btn btn-success btn-sm" data-bs-toggle="" aria-expanded="false" onClick={(e)=>handleOnClick(e,"/dashboard/inbox/inbox")}>
                                             <div className="row">
-                                                <div className="col"><i class="fas fa-inbox"></i></div>
+                                                <div className="col"><i className="fas fa-inbox"></i></div>
                                                 <div><span className="fw-bold small d-none d-lg-block">Inbox</span></div>
                                             </div>
                                         </div>                         
                                     
                                         <div className="btn btn-success btn-sm" data-bs-toggle="" aria-expanded="false" onClick={(e)=>handleOnClick(e,"/dashboard/shop")}>
                                             <div className="row">
-                                                <div className="col"><i class="fas fa-shopping-basket"></i></div>
+                                                <div className="col"><i className="fas fa-shopping-basket"></i></div>
                                                 <div><span className="fw-bold small d-none d-lg-block">Shop</span></div>
                                             </div>
                                         </div>
@@ -131,7 +130,7 @@ const DashboardBodySection = () => {
                                         
                                         <div className="btn btn-success btn-sm" data-bs-toggle="" aria-expanded="false" onClick={(e)=>handleOnClick(e,"/dashboard/setting")}>
                                             <div className="row">
-                                                <div className="col"><i class="fas fa-cogs"></i></div>
+                                                <div className="col"><i className="fas fa-cogs"></i></div>
                                                 <div><span className="fw-bold small d-none d-lg-block">Settings</span></div>
                                             </div> 
                                         </div> 
@@ -141,7 +140,7 @@ const DashboardBodySection = () => {
                         </nav>
                     </div>
                 </div>
-                <div className="container-fluid" style={{marginTop:"5px"}}>
+                <div className="container-fluid">
                     <div id="section"> 
                         <div style={{position:"relative",paddingBottom:"135vh",width:"100%",height:"100%"}}>
                             <iframe 
@@ -150,7 +149,7 @@ const DashboardBodySection = () => {
                                 style={{position:"absolute",top:"0",left:"0",width:"100%",height:"100%"}}
                                 allowFullScreen={true}
                                 ref={refIframe}
-                                >no iframe</iframe>
+                            >no iframe</iframe>
                         </div>
                     </div>
                 </div>

@@ -19,9 +19,8 @@ const EditBusinessSignInSecurityPage = () => {
     const [input, setInput] = useState({ Password: '', ConfirmPassword: '' });
     const [error, setError] = useState({ Password: '', ConfirmPassword: '' });
     const [hideChangePassword, setHideChangePassword] = useState(false);
-    const [storeData, setStoreData] = useState([]);
+    const [storeProfileData, setStoreProfileData] = useState([]);
     const [buttonDisabled, setButtonDisabled] = useState(false);
-    const [trackDataChange,setTrackDataChange] = useState(false);
 
     const toggleChangePassword = () => {
         setHideChangePassword(!hideChangePassword);
@@ -30,7 +29,7 @@ const EditBusinessSignInSecurityPage = () => {
     useEffect(() => {
         const stored_data = getSession(PROFILE_SESSION);
         if(stored_data) {
-            setStoreData(stored_data);
+            setStoreProfileData(stored_data);
         }
         Loading.init({className:customCss.notiflix_loading,});
     },[]);
@@ -83,6 +82,7 @@ const EditBusinessSignInSecurityPage = () => {
         if( inputPassword?.current?.value !== inputConfirmPassword?.current?.value){
 
             setButtonDisabled(true);
+            
             Notiflix.Notify.failure('Password mismatch',{
                 ID:'FWA',
                 timeout:2950,
@@ -102,14 +102,14 @@ const EditBusinessSignInSecurityPage = () => {
             });
 
             formData.action = "pass";
-            formData.phone = storeData[0]?.phone || "";
-            formData.email = storeData[0]?.email || "";
-            formData.account_type = storeData[0]?.account_type || "";
+            formData.phone = storeProfileData[0]?.phone || "";
+            formData.email = storeProfileData[0]?.email || "";
+            formData.account_type = storeProfileData[0]?.account_type || "";
             formData.password = inputPassword?.current?.value || "";
             formData.confirm_password = inputConfirmPassword?.current?.value || "";
-            formData.database_id = storeData[0]?.$databaseId || "";
-            formData.table_id = storeData[0]?.$collectionId || "";
-            formData.record_id = storeData[0]?.$id || "";
+            formData.database_id = storeProfileData[0]?.$databaseId || "";
+            formData.table_id = storeProfileData[0]?.$collectionId || "";
+            formData.record_id = storeProfileData[0]?.$id || "";
 
             fetch(`${API_END_POINT}/api/v1/changeBusinessProfile`,{
                 method:'PATCH',
@@ -128,8 +128,8 @@ const EditBusinessSignInSecurityPage = () => {
                             timeout:2950,
                             showOnlyTheLastOne:true                      
                         }); 
-                        setStoreData(data?.data);
-                        setTrackDataChange(!trackDataChange);
+                        setStoreProfileData(data?.data);
+                        setSession(PROFILE_SESSION,data?.data);
                         setTimeout(() => {
                             window.location.reload();
                         }, 2000); 
@@ -150,11 +150,7 @@ const EditBusinessSignInSecurityPage = () => {
         }
     };
 
-    if(trackDataChange === true){
-        setSession(PROFILE_SESSION,storeData);
-    }
-
-    return (
+    return storeProfileData?.length > 0 ? (
         <>
             <div className="container-fluid">
                 <div className="container" style={{marginTop:"15px"}}>
@@ -239,7 +235,7 @@ const EditBusinessSignInSecurityPage = () => {
                 </div>
             </div>
         </>
-    );
+    ):<></>;
 };
 
 export default EditBusinessSignInSecurityPage;

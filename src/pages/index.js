@@ -1,6 +1,6 @@
 export { default as Home } from './Home';
 export { default as Products } from './Products';
-export { default as EntityList } from './DashboardFarmerListPage';
+export { default as EntityList } from './FarmerInfoPage';
 export { default as Dashboard } from './Dashboard';
 export { default as Product } from './Product';
 export { default as AboutPage } from './AboutPage';
@@ -51,3 +51,4 @@ export { default as AdminBlockedStoryPage } from './admin/dashboard/story-commen
 export { default as AdminBlockedCommentPage } from './admin/dashboard/story-comment/AdminBlockedCommentPage';
 export { default as AdminSettingPage } from './admin/dashboard/settings/AdminSettingPage';
 export { default as PhoneVerification } from './PhoneVerification';
+export { default as PaymentMethod } from '../components/payment/PaymentPage';

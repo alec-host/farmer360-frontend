@@ -8,23 +8,23 @@ import { PROFILE_SESSION } from '../session/constant';
 const Dashboard = () => {
 
   const navigate = useNavigate();
-  const [storeData,setStoreData] = useState([]);
+  const [storeProfileData,setStoreProfileData] = useState([]);
   useEffect(() => {
     const session = getSession(PROFILE_SESSION);
-    setStoreData(session);
+    setStoreProfileData(session);
   },[]);
 
-  if(!storeData){
+  if(!storeProfileData){
     navigate('/login');
   }
-
-  return (
+  
+  return setStoreProfileData?.length > 0 ? (
     <>
       <DashboardNavHeader />
-      <DashboardBodySection />
+        <DashboardBodySection />
       <Footer />
     </>
-  )
+  ):navigate('/')
 };
 
 export default Dashboard

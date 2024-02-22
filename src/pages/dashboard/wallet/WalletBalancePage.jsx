@@ -8,7 +8,7 @@ import WalletTransactionPage from "./WalletTransactionPage";
 const WalletBalancePage = () => {
 
     const [hideWallet, setHideWallet] = useState(false);
-    const [storeData, setStoreData] = useState([]);
+    const [storeProfileData, setStoreProfileData] = useState([]);
 
     const toggleProfileHide = () => {
         setHideWallet(!hideWallet);
@@ -17,11 +17,11 @@ const WalletBalancePage = () => {
     useEffect(() => {
         const stored_data = getSession(PROFILE_SESSION);
         if(stored_data){
-        setStoreData(stored_data);
+        setStoreProfileData(stored_data);
         }
     },[]);
 
-    return (
+    return storeProfileData?.length > 0 ? (
         <>
             <div className="container-fluid">
                 <div className="container" style={{marginTop:"15px"}}>
@@ -31,7 +31,7 @@ const WalletBalancePage = () => {
                                 <tbody>
                                     <tr><td><h5><strong>Wallet Balance</strong></h5></td></tr>
                                     <tr><td colSpan={2}><hr /></td></tr>
-                                    <tr style={{display: storeData[0]?.account_type === "farmer" || storeData[0]?.account_type === "business" ? "" : "none"}}>
+                                    <tr style={{display: storeProfileData[0]?.account_type === "farmer" || storeProfileData[0]?.account_type === "business" ? "" : "none"}}>
                                         <td><h5><strong></strong></h5></td>
                                         <td style={{textAlign:"end"}}>
                                             <NavLink to="#" className="btn btn-outline-success m-2" onClick={toggleProfileHide}><i className="" ></i>  View</NavLink>
@@ -62,7 +62,7 @@ const WalletBalancePage = () => {
             </div>
             <WalletTransactionPage />
         </>
-    );
-    };
+    ):<></>;
+};
 
 export default WalletBalancePage;

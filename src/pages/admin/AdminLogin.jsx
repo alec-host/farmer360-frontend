@@ -8,7 +8,7 @@ import {useNavigate } from 'react-router-dom';
 import { Footer, Navbar } from "../../components";
 
 import API_END_POINT from "../../endpoint/apiRoute";
-import { getSession, setSession } from "../../session/appSession";
+import { setSession } from "../../session/appSession";
 import { PROFILE_SESSION } from "../../session/constant";
 
 import buttonStyle from "../../css/custom.button.module.css";
@@ -104,7 +104,6 @@ import { COMMENT_KEY, STORY_KEY, INBOX_KEY, storeOnLocalCache, SURVEY_REQUEST_KE
     .then(async(response) => {
         await response.json().then(data=>{
             if(data.success){
-                console.log(data?.data);
                 setSession(PROFILE_SESSION,data?.data);
                 //storeOnLocalCache(PROFILE_KEY,data?.data);
                 downloadSystemData(1);
@@ -136,48 +135,48 @@ import { COMMENT_KEY, STORY_KEY, INBOX_KEY, storeOnLocalCache, SURVEY_REQUEST_KE
   return (
     <>
       <Navbar />
-      <div className="container my-3 py-3" style={{height:"auto"}}>
-        <h5 className="text-center">Admin Login</h5>
-        <hr />
-        <div className="row my-4 h-100">
-          <div className="col-md-4 col-lg-4 col-sm-8 mx-auto">
-            <form onSubmit={onSubmitHandler}>              
-              <div className="my-3">
-                <label htmlFor="Email display-4">Email address</label>
-                <input
-                  input="text"
-                  className="form-control"
-                  id="Username"
-                  name="Username"
-                  ref={inputUsername}
-                  placeholder="name@example.com"
-                  maxLength={25}
-                  required
-                />
-              </div>
-              <div className="my-3">
-                <label htmlFor="Password display-4">Password</label>
-                <input
-                  type="password"
-                  className="form-control"
-                  id="Password"
-                  name="Password"
-                  ref={inputPassword}
-                  placeholder="Password"
-                  minLength={6}
-                  maxLength={25}
-                  required
-                />
-              </div>
-              <div className="text-right">
-                <button className={"my-2 mx-auto fw-bold btn "+ buttonStyle.custom_theme_button} type="submit" disabled={buttonDisabled}>
-                  Login
-                </button>
-              </div>
-            </form>
+        <div className="container my-3 py-3" style={{height:"auto"}}>
+          <h5 className="text-center">Admin Login</h5>
+          <hr />
+          <div className="row my-4 h-100">
+            <div className="col-md-4 col-lg-4 col-sm-8 mx-auto">
+              <form onSubmit={onSubmitHandler}>              
+                <div className="my-3">
+                  <label htmlFor="Email display-4">Email address</label>
+                  <input
+                    input="text"
+                    className="form-control"
+                    id="Username"
+                    name="Username"
+                    ref={inputUsername}
+                    placeholder="name@example.com"
+                    maxLength={25}
+                    required
+                  />
+                </div>
+                <div className="my-3">
+                  <label htmlFor="Password display-4">Password</label>
+                  <input
+                    type="password"
+                    className="form-control"
+                    id="Password"
+                    name="Password"
+                    ref={inputPassword}
+                    placeholder="Password"
+                    minLength={6}
+                    maxLength={25}
+                    required
+                  />
+                </div>
+                <div className="text-right">
+                  <button className={"my-2 mx-auto fw-bold btn "+ buttonStyle.custom_theme_button} type="submit" disabled={buttonDisabled}>
+                    Login
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
-      </div>
       <Footer />
     </>
   );

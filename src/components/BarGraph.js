@@ -3,7 +3,6 @@ import moment from 'moment';
 
 import { Chart, CategoryScale, LinearScale, BarController, BarElement, Tooltip, plugins } from 'chart.js';
 
-
 const  BarGraph = ({ data }) => {
 
     Chart.register(CategoryScale, LinearScale, BarController, BarElement, Tooltip, plugins);

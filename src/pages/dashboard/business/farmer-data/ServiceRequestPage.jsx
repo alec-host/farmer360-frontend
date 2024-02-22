@@ -21,20 +21,16 @@ const ServiceRequestPage = () => {
 
     const menuOption = new URLSearchParams(window?.location?.search).get('service');
 
-    const allowedFileTypes = ['application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/pdf'];
-
-    const [storeData, setStoreData] = useState([]);
+    const [storeProfileData, setStoreProfileData] = useState([]);
     const [hideApiRequestForm,setHideApiRequestForm] = useState(false);
     const [hideSurveyRequestForm,setHideSurveyRequestForm] = useState(false);
     const [menuSelected,setMenuSelected] = useState(menuOption);
-    const [selectedFile, setSelectedFile] = useState(null);
-    const [message, setMessage] = useState('');
     const [buttonDisabled,setButtonDisabled] = useState(false);
 
     useEffect(() =>{
         const stored_data = getSession(PROFILE_SESSION);
         if (stored_data) {
-          setStoreData(stored_data);
+          setStoreProfileData(stored_data);
         }
         Loading.init({className:customCss.notiflix_loading,});
     },[]);
@@ -59,22 +55,6 @@ const ServiceRequestPage = () => {
         }
     };
 
-    const handleFileChange = (event) => {
-        const file = event.target.files[0];
-        if(file){
-            if(allowedFileTypes.includes(file.type)){
-                setSelectedFile(file);
-                setMessage('File attached successfully.');
-            }else{
-                setSelectedFile(null);
-                setMessage('Invalid file type. Please attach a doc, docx, or pdf file.');
-            }
-        }else{
-            setSelectedFile(null);
-            setMessage('No file selected');
-        }
-    };
-
     const handleSubmit = (event) => {
 
         event.preventDefault();
@@ -90,23 +70,12 @@ const ServiceRequestPage = () => {
             const url = `${API_END_POINT}/api/v1/createApiRequest`;
             formData.request_type="api";
             formData.description = inputDescription?.current.value;
-            formData.business_uuid = storeData[0].business_uuid;
-            formData.business_name = storeData[0].business_name;
+            formData.business_uuid = storeProfileData[0].business_uuid;
+            formData.business_name = storeProfileData[0].business_name;
             formData.date_created = formattedDateTime || "";
             
             httpPost(formData,url);
         }else{
-
-            /*
-            const formData = new FormData();
-            const url = `${API_END_POINT}/api/v1/createSurveyRequest`;
-            formData.append('request_type','survey');
-            formData.append('file',selectedFile || null);
-            formData.append('business_uuid',storeData[0].business_uuid);
-            formData.append('business_name',storeData[0].business_name);
-            formData.append('original_file_name',selectedFile.name || null);
-            formData.append('date_created',formattedDateTime);
-            */
 
             const url = `${API_END_POINT}/api/v1/createSurveyRequest`;
             formData.request_type = "survey";
@@ -114,8 +83,8 @@ const ServiceRequestPage = () => {
             formData.survey_title = inputSurveyTitle?.current.value;
             formData.target_audience = inputTargetAudience?.current.value;
             formData.number_of_participants = inputNumberOfParticipant?.current.value;
-            formData.business_uuid = storeData[0].business_uuid;
-            formData.business_name = storeData[0].business_name;
+            formData.business_uuid = storeProfileData[0].business_uuid;
+            formData.business_name = storeProfileData[0].business_name;
             formData.date_created = formattedDateTime || "";
 
             httpPost(formData,url);
@@ -131,8 +100,6 @@ const ServiceRequestPage = () => {
         .then(async(response) => {
             await response.json().then(data=>{
                 if(data?.success){
-                    setMessage(null);
-                    setSelectedFile(null);
                     inputDescription.value='';
                     inputSurveyObjective.value='';
                     inputSurveyTitle.value='';
@@ -143,7 +110,6 @@ const ServiceRequestPage = () => {
                         timeout:2950,
                         showOnlyTheLastOne:true                      
                     });
-                    //setTrackDataChange(!trackDataChange);
                 }else{
                     Notiflix.Notify.warning('Update has Failed',{
                         ID:'FWA',
@@ -297,30 +263,8 @@ const ServiceRequestPage = () => {
                                                         required
                                                     />
                                                 </div> 
-                                                <div className="mb-3">
-
-                                                </div>
-                                                <div className="mb-3">
-
-                                                </div>
-                                                {
-                                                    <div className="mb-3" style={{display:"none"}}>
-                                                        {/*
-                                                        <label htmlFor="SurveyTemplate"><small><strong>Attache File</strong> (Survey template)</small></label>
-                                                        <input
-                                                            type="file"
-                                                            className="form-control"
-                                                            id="SurveyTemplate"
-                                                            name="SurveyTemplate"
-                                                            accept=".doc, .docx, .pdf"
-                                                            onChange={handleFileChange}
-                                                            required = {!selectedFile ? true:false}
-                                                        />
-                                                        */}
-                                                        <p></p>
-                                                        <p><small style={{color:'red'}}>{message}</small></p>
-                                                    </div>
-                                                }
+                                                <div className="mb-3"></div>
+                                                <div className="mb-3"></div>
                                                 <div style={{textAlign:'right'}}>
                                                     <button className="btn btn-dark">Submit</button>
                                                 </div>
@@ -337,7 +281,7 @@ const ServiceRequestPage = () => {
         );
     };
 
-    return (
+    return storeProfileData?.length > 0 ? (
         <>
             <div className="d-flex align-items-center justify-content-center pb-5">
                 <div className="col-md-10" style={{marginTop:"15px"}}>
@@ -350,7 +294,7 @@ const ServiceRequestPage = () => {
                 </div>
             </div>
         </>
-    );
+    ):<></>;
 };
 
 export default ServiceRequestPage;

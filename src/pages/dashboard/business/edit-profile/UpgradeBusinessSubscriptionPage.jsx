@@ -9,14 +9,13 @@ import { PROFILE_SESSION } from "../../../../session/constant";
 
 const UpgradeBusinessSubscriptionPage = () => {
 
-  const [storeData, setStoreData] = useState([]);
+  const [storeProfileData, setStoreProfileData] = useState([]);
   const [buttonDisabled, setButtonDisabled] = useState(false);
-  const [trackDataChange,setTrackDataChange] = useState(false);
 
   useEffect(() => {
     const stored_data = getSession(PROFILE_SESSION);
     if(stored_data){
-      setStoreData(stored_data);
+      setStoreProfileData(stored_data);
     }
   },[]);
   
@@ -32,13 +31,13 @@ const UpgradeBusinessSubscriptionPage = () => {
         backgroundColor: 'rgba(0,0,0,0)',
     });
 
-    formData.email = storeData[0]?.email || "";
-    formData.owner_reference_number = storeData[0]?.reference_number || "";
-    formData.subscription = storeData[0]?.subscription === "basic" ? "advance" : "basic";
-    formData.account_type = storeData[0]?.account_type || "";
-    formData.database_id = storeData[0]?.$databaseId || "";
-    formData.table_id = storeData[0]?.$collectionId || "";
-    formData.record_id = storeData[0]?.$id || "";
+    formData.email = storeProfileData[0]?.email || "";
+    formData.owner_reference_number = storeProfileData[0]?.reference_number || "";
+    formData.subscription = storeProfileData[0]?.subscription === "basic" ? "advance" : "basic";
+    formData.account_type = storeProfileData[0]?.account_type || "";
+    formData.database_id = storeProfileData[0]?.$databaseId || "";
+    formData.table_id = storeProfileData[0]?.$collectionId || "";
+    formData.record_id = storeProfileData[0]?.$id || "";
 
     fetch(`${API_END_POINT}/api/v1/switchSubscription`,{
         method:'PATCH',
@@ -50,13 +49,13 @@ const UpgradeBusinessSubscriptionPage = () => {
     .then(async(response) => {
         await response.json().then(data=>{
             if(data?.success){
-                setStoreData([data?.data]);
+                setStoreProfileData([data?.data]);
                 Notiflix.Notify.info('Subscription switch successful',{
                     ID:'SWA',
                     timeout:2950,
                     showOnlyTheLastOne:true                      
                 }); 
-                setTrackDataChange(!trackDataChange); 
+                setSession(PROFILE_SESSION,storeProfileData);
                 setTimeout(() => {
                     window.location.reload();
                 }, 2000);                
@@ -76,11 +75,7 @@ const UpgradeBusinessSubscriptionPage = () => {
     });
   };
 
-  if(trackDataChange === true){
-    setSession(PROFILE_SESSION,storeData);
-  }
-
-  return (
+  return storeProfileData?.length > 0 ? (
     <>
       <div className="container-fluid">
         <div className="container" style={{marginTop:"15px"}}>
@@ -99,10 +94,10 @@ const UpgradeBusinessSubscriptionPage = () => {
                                         <tr>
                                             <td><h6><strong>Active package</strong></h6></td>
                                             <td style={{textAlign:"end"}}>
-                                                <button className={storeData[0]?.subscription  === "free" || storeData[0]?.subscription  === "basic" ? "btn btn-success m-2" : "btn btn-danger m-2"} type="button"><i></i> {storeData[0]?.subscription  === "basic" || storeData[0]?.subscription  === "advance" ? "Downgrade" : "Upgrade"}</button>
+                                                <button className={storeProfileData[0]?.subscription  === "free" || storeProfileData[0]?.subscription  === "basic" ? "btn btn-success m-2" : "btn btn-danger m-2"} type="button"><i></i> {storeProfileData[0]?.subscription  === "basic" || storeProfileData[0]?.subscription  === "advance" ? "Downgrade" : "Upgrade"}</button>
                                             </td>                    
                                         </tr>
-                                        <tr><td colSpan={2}><span style={{color:"#008000",fontSize:"18px",textTransform:"uppercase"}}><strong>{storeData[0]?.subscription}</strong></span></td></tr>
+                                        <tr><td colSpan={2}><span style={{color:"#008000",fontSize:"18px",textTransform:"uppercase"}}><strong>{storeProfileData[0]?.subscription}</strong></span></td></tr>
                                         <tr><td colSpan={2}><hr /></td></tr>
                                       </tbody>
                                   </table>
@@ -115,7 +110,7 @@ const UpgradeBusinessSubscriptionPage = () => {
         </div>
       </div>
     </>
-  );
+  ):<></>;
 };
 
 export default UpgradeBusinessSubscriptionPage;

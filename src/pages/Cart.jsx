@@ -13,16 +13,24 @@ const Cart = () => {
 
   const EmptyCart = () => {
     return (
-      <div className="container">
-        <div className="row">
-          <div className="col-md-12 py-5 bg-light text-center">
-            <h5 className="p-3 display-5">Your Cart is Empty</h5>
-            <Link to="/" className="btn  btn-outline-dark mx-4">
-              <i className="fa fa-arrow-left"></i> Continue Shopping
-            </Link>
+      <>
+        <div className="container">
+          <div className="col">
+            <div className="card-deck mb-3 text-center">
+                <div className="card mb-4 box-shadow">
+                    <div className="card-header">
+                      <h5 className="my-0 fw-normal">Cart is Empty</h5> 
+                    </div>
+                    <div className="card-body">
+                      <Link to="/" className="btn btn-outline-success mx-4">
+                        <i className="fa fa-arrow-left"></i> Continue Shopping
+                      </Link>
+                    </div>
+                </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </div> 
+      </>
     );
   };
 
@@ -51,8 +59,8 @@ const Cart = () => {
           <div className="container py-0">
             <div className="row d-flex justify-content-center my-4">
               <div className="col-md-8">
-                <div className="body" style={{marginBottom:"20px"}}>
-                <NavLink to="/" className="btn btn-outline-dark btn-block">Continue shopping</NavLink>
+                <div className="body mb-4">
+                  <NavLink to="/" className="btn btn-outline-success btn-block"><i className="fas fa-shopping-cart"></i> Continue shopping</NavLink>
                 </div>
                 <div className="card mb-4">
                   <div className="card-header py-3">
@@ -123,8 +131,8 @@ const Cart = () => {
                     })}
                   </div>
                 </div>
-                <div className="body" style={{marginBottom:"20px"}}>
-                  <NavLink to="/" className="btn btn-outline-dark btn-block">Continue shopping</NavLink>
+                <div className="body mb-4">
+                  <NavLink to="/" className="btn btn-outline-success btn-block"><i className="fas fa-shopping-cart"></i> Continue shopping</NavLink>
                 </div>
               </div>
               <div className="col-md-4">
@@ -153,8 +161,7 @@ const Cart = () => {
 
                     <Link
                       to="/checkout"
-                      className="btn btn-success btn-md btn-block"
-                    >
+                      className="btn btn-success btn-md btn-block">
                       Go to checkout
                     </Link>
                   </div>
@@ -168,16 +175,16 @@ const Cart = () => {
   };
 
   return (
-    <>
-      <Navbar />
-      <div className="container my-3 py-3" style={{height:"80vh"}}>
-        <h5 className="text-center">Cart</h5>
-        <hr />
-        {state.length > 0 ? <ShowCart /> : <EmptyCart />}
-      </div>
-      <Footer />
-    </>
-  );
+        <>
+          <Navbar />
+            <div className="container my-3 py-3" style={{height:"80vh"}}>
+              <h5 className="text-center">Cart</h5>
+              <hr />
+              {state.length > 0 ? <ShowCart /> : <EmptyCart />}
+            </div>
+          <Footer />  
+        </>
+      );
 };
 
 export default Cart;

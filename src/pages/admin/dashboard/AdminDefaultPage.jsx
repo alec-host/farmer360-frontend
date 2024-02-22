@@ -5,23 +5,27 @@ import Select from "react-select";
 
 import { Loading } from 'notiflix/build/notiflix-loading-aio';
 
-import DashboardHeadSection from "../../../components/AdminDashboardStatsHeader";
+import DateRangePicker from "../../../components/admin/DateRangePicker";
 
 import { getSession } from "../../../session/appSession";
 import { PROFILE_SESSION } from "../../../session/constant";
 import API_END_POINT from "../../../endpoint/apiRoute";
 
 import BarGraph from "../../../components/BarGraph";
-import PageLoading from "../../../components/loader/AdminDefaultPageLoader";
+import PageLoading from "../../../components/admin/loader/PageLoading";
 import getCumulativeCounts from "../../../utility/cumulative-count-date";
 import { stat_options } from "../../../db/optionsData";
-import { BASIC_STAT_KEY, RANGE_STAT_API_KEY, RANGE_STAT_BUSINESS_KEY, RANGE_STAT_COMMENT_KEY, RANGE_STAT_FARMER_KEY, RANGE_STAT_STORY_KEY, RANGE_STAT_SURVEY_KEY, clearLocalCache, readLocalCache, storeOnLocalCache } from "../../../db/localSessionData";
+
 import AdminSurveyRequestPage from "./request/AdminSurveyRequestpage";
 import AdminApiRequestPage from "./request/AdminApiRequestPage";
 import AdminBlockedStoryPage from "./story-comment/AdminBlockedStoryPage";
 import AdminBlockedCommentPage from "./story-comment/AdminBlockedCommentPage";
 import AdminFarmerPage from "./registered-users/AdminFarmerPage";
 import AdminBusinessPage from "./registered-users/AdminBusinessPage";
+
+import customCss from "../../../css/custom.loading.module.css";
+
+import { BASIC_STAT_KEY, RANGE_STAT_API_KEY, RANGE_STAT_BUSINESS_KEY, RANGE_STAT_COMMENT_KEY, RANGE_STAT_FARMER_KEY, RANGE_STAT_STORY_KEY, RANGE_STAT_SURVEY_KEY, clearLocalCache, readLocalCache, storeOnLocalCache } from "../../../db/localSessionData";
 
 const AdminDefaultPage = () => {
 
@@ -47,6 +51,7 @@ const AdminDefaultPage = () => {
     }
     getBasicStats();
     getRangeStats();
+    Loading.init({className:customCss.notiflix_loading,});
   },[]);
 
   const getBasicStats = async() => {
@@ -59,7 +64,6 @@ const AdminDefaultPage = () => {
       }};
       await axios(config).then((resp) => {
         if(resp){
-          console.log(resp?.data?.data);
           storeOnLocalCache(BASIC_STAT_KEY,resp?.data?.data);
           setStoreBasicStatData(resp?.data?.data);
           setLoading(loading);
@@ -67,7 +71,7 @@ const AdminDefaultPage = () => {
       })
       .catch(function (error) {
         setLoading(loading);
-        console.log(error);
+        console.error(error);
       });
   };
 
@@ -116,7 +120,6 @@ const AdminDefaultPage = () => {
 
         const stored_farmer_data = readLocalCache(RANGE_STAT_FARMER_KEY);
         if(stored_farmer_data) {
-          console.log(stored_farmer_data.length);
           setStoreRangeObject((prev) => ({
             ...prev,
             farmer_obj: stored_farmer_data,
@@ -125,7 +128,6 @@ const AdminDefaultPage = () => {
 
         const stored_business_data = readLocalCache(RANGE_STAT_BUSINESS_KEY);
         if(stored_business_data) {
-          console.log(stored_business_data.length);
           setStoreRangeObject((prev) => ({
             ...prev,
             business_obj: stored_business_data,
@@ -134,7 +136,6 @@ const AdminDefaultPage = () => {
 
         const stored_story_data = readLocalCache(RANGE_STAT_STORY_KEY);
         if(stored_story_data) {
-          console.log(stored_story_data.length);
           setStoreRangeObject((prev) => ({
             ...prev,
             story_obj: stored_story_data,
@@ -143,7 +144,6 @@ const AdminDefaultPage = () => {
         
         const stored_comment_data = readLocalCache(RANGE_STAT_COMMENT_KEY);
         if(stored_comment_data) {
-          console.log(stored_comment_data.length);
           setStoreRangeObject((prev) => ({
             ...prev,
             comment_obj: stored_comment_data,
@@ -152,7 +152,6 @@ const AdminDefaultPage = () => {
         
         const stored_api_data = readLocalCache(RANGE_STAT_API_KEY);
         if(stored_api_data) {
-          console.log(stored_api_data.length);
           setStoreRangeObject((prev) => ({
             ...prev,
             api_obj: stored_api_data,
@@ -161,7 +160,6 @@ const AdminDefaultPage = () => {
 
         const stored_survey_data = readLocalCache(RANGE_STAT_SURVEY_KEY);
         if(stored_survey_data) {
-          console.log(stored_survey_data.length);
           setStoreRangeObject((prev) => ({
             ...prev,
             survey_obj: stored_survey_data,
@@ -230,7 +228,7 @@ const AdminDefaultPage = () => {
   };
 
   const handleChange = (e) => {
-    console.log(storeRangeObject.farmer_obj);
+
     let count = 0;
 
     const startDate = typeof(selectedDateRange.startDate.length) === "undefined" ? selectedDateRange.startDate.toISOString().split('T')[0] : selectedDateRange.startDate;
@@ -258,7 +256,6 @@ const AdminDefaultPage = () => {
       default:break;
     }
     setChartDataSet(count);
-    console.log(e.value);
   };
 
   const rangeStatCount = (startDate,endDate,jsonData) => {
@@ -337,7 +334,7 @@ const AdminDefaultPage = () => {
     return(
       <div className="text-end py-3">
         <button type="button" name={"btnView"+buttonOption} className="btn btn-outline-secondary btn-sm px-4" data-toggle="modal" data-target="#statModal" onClick={handlePageNavigation}>
-        <i className="far fa-eye"></i> View 
+          <i className="far fa-eye"></i> View 
         </button>
       </div>
     );
@@ -535,7 +532,7 @@ const AdminDefaultPage = () => {
       );
     };
 
-    return (
+    return  (
       <>
         {
           loading ? 
@@ -543,7 +540,7 @@ const AdminDefaultPage = () => {
           : 
           <>
             <DashBoardTitle />
-            <DashboardHeadSection onDateRangeChange={handleDateRangeChange} formSubmitHandle={handleSubmit} injectedFilterButton={<FilterButton />} injectedRefreshButton={<RefreshButton />} /> 
+            <DateRangePicker onDateRangeChange={handleDateRangeChange} formSubmitHandle={handleSubmit} injectedFilterButton={<FilterButton />} injectedRefreshButton={<RefreshButton />} /> 
             <DashboardBodySection />
           </>
         }

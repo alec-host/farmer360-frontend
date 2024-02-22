@@ -6,23 +6,23 @@ import { Loading } from 'notiflix/build/notiflix-loading-aio';
 import API_END_POINT from "../../../endpoint/apiRoute";
 import { getSession, setSession } from "../../../session/appSession";
 import { PROFILE_SESSION } from "../../../session/constant";
+import PaymentPage from "../../../components/payment/PaymentPage";
 
 const UpgradeSubscriptionPage = () => {
 
-  const [storeData, setStoreData] = useState([]);
+  const [storeProfileData, setStoreProfileData] = useState([]);
   const [buttonDisabled, setButtonDisabled] = useState(false);
-  const [trackDataChange,setTrackDataChange] = useState(false);
 
   useEffect(() => {
     const stored_data = getSession(PROFILE_SESSION);
     if(stored_data){
-      setStoreData(stored_data);
+      setStoreProfileData(stored_data);
     }
   },[]);
   
   const handleSubmit = (event) => {
 
-    let formData = {};
+    const formData = {};
 
     event.preventDefault();
 
@@ -32,14 +32,14 @@ const UpgradeSubscriptionPage = () => {
         backgroundColor: 'rgba(0,0,0,0)',
     });
 
-    formData.email = storeData[0]?.email || "";
-    formData.owner_reference_number = storeData[0]?.reference_number || "";
-    if(storeData[0]?.account_type === "farmer"){
-      formData.subscription = storeData[0]?.subscription === "basic" ? "advance" : "basic";
+    formData.email = storeProfileData[0]?.email || "";
+    formData.owner_reference_number = storeProfileData[0]?.reference_number || "";
+    if(storeProfileData[0]?.account_type === "farmer"){
+      formData.subscription = storeProfileData[0]?.subscription === "basic" ? "advance" : "basic";
     }
-    formData.database_id = storeData[0]?.$databaseId || "";
-    formData.table_id = storeData[0]?.$collectionId || "";
-    formData.record_id = storeData[0]?.$id || "";
+    formData.database_id = storeProfileData[0]?.$databaseId || "";
+    formData.table_id = storeProfileData[0]?.$collectionId || "";
+    formData.record_id = storeProfileData[0]?.$id || "";
 
     fetch(`${API_END_POINT}/api/v1/switchSubscription`,{
         method:'PATCH',
@@ -51,16 +51,16 @@ const UpgradeSubscriptionPage = () => {
     .then(async(response) => {
         await response.json().then(data=>{
             if(data?.success){
-                setStoreData([data?.data]);
+                setStoreProfileData([data?.data]);
                 Notiflix.Notify.info('Subscription switch successful',{
                     ID:'SWA',
                     timeout:2950,
                     showOnlyTheLastOne:true                      
                 }); 
-                setTrackDataChange(!trackDataChange); 
                 setTimeout(() => {
                     window.location.reload();
-                }, 2000);                
+                }, 2000);  
+                setSession(PROFILE_SESSION,storeProfileData);              
             }else{
                 Notiflix.Notify.warning('Subscription switch has Failed',{
                     ID:'FWA',
@@ -77,11 +77,7 @@ const UpgradeSubscriptionPage = () => {
     });
   };
 
-  if(trackDataChange === true){
-    setSession(PROFILE_SESSION,storeData);
-  }
-
-  return (
+  return storeProfileData?.length > 0 ? (
     <>
       <div className="container-fluid">
         <div className="container" style={{marginTop:"15px"}}>
@@ -99,17 +95,30 @@ const UpgradeSubscriptionPage = () => {
                                       <tbody>
                                         <tr>
                                             <td><h6><strong></strong></h6></td>
-                                            <td style={{textAlign:"end"}}>
+                                            <td className="text-right">
+
                                                 {
-                                                  storeData[0]?.account_type && storeData[0]?.account_type === "farmer"
-                                                  ?
-                                                  <button className={storeData[0]?.subscription  === "basic" ? "btn btn-success m-2" : "btn btn-primary m-2"} type="button"  disabled={storeData[0]?.subscription  === "basic" ? false : true}><i></i>Upgrade</button>
+                                                  storeProfileData[0]?.account_type === "farmer" ?
+                                                    storeProfileData[0]?.account_type === "farmer" && storeProfileData[0]?.subscription === "basic" ?
+                                                    <PaymentPage SubscriptionFee={storeProfileData[0]?.subscription === "basic" ? "$10":"$10"} ButtonLabel={"Upgrade"} />
+                                                    :
+                                                    storeProfileData[0]?.account_type === "farmer" && storeProfileData[0]?.subscription === "advance" ?
+                                                    <button className={"btn btn-secondary m-2"} type="button" disabled={true}><i></i>Upgrade</button>
+                                                    :
+                                                    null
                                                   :
-                                                  <button className={storeData[0]?.subscription  === "free" ? "btn btn-success m-2" : "btn btn-primary m-2"} type="button"  disabled={storeData[0]?.subscription  === "free" ? false : true}><i></i>Upgrade</button>
+                                                    storeProfileData[0]?.account_type === "business" && storeProfileData[0]?.subscription  === "advance" ?
+                                                    <button className={"btn btn-secondary m-2"} type="button" disabled={true}><i></i>Upgrade</button>
+                                                    :
+                                                    storeProfileData[0]?.account_type === "business" && (storeProfileData[0]?.subscription  === "free" || storeProfileData[0]?.subscription  === "standard")  ?
+                                                    <PaymentPage SubscriptionFee={storeProfileData[0]?.subscription === "free" ? "$65" : "$150" } ButtonLabel={"Upgrade"} />
+                                                    :
+                                                    null
                                                 }
+
                                             </td>                    
                                         </tr>
-                                        <tr><td colSpan={2}><strong>Active package</strong>:&nbsp;&nbsp;<span style={{color:"#008000",fontSize:"16px",textTransform:"uppercase"}}><strong>{storeData[0]?.subscription}</strong></span></td></tr>
+                                        <tr><td colSpan={2}><strong>Active package</strong>:&nbsp;&nbsp;<span style={{color:"#008000",fontSize:"16px",textTransform:"uppercase"}}><strong>{storeProfileData[0]?.subscription}</strong></span></td></tr>
                                         <tr><td colSpan={2}><hr /></td></tr>
                                       </tbody>
                                   </table>
@@ -122,7 +131,7 @@ const UpgradeSubscriptionPage = () => {
         </div>
       </div>
     </>
-  );
+  ):<></>;
 };
 
 export default UpgradeSubscriptionPage;

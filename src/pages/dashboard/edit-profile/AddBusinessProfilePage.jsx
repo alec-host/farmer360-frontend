@@ -19,7 +19,7 @@ const AddBusinessProfilePage = () => {
 
   const inputFarmItemList = useRef(null);
 
-  const [storeData,setStoreData] = useState([]);
+  const [storeProfileData,setStoreProfileData] = useState([]);
   const [ activeStep, setActiveStep ] = useState(0);
   const [selectedFarmOption,setSelectedFarmOption] = useState([]);
   const [selectedFarmDisplayOption,setSelectedFarmDisplayOption] = useState([]);
@@ -72,7 +72,7 @@ const AddBusinessProfilePage = () => {
   useEffect(() => {
     const stored_data = getSession(PROFILE_SESSION);
     if(stored_data){
-      setStoreData(stored_data);
+      setStoreProfileData(stored_data);
     }
   },[]);
   
@@ -84,14 +84,13 @@ const AddBusinessProfilePage = () => {
       case "BusinessCertCopy":
         setSelectedBusinessCertFile(e.target.files[0]);
         break;
+      default: break;
     }
   };
 
   if(activeStep === 0){
     isButtonDisabled = !selectedIDNumberFile;
   }else if(activeStep === 1){
-    const idValue = readLocalCache(DBASE_KEY+"id");
-    const pinValue = readLocalCache(DBASE_KEY+"pin");
     isButtonDisabled = !selectedBusinessCertFile;
   }else{
     if(!selectedFarmOption.length){
@@ -111,7 +110,7 @@ const AddBusinessProfilePage = () => {
 
     setButtonDisabled(!buttonDisabled);
 
-    const formData = new FormData;
+    const formData = new FormData();
     formData.append('action',"business_profile");
     formData.append('pin',typeof(readLocalCache(DBASE_KEY+"pin")?.PIN) !== "undefined" ? readLocalCache(DBASE_KEY+"pin").PIN : '');
     formData.append('id_file',selectedIDNumberFile);
@@ -119,10 +118,10 @@ const AddBusinessProfilePage = () => {
     formData.append('business_address',typeof(readLocalCache(DBASE_KEY+"address")?.BusinessAddress) !== "undefined" ? readLocalCache(DBASE_KEY+"address").BusinessAddress : '');
     formData.append('business_cert_file',selectedBusinessCertFile);
     formData.append('farm_item',inputFarmItemList?.current?.value);
-    formData.append('owner_reference_number',storeData[0]?.reference_number || '')
-    formData.append('database_id',storeData[0]?.$databaseId);
-    formData.append('record_id',storeData[0]?.$id);
-    formData.append('table_id',storeData[0]?.$collectionId);
+    formData.append('owner_reference_number',storeProfileData[0]?.reference_number || '')
+    formData.append('database_id',storeProfileData[0]?.$databaseId);
+    formData.append('record_id',storeProfileData[0]?.$id);
+    formData.append('table_id',storeProfileData[0]?.$collectionId);
 
     fetch(`${API_END_POINT}/api/v1/updateUserDetailsFile`,{
         method:'PATCH',
@@ -146,7 +145,7 @@ const AddBusinessProfilePage = () => {
                 });
                 setTrackDataChange(!trackDataChange);
                 setSession(PROFILE_SESSION,data?.data);
-                setStoreData(getSession(PROFILE_SESSION));
+                setStoreProfileData(getSession(PROFILE_SESSION));
             }else{
                 Notiflix.Notify.warning('Update has Failed',{
                     ID:'FWA',
@@ -221,7 +220,7 @@ const AddBusinessProfilePage = () => {
                 className="form-control"
                 id="BusinessName"
                 name="BusinessName"
-                defaultValue={storeData[0]?.business_name}
+                defaultValue={storeProfileData[0]?.business_name}
                 readOnly
             />
         </div>

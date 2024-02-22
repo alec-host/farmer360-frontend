@@ -28,7 +28,7 @@ const PricingBusinessPage = () => {
                                 <li>Free survey request/year limited 200 farmers <i className="fa fa-multiply mr-1" style={{color:"#EA4335"}}></i></li>
                                 </ul>
                                 <br/>
-                                <NavLink to={"/register/business/?subscription=free"}>
+                                <NavLink to={"/register/business/?subscription=free&t=business&&fee=0"}>
                                     <button type="button" className="btn btn-md btn-block btn-outline-success font-weight-bold">Sign up for Free</button>
                                 </NavLink>                                
                             </div>
@@ -49,7 +49,7 @@ const PricingBusinessPage = () => {
                                 <li>API integration(additional cost) <i className="fa fa-check mr-1" style={{color:"#FFA600"}}></i></li>
                                 <li>Free survey request/year limited to 200 farmers: Additional cost</li>
                                 </ul>
-                                <NavLink to={"/register/business/?subscription=basic"}>
+                                <NavLink to={"/register/business/?subscription=basic&t=business&&fee=$65"}>
                                     <button type="button" className="btn btn-md btn-block btn-success font-weight-bold">Get Started</button>
                                 </NavLink>  
                             </div>
@@ -70,7 +70,7 @@ const PricingBusinessPage = () => {
                                 <li>API integration(additional cost) <i className="fa fa-check mr-1" style={{color:"#FFA600"}}></i></li>
                                 <li>Free survey request/year limited to 200 farmers: Additional cost</li>
                                 </ul>
-                                <NavLink to={"/register/business/?subscription=advance"}>
+                                <NavLink to={"/register/business/?subscription=advance&t=business&&fee=$150"}>
                                     <button type="button" className="btn btn-md btn-block btn-success font-weight-bold">Get Started</button>
                                 </NavLink>
                             </div>

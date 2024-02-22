@@ -7,7 +7,7 @@ import 'react-phone-input-2/lib/style.css'
 import Notiflix from 'notiflix';
 import { Loading } from 'notiflix/build/notiflix-loading-aio';
 
-import { RegionDropdown } from 'react-country-region-selector';
+import { RegionDropdown } from "react-country-region-selector";
 
 import { Footer, Navbar } from "../components";
 import { category_options, entity_options } from '../db/optionsData';
@@ -15,6 +15,7 @@ import formattedDateTime from '../utility/format-current-date';
 import API_END_POINT from '../endpoint/apiRoute';
 
 import buttonStyle from "../css/custom.button.module.css";
+import PaymentPage from '../components/payment/PaymentPage';
 
 const Register = () => {
 
@@ -41,6 +42,7 @@ const Register = () => {
     const [region, setRegion] = useState(null);
 
     const subscription = new URLSearchParams(window?.location?.search).get('subscription');
+    const fee = new URLSearchParams(window?.location?.search).get('fee');
 
     useEffect(() =>{
         setCurrentDate(formattedDateTime);
@@ -90,11 +92,6 @@ const Register = () => {
     };
 
     const handleInputChange = () => {};
-
-    const handlePayment = () => {
-        alert('sssss');
-        return;
-    };
 
     const handleRegistredByChange = (event) => {
         setSelectedCategory(event.value);
@@ -437,9 +434,7 @@ const Register = () => {
                                             Register 
                                         </button>
                                     :
-                                        <button className={"my-2 mx-auto fw-bold btn btn-outline-danger"} type="submit" onClick={handlePayment} disabled={!buttonDisabled}> 
-                                            Pay Now
-                                        </button>                               
+                                        <PaymentPage SubscriptionFee={fee} ButtonLabel={"Pay Now"}/>                             
                                     }
                                 </div>
                             </form>

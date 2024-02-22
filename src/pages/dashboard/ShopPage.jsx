@@ -3,10 +3,14 @@ import { Link } from "react-router-dom";
 import { STORE_KEY, readLocalCache } from "../../db/localSessionData";
 
 import ProfileAvatar from "../../components/ProfileAvatar";
+import { getSession } from "../../session/appSession";
+import { PROFILE_SESSION } from "../../session/constant";
 
 const ShopPage = () => {
 
   const [storeShopData, setStoreShopData] = useState([]);
+  const [storeProfileData, setStoreProfileData] = useState([]);
+
 
   const refIframe = React.useRef(null);
 
@@ -19,14 +23,19 @@ const ShopPage = () => {
     setIframeUrl(page);
   };  
 
-  useEffect(() =>{
+  useEffect(() => {
+    const stored_profile_data = getSession(PROFILE_SESSION);
+    if (stored_profile_data) {
+      setStoreProfileData(stored_profile_data);
+    }  
+
     const stored_data = readLocalCache(STORE_KEY);
     if (stored_data) {
       setStoreShopData(stored_data);
     }
   },[]);
 
-  return (
+  return storeProfileData?.length > 0 ? (
     <>
       <div className="container-fluid" style={{marginTop:"0px",background:"#F9F9F9",width:"100%",height:"auto"}}>
         <div className="container-fluid">
@@ -84,7 +93,7 @@ const ShopPage = () => {
         </div>
     </div>
   </>
-  );
+  ):<></>;
 };
 
 export default ShopPage;

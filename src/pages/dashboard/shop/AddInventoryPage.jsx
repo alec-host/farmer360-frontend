@@ -9,10 +9,11 @@ import 'react-quill/dist/quill.snow.css';
 import Notiflix from 'notiflix';
 import { Loading } from 'notiflix/build/notiflix-loading-aio';
 
-import { PRODUCT_KEY, readLocalCache, storeOnLocalCache } from "../../../db/localSessionData";
 import API_END_POINT from "../../../endpoint/apiRoute";
 
 import customCss from "../../../css/custom.loading.module.css";
+
+import { PRODUCT_KEY, readLocalCache, storeOnLocalCache } from "../../../db/localSessionData";
 
 const AddInventoryPage = () => {
 
@@ -24,9 +25,8 @@ const AddInventoryPage = () => {
     const [hideProfile, setHideProfile] = useState(false);
  
     const [storeProductData, setStoreProductData] = useState([]);
-    const [filter, setFilter] = useState(storeProductData);
+    const [filterProduct, setFilterProduct] = useState(storeProductData);
     const [buttonDisabled, setButtonDisabled] = useState(false);
-    const [trackDataChange,setTrackDataChange] = useState(false);
 
     const [productReferenceNumber,setProductReferenceNumber] = useState([]);
     const [databaseId, setDatabaseId] = useState([]);
@@ -47,7 +47,7 @@ const AddInventoryPage = () => {
         const stored_data = readLocalCache(PRODUCT_KEY);
         if(stored_data){
             setStoreProductData(stored_data);
-            setFilter(stored_data);
+            setFilterProduct(stored_data);
         }
         Loading.init({className:customCss.notiflix_loading,});
     },[]); 
@@ -96,7 +96,7 @@ const AddInventoryPage = () => {
         }else{
             filteredProductList = storeProductData;
         }
-        setFilter(filteredProductList);
+        setFilterProduct(filteredProductList);
     } 
     
     const handleOnChange = (e) => {
@@ -144,12 +144,6 @@ const AddInventoryPage = () => {
             const documentIdArr = [...formControlD].map(input => input.value);
             const collectionIdArr = [...formControlE].map(input => input.value);
 
-            console.log(isPublishedArr[formId]);
-            console.log(productReferenceNumberArr[formId]);
-            console.log(databaseIdArr[formId]);
-            console.log(documentIdArr[formId]);
-            console.log(collectionIdArr[formId]);
-
             if(isPublishedArr[formId] === "0"){
                 if(textChanged === 0){
                     publish_status = 1;
@@ -173,9 +167,7 @@ const AddInventoryPage = () => {
                     table_id:collectionIdArr[formId],
                     record_id:documentIdArr[formId]
                 };
-                
-                console.log(JSON.stringify(formUpdateData));  
-
+            
                 httpPost(formUpdateData); 
             }
         }
@@ -197,21 +189,20 @@ const AddInventoryPage = () => {
             }
         })
         .then(async(response) => {
-            await response.json().then(data=>{
-                console.log(data);
+            await response.json().then(data => {
                 if(data?.success){
                     setFormData({});
                     setStoreProductData(data?.data);
-                    setFilter(data?.data);
+                    setFilterProduct(data?.data);
                     Notiflix.Notify.info('Update successful',{
                         ID:'SWA',
                         timeout:2950,
                         showOnlyTheLastOne:true                      
-                    }); 
-                    setTrackDataChange(!trackDataChange); 
+                    });
                     setTimeout(() => {
                         //window.location.reload();
-                    }, 2000);                
+                    }, 2000);  
+                    storeOnLocalCache(PRODUCT_KEY,storeProductData);              
                 }else{
                     Notiflix.Notify.warning('Product update has Failed',{
                         ID:'FWA',
@@ -227,10 +218,6 @@ const AddInventoryPage = () => {
             console.error(await error);
         });
     };
-
-    if(trackDataChange === true){
-        storeOnLocalCache(PRODUCT_KEY,storeProductData);
-    }
 
     const renderForms = (data) => {
         const forms = [];
@@ -480,7 +467,7 @@ const AddInventoryPage = () => {
             }
         return forms;
     };
-
+    
     return (
         <>
             <div className="container-fluid">
@@ -521,7 +508,7 @@ const AddInventoryPage = () => {
                                                 <br/>
                                             </div>
                                             <p></p>
-                                            {filter?.map((data) => (renderForms([data])))}
+                                            {filterProduct?.map((data) => (renderForms([data])))}
                                         </div>
                                     </td>
                                 </tr>

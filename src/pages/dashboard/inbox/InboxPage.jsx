@@ -24,7 +24,7 @@ const InboxPage = () => {
     const inputMessage = useRef("");
     const [hideProfile, setHideProfile] = useState(false);
     const [hideReply, setHideReply] = useState(false);
-    const [storeData, setStoreData] = useState([]);
+    const [storeProfileData, setStoreProfileData] = useState([]);
     const [storeInboxData, setStoreInboxData] = useState([]);
     const [inboxSubject, setInboxSubject] = useState([]);
     const [inboxBody, setInboxBody] = useState([]);
@@ -46,7 +46,7 @@ const InboxPage = () => {
     useEffect(() => {
         const stored_data = getSession(PROFILE_SESSION);
         if(stored_data){
-            setStoreData(stored_data);
+            setStoreProfileData(stored_data);
         }
     },[]);
 
@@ -69,7 +69,7 @@ const InboxPage = () => {
             backgroundColor: 'rgba(0,0,0,0)',
         });
         clearLocalCache(INBOX_KEY);
-        console.log(storeData);
+        console.log(storeProfileData);
         getInbox();
         Loading.remove(1523);
     };
@@ -77,7 +77,7 @@ const InboxPage = () => {
     const getInbox = async() => {
         const config = {
         method: 'GET',
-        url: API_END_POINT+'/api/v1/getInbox?owner_reference_number='+storeData[0]?.reference_number+'&email='+storeData[0]?.email,
+        url: API_END_POINT+'/api/v1/getInbox?owner_reference_number='+storeProfileData[0]?.reference_number+'&email='+storeProfileData[0]?.email,
         headers: { 
           'Content-Type': 'application/json'
         }};
@@ -291,7 +291,7 @@ const InboxPage = () => {
 
     const actionsMemo = React.useMemo(() => <div><Refresh onRefresh={handleRefresh}/></div>, []);
 
-    return (
+    return  storeProfileData?.length > 0 ? (
         <>
             <div className="container-fluid">
                 <div className="row" style={{marginTop:"15px"}}>
@@ -304,7 +304,7 @@ const InboxPage = () => {
                                 <tr style={{display: true  ? "" : "none"}}>
                                     <td><h5><strong></strong></h5></td>
                                     <td style={{textAlign:"end"}}>
-                                        <button className="btn btn-success m-2" onClick={toggleProfileHide} disabled={storeData[0]?.is_profile_completed === 1 ? false : true}> View Inbox</button>
+                                        <button className="btn btn-success m-2" onClick={toggleProfileHide} disabled={storeProfileData[0]?.is_profile_completed === 1 ? false : true}> View</button>
                                     </td>
                                 </tr>                    
                                 <tr>
@@ -345,7 +345,7 @@ const InboxPage = () => {
                 </div>
             </div>
         </>
-    );
+    ):<></>;
 };
 
 export default InboxPage;

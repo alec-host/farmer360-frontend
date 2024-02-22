@@ -1,7 +1,7 @@
 import React,{ useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 
-import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
+import { CountryDropdown, RegionDropdown } from "react-country-region-selector";
 
 import Notiflix from 'notiflix';
 import { Loading } from 'notiflix/build/notiflix-loading-aio';
@@ -23,7 +23,7 @@ const EditBusinessContactInfoPage = () => {
 
   const [hideProfile, setHideProfile] = useState(false);
   const [hideLocation, setHideLocation] = useState(false);
-  const [storeData, setStoreData] = useState([]);
+  const [storeProfileData, setStoreProfileData] = useState([]);
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [trackDataChange,setTrackDataChange] = useState(false);
   const [inputUpdate,setInputUpdate] = useState("");
@@ -48,7 +48,7 @@ const EditBusinessContactInfoPage = () => {
     setCountry(countryList);
     const stored_data = getSession(PROFILE_SESSION);
     if(stored_data){
-      setStoreData(stored_data);
+      setStoreProfileData(stored_data);
     }
     Loading.init({className:customCss.notiflix_loading,});
   },[]); 
@@ -69,10 +69,10 @@ const EditBusinessContactInfoPage = () => {
         backgroundColor: 'rgba(0,0,0,0)',
     });
 
-    formData.account_type = storeData[0]?.account_type || "";;
-    formData.phone = storeData[0]?.phone || "";
-    formData.email = storeData[0]?.email || "";
-    formData.account_type = storeData[0]?.account_type || "";
+    formData.account_type = storeProfileData[0]?.account_type || "";;
+    formData.phone = storeProfileData[0]?.phone || "";
+    formData.email = storeProfileData[0]?.email || "";
+    formData.account_type = storeProfileData[0]?.account_type || "";
 
     switch(inputUpdate){
         case "contact":
@@ -89,9 +89,9 @@ const EditBusinessContactInfoPage = () => {
         break;
     }
 
-    formData.database_id = storeData[0]?.$databaseId || "";
-    formData.table_id = storeData[0]?.$collectionId || "";
-    formData.record_id = storeData[0]?.$id || "";
+    formData.database_id = storeProfileData[0]?.$databaseId || "";
+    formData.table_id = storeProfileData[0]?.$collectionId || "";
+    formData.record_id = storeProfileData[0]?.$id || "";
 
     fetch(`${API_END_POINT}/api/v1/changeBusinessProfile`,{
         method:'PATCH',
@@ -107,7 +107,8 @@ const EditBusinessContactInfoPage = () => {
                 inputLastName.current.value='';
                 setCountry('');
                 setRegion('');
-                setStoreData(data?.data);
+                setStoreProfileData(data?.data);
+                setSession(PROFILE_SESSION,data?.data);
                 Notiflix.Notify.info('Update successful',{
                     ID:'SWA',
                     timeout:2950,
@@ -133,11 +134,7 @@ const EditBusinessContactInfoPage = () => {
     });
   };
 
-  if(trackDataChange === true){
-    setSession(PROFILE_SESSION,storeData);
-  }
-
-  return (
+  return storeProfileData.length > 0 ? (
     <>
       <div className="container-fluid">
         <div className="container" style={{marginTop:"15px"}}>
@@ -151,7 +148,7 @@ const EditBusinessContactInfoPage = () => {
                             <td><h5><strong>Contact Info</strong></h5></td>
                             <td style={{textAlign:"end"}}>
                                 {
-                                storeData[0]?.first_name === "N/A" && storeData[0]?.last_name === "N/A" ?
+                                storeProfileData[0]?.first_name === "N/A" && storeProfileData[0]?.last_name === "N/A" ?
                                 null
                                 :
                                 <NavLink to="#" className="btn btn-outline-success m-2" onClick={toggleProfileHide}><i className=""></i> Edit</NavLink>
@@ -164,10 +161,10 @@ const EditBusinessContactInfoPage = () => {
                                     <thead><tr><th/></tr></thead>
                                     <tbody>
                                         <tr>
-                                            <td><strong>{storeData[0]?.business_name}</strong></td>
+                                            <td><strong>{storeProfileData[0]?.business_name}</strong></td>
                                         </tr>
                                         <tr>
-                                            <td style={{textAlign:"left"}}>{storeData[0]?.email}</td>
+                                            <td style={{textAlign:"left"}}>{storeProfileData[0]?.email}</td>
                                         </tr> 
                                     </tbody> 
                                 </table>
@@ -189,7 +186,7 @@ const EditBusinessContactInfoPage = () => {
                                                         id="FirstName"
                                                         name="FirstName"
                                                         onFocus={()=>handleInputContactFocus("contact")}
-                                                        defaultValue={storeData[0]?.first_name}
+                                                        defaultValue={storeProfileData[0]?.first_name}
                                                         ref={inputFirstName}
                                                         placeholder={"First Name"}
                                                         maxLength={40}
@@ -207,7 +204,7 @@ const EditBusinessContactInfoPage = () => {
                                                         id="LastName"
                                                         name="LastName"
                                                         onFocus={()=>handleInputContactFocus("contact")}
-                                                        defaultValue={storeData[0]?.last_name}
+                                                        defaultValue={storeProfileData[0]?.last_name}
                                                         ref={inputLastName}
                                                         placeholder={"Last Name"}
                                                         maxLength={40}
@@ -225,7 +222,7 @@ const EditBusinessContactInfoPage = () => {
                                                         className="form-control"
                                                         id="Email"
                                                         name="Email"
-                                                        value={storeData[0]?.email}
+                                                        value={storeProfileData[0]?.email}
                                                         placeholder="Email" 
                                                         maxLength={40}
                                                         readOnly
@@ -241,7 +238,7 @@ const EditBusinessContactInfoPage = () => {
                                                         className="form-control"
                                                         id="Phone"
                                                         name="Phone"
-                                                        value={storeData[0]?.phone}
+                                                        value={storeProfileData[0]?.phone}
                                                         placeholder="Phone number"
                                                         maxLength={20}
                                                         readOnly
@@ -290,10 +287,10 @@ const EditBusinessContactInfoPage = () => {
                                     <thead><tr><th/></tr></thead>
                                     <tbody>
                                         <tr>
-                                            <td><strong>{storeData[0]?.city}</strong></td>
+                                            <td><strong>{storeProfileData[0]?.city}</strong></td>
                                         </tr>
                                         <tr>
-                                            <td style={{textAlign:"left"}}>{storeData[0]?.country}</td>
+                                            <td style={{textAlign:"left"}}>{storeProfileData[0]?.country}</td>
                                         </tr> 
                                     </tbody> 
                                 </table>
@@ -306,6 +303,7 @@ const EditBusinessContactInfoPage = () => {
                                         <thead><tr><th/></tr></thead>
                                         <tbody>
                                             <tr>
+                                               
                                                 <td colSpan={2}>
                                                     <CountryDropdown
                                                         id="Country"
@@ -313,7 +311,7 @@ const EditBusinessContactInfoPage = () => {
                                                         classes="form-control"
                                                         value={country}
                                                         valueType="full"
-                                                        defaultValue={storeData[0]?.city === "Not specified" || storeData[0]?.city === null  ? null : storeData[0]?.city}
+                                                        defaultValue={storeProfileData[0]?.city === "Not specified" || storeProfileData[0]?.city === null  ? null : storeProfileData[0]?.city}
                                                         onChange={(val) => setCountry(val)}
                                                         ref={inputCountry}
                                                         required
@@ -371,7 +369,7 @@ const EditBusinessContactInfoPage = () => {
         </div>
       </div>
     </>
-  );
+  ):<></>;
 };
 
 export default EditBusinessContactInfoPage;

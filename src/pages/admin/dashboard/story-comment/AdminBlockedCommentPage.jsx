@@ -10,12 +10,13 @@ import API_END_POINT from "../../../../endpoint/apiRoute";
 import datatableStyle from "../../../../css/datatable.module.css";
 import { getSession } from "../../../../session/appSession";
 import { PROFILE_SESSION } from "../../../../session/constant";
-import { COMMENT_KEY, readLocalCache, storeOnLocalCache } from "../../../../db/localSessionData";
 import FilterComponent from "../../../../components/FilterComponent";
 import makeTextBold from "../../../../components/BoldTextComponent";
 import downloadCSV from "../../../../utils/downloadCSV";
 
 import customCss from "../../../../css/custom.loading.module.css";
+
+import { COMMENT_KEY, readLocalCache, storeOnLocalCache } from "../../../../db/localSessionData";
 
 
 const AdminBlockedCommentPage = () => {
@@ -134,7 +135,7 @@ const AdminBlockedCommentPage = () => {
 
     const actionsMemo = React.useMemo(() => <div><Export onExport={() => downloadCSV(filteredItems,filteredItems)} /><Refresh onRefresh={handleRefresh}/></div>, [filteredItems,storeCommentData]);
 
-    return (
+    return storeProfileData?.length > 0 ? (
         <>
             <div className="container-fluid">
                 <div className="row" style={{marginTop:"15px"}}>
@@ -147,7 +148,7 @@ const AdminBlockedCommentPage = () => {
                                 <tr style={{display: true  ? "" : "none"}}>
                                     <td><h5><strong></strong></h5></td>
                                     <td style={{textAlign:"end"}}>
-                                        <button className="btn btn-success m-2" onClick={toggleDataGrid} > View Comments</button>
+                                        <button className="btn btn-success m-2" onClick={toggleDataGrid} > View</button>
                                     </td>
                                 </tr>                    
                                 <tr>
@@ -185,7 +186,7 @@ const AdminBlockedCommentPage = () => {
                 </div>
             </div>
         </>
-    );
+    ):<></>;
 };
 
 export default AdminBlockedCommentPage;

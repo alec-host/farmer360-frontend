@@ -1,13 +1,15 @@
 import React ,{useEffect, useState} from 'react'
-import { Footer, AdminDashboardNavHeader, AdminDashboardBodySection } from "../../components";
+
 import {useNavigate} from 'react-router-dom';
 import { getSession } from '../../session/appSession';
 import { PROFILE_SESSION } from '../../session/constant';
+import { Footer, AdminDashboardNavHeader, AdminDashboardBodySection } from "../../components";
 
 const AdminDashboard = () => {
 
   const navigate = useNavigate();
   const [storeProfileData,setStoreProfileData] = useState([]);
+
   useEffect(() => {
     const session = getSession(PROFILE_SESSION);
     setStoreProfileData(session);
@@ -20,10 +22,10 @@ const AdminDashboard = () => {
   return (
     <>
       <AdminDashboardNavHeader />
-      <AdminDashboardBodySection />
+        <AdminDashboardBodySection />
       <Footer />
     </>
   )
 };
 
-export default AdminDashboard
+export default AdminDashboard;

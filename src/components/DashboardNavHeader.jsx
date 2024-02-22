@@ -37,29 +37,33 @@ const [storeProfileData, setStoreProfileData] = useState([]);
                     </button>
                     <div className="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul className="navbar-nav m-auto my-2 text-center"></ul>
-                        <div className="dropdown"> 
-                            <a href="/#" className="d-flex align-items-center link-body-emphasis text-decoration-none dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                &nbsp;&nbsp;
-                                <Avatar 
-                                    colors={['#FCCF0A', '#0B51C1', '#3A6024','#B3003C','#7E3794','#F2855C']}
-                                    name={storeProfileData[0]?.email}
-                                    size={45}
-                                    round={true} 
-                                />
-                                {
-                                storeProfileData[0]?.account_type === "farmer" ? 
-                                <span>&nbsp;{storeProfileData[0]?.first_name === "N/A" && storeProfileData[0]?.last_name === "N/A" ? storeProfileData[0]?.business_name : storeProfileData[0]?.first_name }&nbsp;</span>
-                                :
-                                <span>&nbsp;{ storeProfileData[0]?.business_name }&nbsp;</span>
-                                }
-                            </a>
-                            <ul className="dropdown-menu text-small shadow text-left">
-                                <li><hr className="dropdown-divider"/></li>
-                                <li className="nav-item">
-                                    <NavLink className="nav-link" to="/login" onClick={handleOnClick}>&nbsp;&nbsp;&nbsp;&nbsp;Sign out</NavLink>
-                                </li>                                                                                                                                                          
-                            </ul>
-                        </div>                     
+                        {
+                            storeProfileData?.length > 0 ?
+                            <div className="dropdown"> 
+                                <a href="/#" className="d-flex align-items-center link-body-emphasis text-decoration-none dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                    &nbsp;&nbsp;
+                                    <Avatar 
+                                        colors={['#FCCF0A', '#0B51C1', '#3A6024','#B3003C','#7E3794','#F2855C']}
+                                        name={storeProfileData[0]?.email ? storeProfileData[0]?.email : ""}
+                                        size={45}
+                                        round={true} 
+                                    />
+                                    {
+                                    storeProfileData[0]?.account_type === "farmer" ? 
+                                    <span>&nbsp;{storeProfileData[0]?.first_name === "N/A" && storeProfileData[0]?.last_name === "N/A" ? storeProfileData[0]?.business_name : storeProfileData[0]?.first_name }&nbsp;</span>
+                                    :
+                                    <span>&nbsp;{ storeProfileData[0]?.business_name }&nbsp;</span>
+                                    }
+                                </a>
+                                <ul className="dropdown-menu text-small shadow text-left">
+                                    <li><hr className="dropdown-divider"/></li>
+                                    <li className="nav-item">
+                                        <NavLink className="nav-link" to="/login" onClick={handleOnClick}>&nbsp;&nbsp;&nbsp;&nbsp;Sign out</NavLink>
+                                    </li>                                                                                                                                                          
+                                </ul>
+                            </div>
+                            :<></>
+                        }                     
                     </div>
                 </div>
             </nav>
