@@ -46,6 +46,6 @@ Start the server
 * [React](https://reactjs.org/)
 * [Redux](https://redux.js.org/)
 * [Bootstrap](https://getbootstrap.com/)
-* [Firebase] (https://firebase.google.com/)
+* [Firebase](https://firebase.google.com/)
 * [Fake Store API](https://fakestoreapi.com/)
 
