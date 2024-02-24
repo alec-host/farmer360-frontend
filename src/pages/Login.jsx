@@ -159,7 +159,7 @@ const Login = () => {
   return (
     <>
       <Navbar />
-      <div className="container my-3 py-3" style={{height:"auto"}}>
+      <div className="container my-3 py-3" style={{height:"70vh"}}>
         <h5 className="text-center">Login</h5>
         <hr />
         <div className="row my-4 h-100">

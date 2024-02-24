@@ -2,7 +2,7 @@ import React,{ useState, useEffect, useRef } from "react";
 
 import Notiflix from "notiflix";
 import Select from "react-select";
-import MultiSelect from "react-awesome-multiselect";
+import { MultiSelect } from "react-multi-select-component";
 import { Loading } from "notiflix/build/notiflix-loading-aio";
 import CustomStepper from "../../../components/CustomStepper";
 
@@ -13,6 +13,8 @@ import AddBusinessProfilePage from "./AddBusinessProfilePage";
 import { getSession, setSession } from "../../../session/appSession";
 import { PROFILE_SESSION } from "../../../session/constant";
 import ProfileBusinessPage from "../business/ProfileBusinessPage";
+
+import customCss from "../../../css/custom.loading.module.css";
 
 const AddIndividualProfilePage = () => {
 
@@ -27,7 +29,6 @@ const AddIndividualProfilePage = () => {
   const [storeProfileData,setStoreProfileData] = useState([]);
   const [ activeStep, setActiveStep ] = useState(0);
   const [selectedFarmOption,setSelectedFarmOption] = useState([]);
-  const [selectedFarmDisplayOption,setSelectedFarmDisplayOption] = useState([]);
   const [buttonDisabled,setButtonDisabled] = useState(false);
 
   const steps = [
@@ -38,19 +39,12 @@ const AddIndividualProfilePage = () => {
 
   let isButtonDisabled = null;
 
-  const handleSelectCb = (opt) => {
-    setSelectedFarmOption(opt);
-  };
-
-  const handleSelectDispayNameCb = (opt) => {
-    setSelectedFarmDisplayOption(opt);
-  };
-
   useEffect(() => {
     const stored_data = getSession(PROFILE_SESSION);
     if(stored_data){
       setStoreProfileData(stored_data);
     }
+    Loading.init({className:customCss.notiflix_loading,});
   },[]);
   
   const handleGenderChange = item => {
@@ -87,17 +81,19 @@ const AddIndividualProfilePage = () => {
 
     setButtonDisabled(!buttonDisabled);
 
+    const farmOptions = selectedFarmOption.map(item => item.value);
+
     formData.action = "profile";
     formData.phone = storeProfileData[0]?.msisdn || "";
     formData.email = storeProfileData[0]?.email || "";
     formData.gender = selectedGender.value || "";
     formData.age_bracket = selectedAge.value || "";
     formData.education_level = selectedEducation.value || "";
-    formData.farmed_items = inputFarmItemList?.current?.value || "";
+    formData.farmed_items = farmOptions.join(', ') || "";
     formData.database_id = storeProfileData[0]?.$databaseId || "";
     formData.table_id = storeProfileData[0]?.$collectionId || "";
     formData.record_id = storeProfileData[0]?.$id || "";
-    formData.is_profile_completed = 1; 
+    formData.is_profile_completed = 1;
 
     fetch(`${API_END_POINT}/api/v1/updateUserDetails`,{
         method:'PATCH',
@@ -229,20 +225,16 @@ const AddIndividualProfilePage = () => {
           <table style={{width:'100%'}}>
               <thead><tr><th/></tr></thead>
               <tbody>
-              <tr><td align="left"><label for="FarmList">What do you farm?</label> </td></tr>
+              <tr><td align="left"><label htmlFor="FarmList">What do you farm?</label> </td></tr>
               <tr>
                 <td>
                   <MultiSelect
-                    list={farm_item_options}
-                    handleSelectCb={handleSelectCb}
-                    handleSelectDispayNameCb={handleSelectDispayNameCb}
-                    selectedOptions={selectedFarmOption}
-                    dropDownColor={"#FCFCFC"}
-                    chipColor={"#EA4335"}
-                    listSelectColor={"#008000"}
-                    isCloseOnOutsideClick={true}
-                    isTypeToSearch={true}
-                  /> 
+                    options={farm_item_options}
+                    value={selectedFarmOption}
+                    onChange={setSelectedFarmOption}
+                    labelledBy="Select Options from list"
+                    className="fw-bold text-danger"  
+                  />
                 </td>
               </tr>
               <tr>
@@ -252,7 +244,7 @@ const AddIndividualProfilePage = () => {
                     id="FarmItem" 
                     name="FarmItem" 
                     style={{width:'100%'}}
-                    value={selectedFarmDisplayOption} 
+                    value={selectedFarmOption} 
                     ref={inputFarmItemList} 
                     readOnly
                   />

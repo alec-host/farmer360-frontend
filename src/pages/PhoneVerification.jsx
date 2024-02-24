@@ -30,8 +30,6 @@ const PhoneVerification = () => {
         setInputPhone('+'+in_phone);
       }
     },[]);
-
-    console.log(in_phone);
     
     const generateRecaptcha = () => {
       window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha', {
@@ -46,6 +44,10 @@ const PhoneVerification = () => {
 
       event.preventDefault();
 
+      Loading.standard({
+        backgroundColor: 'rgba(0,0,0,0)',
+      });
+
       if(inputPhone === phone){
         setHasFilled(true);
         generateRecaptcha();
@@ -58,7 +60,7 @@ const PhoneVerification = () => {
           }).catch((error) => {
             // Error; SMS not sent
             setShowOtpRequestLink(!showOtpRequestLink);
-            console.log(error);
+            console.error(error);
           });
       }else{
         Notiflix.Notify.warning('Invalid Phone Number.',{
@@ -67,6 +69,7 @@ const PhoneVerification = () => {
           showOnlyTheLastOne:true                      
         });
       }
+      Loading.remove(1523);
     }
     
     const navigate = useNavigate();
@@ -80,25 +83,15 @@ const PhoneVerification = () => {
         console.log(otp);
         // verify otp
         let confirmationResult = window.confirmationResult;
-        confirmationResult.confirm(otp).then((result) => {
-
-          let user = result.user;
-
-          console.log(otp);
-
-          /*
-          let formData = {};
-          let user = result.user;
+        confirmationResult.confirm(otp).then((data) => {
+          
+          const formData = {};
 
           formData.is_verified = 1;
-          formData.phone = user.phone.phoneNumber;
-          formData.is_verified = entity;
-
-          console.log(formData);
-          */
+          formData.phone = data.user.phoneNumber.replace('+','');
+          formData.entity_type = entity;
           
-          //httpPost(formData);
-          navigate('/login/1');
+          httpPost(formData);
           
         }).catch((error) => {
           Notiflix.Notify.warning('User couldn\'t sign in (bad verification code?',{
@@ -106,11 +99,16 @@ const PhoneVerification = () => {
             timeout:2950,
             showOnlyTheLastOne:true                      
           });
+          console.error(error);
         });
       }
     }
 
     const httpPost = (formData) => {
+      Loading.standard({
+        backgroundColor: 'rgba(0,0,0,0)',
+      });
+
       fetch(`${API_END_POINT}/api/v1/verifyPhoneNumber`,{
           method:'PATCH',
           body: JSON.stringify(formData),
@@ -119,7 +117,7 @@ const PhoneVerification = () => {
           }
       })
       .then(async(response) => {
-          await response.json().then(data=>{
+          await response.json().then(data => {
               if(data?.success){
                   Notiflix.Notify.info('Verification was successful',{
                       ID:'SWA',
@@ -136,9 +134,11 @@ const PhoneVerification = () => {
               }
               Loading.remove(1523);
           });
+          Loading.remove(1523);
       })
       .catch(async(error) => {
-          console.error(await error);
+        Loading.remove(1523);
+        console.error(await error);
       });
     };
 
@@ -150,7 +150,7 @@ const PhoneVerification = () => {
       return (
         <>
            <Navbar/>
-            <div className="container my-3 py-3" style={{height:"50vh"}}>
+            <div className="container my-3 py-3" style={{height:"70vh"}}>
               <h5 className="text-center">Phone Verification</h5>
               <hr />
                 <div className="row my-4 h-100">
@@ -198,20 +198,20 @@ const PhoneVerification = () => {
       return (
         <>
             <Navbar/>
-            <div className="container my-3 py-3" style={{height:"50vh"}}>
-              <div className="row my-4 h-100">
-                <div className="col-md-4 col-lg-4 col-sm-8 mx-auto">
-                  <label htmlFor="OTP" className="form-label text-black-50 m-0 small" >Enter the OTP</label>
-                  <input className="form-control" type="number" id="OTP" maxLength={6} value={otp} onChange={verifyOtp} />
-                  <div className="my-2 text-end">
-                    <div className="text-start">
-                      <Link className="text-decoration-underline text-info" onClick={handleButtonShow} style={{display: showOtpRequestLink ? "" : "none"}}>Didn't get a verification code?</Link>
-                    </div>
-                    <button className={"my-1 mx-auto btn fw-bold " + buttonStyle.custom_theme_button} style={{display: hideRequestOtpButton ? "none" : "" }} >Request Code</button>
-                </div>
+              <div className="container my-3 py-3" style={{height:"70vh"}}>
+                <div className="row my-4 h-100">
+                  <div className="col-md-4 col-lg-4 col-sm-8 mx-auto">
+                    <label htmlFor="OTP" className="form-label text-black-50 m-0 small" >Enter the OTP</label>
+                    <input className="form-control" type="number" id="OTP" maxLength={6} value={otp} onChange={verifyOtp} />
+                    <div className="my-2 text-end">
+                      <div className="text-start">
+                        <Link className="text-decoration-underline text-info" onClick={handleButtonShow} style={{display: showOtpRequestLink ? "" : "none"}}>Didn't get a verification code?</Link>
+                      </div>
+                      <button className={"my-1 mx-auto btn fw-bold " + buttonStyle.custom_theme_button} style={{display: hideRequestOtpButton ? "none" : "" }} >Request Code</button>
+                  </div>
+                  </div>
                 </div>
               </div>
-            </div>
             <Footer />
             <div id="recaptcha"></div>
         </>

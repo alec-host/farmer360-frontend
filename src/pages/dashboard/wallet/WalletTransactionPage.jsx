@@ -1,5 +1,4 @@
 import React,{ useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
 
 import axios from 'axios';
 
@@ -122,7 +121,9 @@ const WalletTransactionPage = () => {
                                     <tr style={{display: storeProfileData[0]?.account_type === "farmer" || storeProfileData[0]?.account_type === "business" ? "" : "none"}}>
                                         <td><h5><strong></strong></h5></td>
                                         <td style={{textAlign:"end"}}>
-                                            <NavLink to="#" className="btn btn-outline-success m-2" onClick={toggleProfileHide}><i className="" ></i>  View</NavLink>
+                                            <button className="btn btn-outline-success m-2" onClick={toggleProfileHide} disabled={storeProfileData[0]?.is_profile_completed === 0 ? true : false}>
+                                                <i className="" ></i>  View
+                                            </button>
                                         </td>
                                     </tr>                     
                                     <tr>

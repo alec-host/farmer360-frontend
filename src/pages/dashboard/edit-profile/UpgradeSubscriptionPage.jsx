@@ -115,7 +115,6 @@ const UpgradeSubscriptionPage = () => {
                                                     :
                                                     null
                                                 }
-
                                             </td>                    
                                         </tr>
                                         <tr><td colSpan={2}><strong>Active package</strong>:&nbsp;&nbsp;<span style={{color:"#008000",fontSize:"16px",textTransform:"uppercase"}}><strong>{storeProfileData[0]?.subscription}</strong></span></td></tr>

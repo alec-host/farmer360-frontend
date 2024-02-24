@@ -170,7 +170,7 @@ const RegisterBusiness = () => {
                         timeout:2950,
                         showOnlyTheLastOne:true                      
                     });
-                    navigate('/phone-verification/?entity=business');
+                    navigate('/phone-verification/?entity=business&phone='+phone);
                 }else{
                     let msg = null;
                     if(data?.message.includes('Document with the requested ID already exists')){

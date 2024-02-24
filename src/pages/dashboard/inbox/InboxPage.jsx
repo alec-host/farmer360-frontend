@@ -1,11 +1,10 @@
 import React,{ useState, useEffect, useRef } from "react";
-import axios from  'axios';
+import axios from 'axios';
 
 import DataTable from 'react-data-table-component';
 
 import Notiflix from 'notiflix';
 import { Loading } from 'notiflix/build/notiflix-loading-aio';
-
 
 import datatableStyle from "../../../css/datatable.module.css";
 import FilterComponent from "../../../components/FilterComponent";
@@ -16,6 +15,8 @@ import API_END_POINT from "../../../endpoint/apiRoute";
 
 import { getSession } from "../../../session/appSession";
 import { PROFILE_SESSION } from "../../../session/constant";
+
+import customCss from "../../../css/custom.loading.module.css";
 
 import { INBOX_KEY, clearLocalCache, readLocalCache, storeOnLocalCache } from "../../../db/localSessionData";
 
@@ -48,6 +49,7 @@ const InboxPage = () => {
         if(stored_data){
             setStoreProfileData(stored_data);
         }
+        Loading.init({className:customCss.notiflix_loading,});
     },[]);
 
     useEffect(() => {

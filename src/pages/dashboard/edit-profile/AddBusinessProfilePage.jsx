@@ -2,7 +2,7 @@ import React,{ useState, useEffect, useRef } from "react";
 import { useNavigate } from 'react-router-dom';
 
 import Notiflix from "notiflix";
-import MultiSelect from "react-awesome-multiselect";
+
 import { Loading } from "notiflix/build/notiflix-loading-aio";
 import CustomStepper from "../../../components/CustomStepper";
 
@@ -11,6 +11,7 @@ import { DBASE_KEY, clearLocalCache, readLocalCache, storeOnLocalCache } from ".
 import { farm_item_options } from "../../../db/optionsData";
 import { deleteSession, getSession, setSession } from "../../../session/appSession";
 import { PROFILE_SESSION } from "../../../session/constant";
+import { MultiSelect } from "react-multi-select-component";
 
 
 const AddBusinessProfilePage = () => {
@@ -22,7 +23,6 @@ const AddBusinessProfilePage = () => {
   const [storeProfileData,setStoreProfileData] = useState([]);
   const [ activeStep, setActiveStep ] = useState(0);
   const [selectedFarmOption,setSelectedFarmOption] = useState([]);
-  const [selectedFarmDisplayOption,setSelectedFarmDisplayOption] = useState([]);
   const [buttonDisabled,setButtonDisabled] = useState(false);
   const [trackDataChange,setTrackDataChange] = useState(false);
 
@@ -60,14 +60,6 @@ const AddBusinessProfilePage = () => {
   };
 
   let isButtonDisabled = null;
-
-  const handleSelectCb = (opt) => {
-    setSelectedFarmOption(opt);
-  };
-
-  const handleSelectDispayNameCb = (opt) => {
-    setSelectedFarmDisplayOption(opt);
-  };
 
   useEffect(() => {
     const stored_data = getSession(PROFILE_SESSION);
@@ -110,6 +102,8 @@ const AddBusinessProfilePage = () => {
 
     setButtonDisabled(!buttonDisabled);
 
+    const farmOptions = selectedFarmOption.map(item => item.value);
+
     const formData = new FormData();
     formData.append('action',"business_profile");
     formData.append('pin',typeof(readLocalCache(DBASE_KEY+"pin")?.PIN) !== "undefined" ? readLocalCache(DBASE_KEY+"pin").PIN : '');
@@ -117,7 +111,7 @@ const AddBusinessProfilePage = () => {
     formData.append('id_number',typeof(readLocalCache(DBASE_KEY+"id")?.IDNumber) !== "undefined"? readLocalCache(DBASE_KEY+"id").IDNumber : '');
     formData.append('business_address',typeof(readLocalCache(DBASE_KEY+"address")?.BusinessAddress) !== "undefined" ? readLocalCache(DBASE_KEY+"address").BusinessAddress : '');
     formData.append('business_cert_file',selectedBusinessCertFile);
-    formData.append('farm_item',inputFarmItemList?.current?.value);
+    formData.append('farm_item',farmOptions.join(', '));
     formData.append('owner_reference_number',storeProfileData[0]?.reference_number || '')
     formData.append('database_id',storeProfileData[0]?.$databaseId);
     formData.append('record_id',storeProfileData[0]?.$id);
@@ -265,16 +259,12 @@ const AddBusinessProfilePage = () => {
               <tr>
                 <td>
                   <MultiSelect
-                    list={farm_item_options}
-                    handleSelectCb={handleSelectCb}
-                    handleSelectDispayNameCb={handleSelectDispayNameCb}
-                    selectedOptions={selectedFarmOption}
-                    dropDownColor={"#FCFCFC"}
-                    chipColor={"#EA4335"}
-                    listSelectColor={"#008000"}
-                    isCloseOnOutsideClick={true}
-                    isTypeToSearch={true}
-                  /> 
+                    options={farm_item_options}
+                    value={selectedFarmOption}
+                    onChange={setSelectedFarmOption}
+                    labelledBy="Select Options from list"
+                    className="fw-bold text-danger"  
+                  />
                 </td>
               </tr>
               <tr>
@@ -284,7 +274,7 @@ const AddBusinessProfilePage = () => {
                     id="FarmItem" 
                     name="FarmItem" 
                     style={{width:'100%'}}
-                    value={selectedFarmDisplayOption} 
+                    value={selectedFarmOption} 
                     ref={inputFarmItemList} 
                     readOnly
                   />
@@ -301,7 +291,7 @@ const AddBusinessProfilePage = () => {
                       <td style={{width:"100%",height:'150px'}}></td>
                       <td style={{textAlign:"end"}}>
                       <button className="my-2 mx-auto btn btn-success" type="submit" disabled={isButtonDisabled || buttonDisabled}>
-                          Submit
+                        Submit
                       </button>
                       </td>
                   </tr> 
